@@ -11,6 +11,7 @@ export const routes: Routes = [
         loadComponent: () => import('../shared/components/layout/layout.component').then(m => m.LayoutComponent),
         children: [
         { path: 'home', loadComponent: () => import('../features/dashboard/components/home/home.component').then(m => m.HomeComponent) },
+        { path: 'administration', loadChildren: () => import('../features/administration/routes').then(m => m.administrationRoutes) },
         ],
     },
     { path: '**', redirectTo: 'auth' },
