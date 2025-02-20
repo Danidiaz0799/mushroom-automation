@@ -1,8 +1,48 @@
-<div class="container">
-    <h1>Home</h1>
-    <p>Bienvenido a la página principal.</p>
-</div>
+<div class="flex h-screen bg-gray-100">
 
-<div class="flex items-center justify-center h-screen bg-gray-100">
-    <h1 class="text-3xl font-bold text-blue-500">¡Tailwind CSS está funcionando en Angular! 🎉</h1>
+    <div class="flex-1 flex flex-col">
+
+        <div class="p-6">
+            <h1 class="text-3xl font-bold mb-6">Cultivo Automatizado de Setas</h1>
+
+            <!-- Tarjetas de métricas -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white p-4 rounded shadow-md">
+                    <h2 class="text-lg font-semibold">Temperatura</h2>
+                    <p class="text-2xl font-bold text-blue-600">23°C</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow-md">
+                    <h2 class="text-lg font-semibold">Humedad</h2>
+                    <p class="text-2xl font-bold text-green-600">85%</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow-md">
+                    <h2 class="text-lg font-semibold">Iluminación</h2>
+                    <p class="text-2xl font-bold">Activa</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow-md">
+                    <h2 class="text-lg font-semibold">Ventilación</h2>
+                    <p class="text-2xl font-bold">Encendida</p>
+                </div>
+            </div>
+
+            <!-- Gráfica (se añadirá más adelante con una librería como Chart.js) -->
+            <div class="bg-white p-6 rounded shadow-md mb-6">
+                <h2 class="text-xl font-semibold mb-4">Historial de Temperatura y Humedad</h2>
+                <div class="h-40 bg-gray-200 flex items-center justify-center text-gray-600">
+                    📊 Gráfica aquí (Pendiente)
+                </div>
+            </div>
+
+            <!-- Últimos eventos -->
+            <div class="bg-white p-6 rounded shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Registro de Eventos</h2>
+                <ul class="space-y-3">
+                    <li class="border-b pb-2">🌡️ Sensor: Temperatura ajustada a 23°C</li>
+                    <li class="border-b pb-2">💧 Humedad óptima alcanzada (85%)</li>
+                    <li class="border-b pb-2">💡 Iluminación activada automáticamente</li>
+                    <li>🔄 Ventilación encendida</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
