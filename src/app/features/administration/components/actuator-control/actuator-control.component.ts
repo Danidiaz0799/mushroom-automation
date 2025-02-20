@@ -13,15 +13,15 @@ export class ActuatorControlComponent {
   private actuatorService = inject(ActuatorService);
 
   lucesEncendidas = signal(false);
-  ventiladorEncendido = signal(false);
 
   toggleLuces() {
     this.lucesEncendidas.update(value => !value);
-    this.actuatorService.toggleActuator('luces', this.lucesEncendidas()).subscribe();
+    const command = this.lucesEncendidas() ? true : false;
+    this.actuatorService.lightControl(command).subscribe(response => {
+      console.log(response.message);
+    }, error => {
+      console.error(error);
+    });
   }
 
-  toggleVentilador() {
-    this.ventiladorEncendido.update(value => !value);
-    this.actuatorService.toggleActuator('ventilador', this.ventiladorEncendido()).subscribe();
-  }
 }
