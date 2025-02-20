@@ -11,7 +11,7 @@ export class ActuatorService {
 
   constructor(private http: HttpClient) { }
 
-  toggleActuator(actuatorName: string, state: boolean): Observable<any> {
-    return this.http.post<any>(`${this.actuatorsUrl}/toggle`, { name: actuatorName, state });
+  lightControl(state: boolean): Observable<any> {
+    return this.http.post<any>(`${this.actuatorsUrl}/toggle_light`, { state });
   }
 }
