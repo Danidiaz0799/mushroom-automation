@@ -1,10 +1,13 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { DashboardService } from '../../services/dashboard.service';
+import { CommonModule } from '@angular/common';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-home',
+  imports: [CommonModule],
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
@@ -13,13 +16,57 @@ export class HomeComponent implements AfterViewInit {
   temperatureChart: Chart | undefined;
   humidityChart: Chart | undefined;
 
-  temperatureData = [22, 23, 24, 23, 25, 24, 23, 22]; // Datos de temperatura
-  humidityData = [80, 82, 85, 83, 84, 86, 85, 82]; // Datos de humedad
-  labels = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00']; // Horas del día
+  temperatureData: number[] = [];
+  humidityData: number[] = [];
+  labels: string[] = [];
+  latestTemperature: number | undefined;
+  latestHumidity: number | undefined;
+  events: any[] = [];
+
+  constructor(private dashboardService: DashboardService) {}
 
   ngAfterViewInit(): void {
-    this.renderTemperatureChart();
-    this.renderHumidityChart();
+    this.fetchSensorData();
+    this.fetchEvents();
+  }
+
+  fetchSensorData() {
+    this.dashboardService.getSensorData(1, 10).subscribe(data => {
+      // Ordenar los datos por timestamp en orden descendente
+      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      this.temperatureData = data.map((item: any) => item.temperature);
+      this.humidityData = data.map((item: any) => item.humidity);
+      this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleTimeString());
+
+      this.latestTemperature = this.temperatureData[0];
+      this.latestHumidity = this.humidityData[0];
+
+      this.renderTemperatureChart();
+      this.renderHumidityChart();
+    });
+  }
+
+  fetchEvents() {
+    this.dashboardService.getEvents(1, 10).subscribe(data => {
+      this.events = data.map((event: any) => ({
+        ...event,
+        formattedTimestamp: this.formatTimestamp(event.timestamp)
+      }));
+    });
+  }
+
+  formatTimestamp(timestamp: string): string {
+    const date = new Date(timestamp);
+    const options: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour12: true
+    };
+    return date.toLocaleString('es-ES', options);
   }
 
   renderTemperatureChart() {

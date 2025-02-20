@@ -10,7 +10,7 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
-  isOpen = true;
+  isOpen = false; // Contraída por defecto
 
   toggleSidebar() {
     this.isOpen = !this.isOpen;
