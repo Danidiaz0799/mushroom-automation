@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { DashboardService } from '../../services/dashboard.service';
 import { CommonModule } from '@angular/common';
@@ -12,9 +12,10 @@ Chart.register(...registerables);
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements AfterViewInit {
+export class HomeComponent implements AfterViewInit, OnDestroy {
   temperatureChart: Chart | undefined;
   humidityChart: Chart | undefined;
+  intervalId: any;
 
   temperatureData: number[] = [];
   humidityData: number[] = [];
@@ -33,6 +34,15 @@ export class HomeComponent implements AfterViewInit {
     this.fetchSensorData();
     this.fetchEvents();
     this.fetchActuators();
+    this.intervalId = setInterval(() => {
+      this.fetchSensorData();
+    }, 10000); // Recargar cada 10 segundos
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   fetchSensorData() {
@@ -47,8 +57,13 @@ export class HomeComponent implements AfterViewInit {
       this.latestHumidity = this.humidityData[0];
       this.latestUpdate = this.formatTimestamp(data[0].timestamp);
 
-      this.renderTemperatureChart();
-      this.renderHumidityChart();
+      if (!this.temperatureChart || !this.humidityChart) {
+        this.renderTemperatureChart();
+        this.renderHumidityChart();
+      } else {
+        this.updateTemperatureChart();
+        this.updateHumidityChart();
+      }
     });
   }
 
@@ -153,6 +168,22 @@ export class HomeComponent implements AfterViewInit {
           }
         }
       });
+    }
+  }
+
+  updateTemperatureChart() {
+    if (this.temperatureChart) {
+      this.temperatureChart.data.labels = this.labels;
+      this.temperatureChart.data.datasets[0].data = this.temperatureData;
+      this.temperatureChart.update();
+    }
+  }
+
+  updateHumidityChart() {
+    if (this.humidityChart) {
+      this.humidityChart.data.labels = this.labels;
+      this.humidityChart.data.datasets[0].data = this.humidityData;
+      this.humidityChart.update();
     }
   }
 }

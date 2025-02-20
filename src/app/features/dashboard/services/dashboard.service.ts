@@ -7,14 +7,14 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = `${environment.apiUrl}/DhtSensor`;
+  private sensorUrl = `${environment.apiUrl}/DhtSensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
   private actuatorsUrl = `${environment.apiUrl}/Actuator`;
 
   constructor(private http: HttpClient) { }
 
   getSensorData(page: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}`);
+    return this.http.get<any>(`${this.sensorUrl}?page=${page}&pageSize=${pageSize}`);
   }
 
   getEvents(page: number, pageSize: number): Observable<any> {
