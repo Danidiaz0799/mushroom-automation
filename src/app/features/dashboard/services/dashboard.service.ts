@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class DashboardService {
   private apiUrl = `${environment.apiUrl}/DhtSensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
+  private actuatorsUrl = `${environment.apiUrl}/actuators`;
 
   constructor(private http: HttpClient) { }
 
@@ -18,5 +19,9 @@ export class DashboardService {
 
   getEvents(page: number, pageSize: number): Observable<any> {
     return this.http.get<any>(`${this.eventsUrl}?page=${page}&pageSize=${pageSize}`);
+  }
+
+  getActuators(page: number, pageSize: number): Observable<any> {
+    return this.http.get<any>(`${this.actuatorsUrl}?page=${page}&pageSize=${pageSize}`);
   }
 }

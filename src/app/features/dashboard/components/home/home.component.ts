@@ -1,5 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 import { DashboardService } from '../../services/dashboard.service';
 import { CommonModule } from '@angular/common';
 
@@ -23,17 +23,20 @@ export class HomeComponent implements AfterViewInit {
   latestHumidity: number | undefined;
   latestUpdate: string | undefined;
   events: any[] = [];
+  actuators: any[] = [];
+  illuminationState: string = 'Desconocido';
+  ventilationState: string = 'Desconocido';
 
   constructor(private dashboardService: DashboardService) {}
 
   ngAfterViewInit(): void {
     this.fetchSensorData();
     this.fetchEvents();
+    this.fetchActuators();
   }
 
   fetchSensorData() {
     this.dashboardService.getSensorData(1, 10).subscribe(data => {
-      // Ordenar los datos por timestamp en orden descendente
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       this.temperatureData = data.map((item: any) => item.temperature);
@@ -55,6 +58,16 @@ export class HomeComponent implements AfterViewInit {
         ...event,
         formattedTimestamp: this.formatTimestamp(event.timestamp)
       }));
+    });
+  }
+
+  fetchActuators() {
+    this.dashboardService.getActuators(1, 10).subscribe(data => {
+      this.actuators = data;
+      const illumination = this.actuators.find(actuator => actuator.name === 'Iluminación');
+      const ventilation = this.actuators.find(actuator => actuator.name === 'Ventilación');
+      this.illuminationState = illumination ? (illumination.state ? 'Encendida' : 'Apagada') : 'Desconocido';
+      this.ventilationState = ventilation ? (ventilation.state ? 'Encendida' : 'Apagada') : 'Desconocido';
     });
   }
 
