@@ -1,1 +1,34 @@
-<p>login works!</p>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Iniciar Sesión</h2>
+        <form [formGroup]="loginForm">
+        <div class="mb-4">
+            <label for="email" class="block text-gray-700">Correo Electrónico</label>
+            <input type="email" id="email" formControlName="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="correo@ejemplo.com">
+            <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="text-red-600 text-sm mt-1">
+                <div *ngIf="email?.errors?.['required']">El correo electrónico es requerido.</div>
+                <div *ngIf="email?.errors?.['email']">El correo electrónico no es válido.</div>
+            </div>
+        </div>
+        <div class="mb-6">
+            <label for="password" class="block text-gray-700">Contraseña</label>
+            <input type="password" id="password" formControlName="password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="********">
+            <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="text-red-600 text-sm mt-1">
+                <div *ngIf="password?.errors?.['required']">La contraseña es requerida.</div>
+                <div *ngIf="password?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</div>
+            </div>
+        </div>
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+            <input type="checkbox" id="remember" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="remember" class="ml-2 block text-gray-900">Recuérdame</label>
+            </div>
+            <div class="text-sm">
+            <a href="#" class="font-medium text-blue-600 hover:text-blue-500">¿Olvidaste tu contraseña?</a>
+            </div>
+        </div>
+        <button (click)="loginButton()" type="button" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200">Iniciar Sesión</button>
+        </form>
+        <p class="mt-6 text-center text-gray-600">¿No tienes una cuenta? <a routerLink="/auth/register" class="text-blue-600 hover:text-blue-500">Regístrate</a></p>
+    </div>
+</div>
