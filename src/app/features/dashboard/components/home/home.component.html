@@ -1,48 +1,81 @@
-<div class="flex h-screen bg-gray-100">
+<div class="flex bg-gray-100">
 
-    <div class="flex-1 flex flex-col">
+    <!-- Contenedor Principal -->
+    <div class="flex-1 flex flex-col p-6">
 
-        <div class="p-6">
-            <h1 class="text-3xl font-bold mb-6">Cultivo Automatizado de Setas</h1>
+        <!-- Título -->
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">Cultivo Automatizado de Setas</h1>
 
-            <!-- Tarjetas de métricas -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <div class="bg-white p-4 rounded shadow-md">
-                    <h2 class="text-lg font-semibold">Temperatura</h2>
+        <!-- Tarjetas de Métricas -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+
+            <!-- Tarjeta: Temperatura -->
+            <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-blue-500">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Temperatura</h2>
                     <p class="text-2xl font-bold text-blue-600">23°C</p>
                 </div>
-                <div class="bg-white p-4 rounded shadow-md">
-                    <h2 class="text-lg font-semibold">Humedad</h2>
+                <span class="text-blue-500 text-3xl">🌡️</span>
+            </div>
+
+            <!-- Tarjeta: Humedad -->
+            <div
+                class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-green-500">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Humedad</h2>
                     <p class="text-2xl font-bold text-green-600">85%</p>
                 </div>
-                <div class="bg-white p-4 rounded shadow-md">
-                    <h2 class="text-lg font-semibold">Iluminación</h2>
-                    <p class="text-2xl font-bold">Activa</p>
-                </div>
-                <div class="bg-white p-4 rounded shadow-md">
-                    <h2 class="text-lg font-semibold">Ventilación</h2>
-                    <p class="text-2xl font-bold">Encendida</p>
-                </div>
+                <span class="text-green-500 text-3xl">💧</span>
             </div>
 
-            <!-- Gráfica (se añadirá más adelante con una librería como Chart.js) -->
-            <div class="bg-white p-6 rounded shadow-md mb-6">
-                <h2 class="text-xl font-semibold mb-4">Historial de Temperatura y Humedad</h2>
-                <div class="h-40 bg-gray-200 flex items-center justify-center text-gray-600">
-                    📊 Gráfica aquí (Pendiente)
+            <!-- Tarjeta: Iluminación -->
+            <div
+                class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-yellow-500">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Iluminación</h2>
+                    <p class="text-2xl font-bold text-yellow-600">Activa</p>
                 </div>
+                <span class="text-yellow-500 text-3xl">💡</span>
             </div>
 
-            <!-- Últimos eventos -->
-            <div class="bg-white p-6 rounded shadow-md">
-                <h2 class="text-xl font-semibold mb-4">Registro de Eventos</h2>
-                <ul class="space-y-3">
-                    <li class="border-b pb-2">🌡️ Sensor: Temperatura ajustada a 23°C</li>
-                    <li class="border-b pb-2">💧 Humedad óptima alcanzada (85%)</li>
-                    <li class="border-b pb-2">💡 Iluminación activada automáticamente</li>
-                    <li>🔄 Ventilación encendida</li>
-                </ul>
+            <!-- Tarjeta: Ventilación -->
+            <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-gray-500">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Ventilación</h2>
+                    <p class="text-2xl font-bold text-gray-600">Encendida</p>
+                </div>
+                <span class="text-gray-500 text-3xl">🔄</span>
+            </div>
+
+        </div>
+
+        <!-- Gráfica de Temperatura y Humedad -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Historial de Temperatura y Humedad</h2>
+            <div class="h-44 bg-gray-200 flex items-center justify-center text-gray-600 rounded">
+                📊 <span class="ml-2">Gráfica aquí (Pendiente)</span>
             </div>
         </div>
+
+        <!-- Registro de Eventos Mejorado -->
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Registro de Eventos</h2>
+            <ul class="space-y-3 text-gray-700">
+                <li class="flex items-center">
+                    <span class="text-xl text-red-500 mr-2">🌡️</span> Sensor: Temperatura ajustada a 23°C
+                </li>
+                <li class="flex items-center">
+                    <span class="text-xl text-blue-500 mr-2">💧</span> Humedad óptima alcanzada (85%)
+                </li>
+                <li class="flex items-center">
+                    <span class="text-xl text-yellow-500 mr-2">💡</span> Iluminación activada automáticamente
+                </li>
+                <li class="flex items-center">
+                    <span class="text-xl text-gray-500 mr-2">🔄</span> Ventilación encendida
+                </li>
+            </ul>
+        </div>
+
+
     </div>
 </div>

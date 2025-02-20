@@ -1,15 +1,30 @@
-<aside class="w-64 bg-gray-800 text-white p-5">
-    <h2 class="text-xl font-bold mb-6">Menú</h2>
-    <nav>
-        <ul>
-            <li class="mb-4">
-                <a routerLink="/home" class="flex items-center gap-2 p-2 rounded hover:bg-gray-700">
-                    🏠 Inicio
+<aside class="bg-gray-900 text-white h-screen transition-all duration-300 ease-in-out relative flex flex-col"
+    [class.w-64]="isOpen" [class.w-16]="!isOpen">
+
+    <!-- Botón de colapsar/expandir con flecha -->
+    <button
+        class="absolute left-full top-1/2 -translate-y-1/2 bg-gray-900 text-white p-2 rounded-r-lg shadow-md hover:bg-gray-800 transition"
+        (click)="toggleSidebar()">
+        <span [class.rotate-180]="isOpen">.</span>
+    </button>
+
+    <!-- Título del menú -->
+    <h2 class="text-2xl font-semibold m-6 tracking-wide text-center transition-opacity" [class.opacity-100]="isOpen"
+        [class.opacity-0]="!isOpen">
+        Menú
+    </h2>
+
+    <nav class="flex-1">
+        <ul class="space-y-2">
+            <li>
+                <a routerLink="/home" class="flex items-center gap-3 px-4 py-3 rounded-lg transition hover:bg-gray-700 hover:text-gray-300">
+                    🏠 <span *ngIf="isOpen" class="text-lg">Inicio</span>
                 </a>
             </li>
+
             <li>
-                <a routerLink="/auth/login" class="flex items-center gap-2 p-2 rounded hover:bg-gray-700">
-                    🔐 Iniciar Sesión
+                <a routerLink="/auth/login" class="flex items-center gap-3 px-4 py-3 rounded-lg transition hover:bg-gray-700 hover:text-gray-300">
+                    🔐 <span *ngIf="isOpen" class="text-lg">Iniciar Sesión</span>
                 </a>
             </li>
         </ul>
