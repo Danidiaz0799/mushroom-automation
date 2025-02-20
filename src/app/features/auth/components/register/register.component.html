@@ -1,1 +1,33 @@
-<p>register works!</p>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Registrarse</h2>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="mb-4">
+            <label for="email" class="block text-gray-700">Correo Electrónico</label>
+            <input type="email" id="email" formControlName="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="correo@ejemplo.com">
+            <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="text-red-600 text-sm mt-1">
+                <div *ngIf="email?.errors?.['required']">El correo electrónico es requerido.</div>
+                <div *ngIf="email?.errors?.['email']">El correo electrónico no es válido.</div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="password" class="block text-gray-700">Contraseña</label>
+            <input type="password" id="password" formControlName="password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="********">
+            <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="text-red-600 text-sm mt-1">
+                <div *ngIf="password?.errors?.['required']">La contraseña es requerida.</div>
+                <div *ngIf="password?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</div>
+            </div>
+        </div>
+        <div class="mb-6">
+            <label for="confirmPassword" class="block text-gray-700">Confirmar Contraseña</label>
+            <input type="password" id="confirmPassword" formControlName="confirmPassword" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="********">
+            <div *ngIf="confirmPassword?.invalid && (confirmPassword?.dirty || confirmPassword?.touched)" class="text-red-600 text-sm mt-1">
+                <div *ngIf="confirmPassword?.errors?.['required']">La confirmación de la contraseña es requerida.</div>
+                <div *ngIf="registerForm.errors?.['mismatch']">Las contraseñas no coinciden.</div>
+            </div>
+        </div>
+        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200" [disabled]="registerForm.invalid">Registrarse</button>
+        </form>
+        <p class="mt-6 text-center text-gray-600">¿Ya tienes una cuenta? <a routerLink="/auth/login" class="text-blue-600 hover:text-blue-500">Iniciar Sesión</a></p>
+    </div>
+</div>
