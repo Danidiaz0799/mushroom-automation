@@ -64,8 +64,8 @@ export class HomeComponent implements AfterViewInit {
   fetchActuators() {
     this.dashboardService.getActuators(1, 10).subscribe(data => {
       this.actuators = data;
-      const illumination = this.actuators.find(actuator => actuator.name === 'Iluminación');
-      const ventilation = this.actuators.find(actuator => actuator.name === 'Ventilación');
+      const illumination = this.actuators.find(actuator => actuator.name === 'Iluminacion');
+      const ventilation = this.actuators.find(actuator => actuator.name === 'Ventilacion');
       this.illuminationState = illumination ? (illumination.state ? 'Encendida' : 'Apagada') : 'Desconocido';
       this.ventilationState = ventilation ? (ventilation.state ? 'Encendida' : 'Apagada') : 'Desconocido';
     });

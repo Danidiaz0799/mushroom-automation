@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 export class DashboardService {
   private apiUrl = `${environment.apiUrl}/DhtSensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
-  private actuatorsUrl = `${environment.apiUrl}/actuators`;
+  private actuatorsUrl = `${environment.apiUrl}/Actuator`;
 
   constructor(private http: HttpClient) { }
 
