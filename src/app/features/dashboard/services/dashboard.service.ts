@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = 'https://localhost:7126/api/DhtSensor';
-  private eventsUrl = 'https://localhost:7126/api/Event';
+  private apiUrl = `${environment.apiUrl}/DhtSensor`;
+  private eventsUrl = `${environment.apiUrl}/Event`;
 
   constructor(private http: HttpClient) { }
 

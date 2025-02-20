@@ -21,6 +21,7 @@ export class HomeComponent implements AfterViewInit {
   labels: string[] = [];
   latestTemperature: number | undefined;
   latestHumidity: number | undefined;
+  latestUpdate: string | undefined;
   events: any[] = [];
 
   constructor(private dashboardService: DashboardService) {}
@@ -41,6 +42,7 @@ export class HomeComponent implements AfterViewInit {
 
       this.latestTemperature = this.temperatureData[0];
       this.latestHumidity = this.humidityData[0];
+      this.latestUpdate = this.formatTimestamp(data[0].timestamp);
 
       this.renderTemperatureChart();
       this.renderHumidityChart();
