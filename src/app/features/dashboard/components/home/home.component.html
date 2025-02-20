@@ -49,11 +49,16 @@
 
         </div>
 
-        <!-- Gráfica de Temperatura y Humedad -->
+        <!-- Gráficas de Temperatura y Humedad -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Historial de Temperatura y Humedad</h2>
-            <div class="h-44 bg-gray-200 flex items-center justify-center text-gray-600 rounded">
-                📊 <span class="ml-2">Gráfica aquí (Pendiente)</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="h-64">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+                <div class="h-64">
+                    <canvas id="humidityChart"></canvas>
+                </div>
             </div>
         </div>
 
