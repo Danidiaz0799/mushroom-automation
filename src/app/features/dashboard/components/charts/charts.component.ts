@@ -1,7 +1,6 @@
-import { Component, Input, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, AfterViewInit, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
-import { DashboardService } from '../../services/dashboard.service';
 
 Chart.register(...registerables);
 
@@ -11,7 +10,7 @@ Chart.register(...registerables);
   imports: [CommonModule],
   templateUrl: './charts.component.html'
 })
-export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
+export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChanges {
   @Input() temperatureData: number[] = [];
   @Input() humidityData: number[] = [];
   @Input() labels: string[] = [];
@@ -20,12 +19,10 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
   humidityChart: Chart | undefined;
   intervalId: any;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor() {}
 
   ngOnInit(): void {
-    this.fetchSensorData();
     this.intervalId = setInterval(() => {
-      this.fetchSensorData();
     }, 5000);
   }
 
@@ -46,18 +43,8 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
     this.renderHumidityChart();
   }
 
-  fetchSensorData() {
-    this.dashboardService.getSensorData(1, 10).subscribe(data => {
-      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-      this.temperatureData = data.map((item: any) => item.temperature);
-      this.humidityData = data.map((item: any) => item.humidity);
-      this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      }));
-
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['temperatureData'] || changes['humidityData'] || changes['labels']) {
       if (this.temperatureChart) {
         this.updateTemperatureChart();
       } else {
@@ -69,12 +56,15 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
       } else {
         this.renderHumidityChart();
       }
-    });
+    }
   }
 
   renderTemperatureChart() {
     const ctx = document.getElementById('temperatureChart') as HTMLCanvasElement;
     if (ctx) {
+      if (this.temperatureChart) {
+        this.temperatureChart.destroy();
+      }
       this.temperatureChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -122,6 +112,9 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
   renderHumidityChart() {
     const ctx = document.getElementById('humidityChart') as HTMLCanvasElement;
     if (ctx) {
+      if (this.humidityChart) {
+        this.humidityChart.destroy();
+      }
       this.humidityChart = new Chart(ctx, {
         type: 'line',
         data: {
