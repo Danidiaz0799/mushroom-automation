@@ -18,7 +18,7 @@ export class EventsComponent implements OnInit {
   }
 
   fetchEvents() {
-    this.dashboardService.getEvents(1, 10).subscribe(data => {
+    this.dashboardService.getEvents(1, 5).subscribe(data => {
       this.events = data.map((event: any) => ({
         ...event,
         formattedTimestamp: this.formatTimestamp(event.timestamp)
