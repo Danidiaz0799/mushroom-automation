@@ -1,0 +1,39 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+  <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-blue-500">
+    <div>
+      <h2 class="text-lg font-semibold text-gray-700">Temperatura</h2>
+      <p class="text-2xl font-bold text-blue-600">{{ latestTemperature }}°C</p>
+      <p class="text-sm text-gray-500">Última actualización: {{ latestUpdate }}</p>
+    </div>
+    <span class="text-blue-500 text-3xl">🌡️</span>
+  </div>
+
+  <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-green-500">
+    <div>
+      <h2 class="text-lg font-semibold text-gray-700">Humedad</h2>
+      <p class="text-2xl font-bold text-green-600">{{ latestHumidity }}%</p>
+      <p class="text-sm text-gray-500">Última actualización: {{ latestUpdate }}</p>
+    </div>
+    <span class="text-green-500 text-3xl">💧</span>
+  </div>
+
+  <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-yellow-500">
+    <div>
+      <h2 class="text-lg font-semibold text-gray-700">Iluminación</h2>
+      <p class="text-2xl font-bold text-yellow-600">{{ illuminationState }}</p>
+    </div>
+    <span class="text-yellow-500 text-3xl">💡</span>
+  </div>
+
+  <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-gray-500">
+    <div>
+      <h2 class="text-lg font-semibold text-gray-700">Ventilación</h2>
+      <p class="text-2xl font-bold text-gray-600">{{ ventilationState }}</p>
+    </div>
+    <span class="text-gray-500 text-3xl">🔄</span>
+  </div>
+</div>
+
+<div *ngIf="errorMessage" class="text-red-500">
+  Error: {{ errorMessage }}
+</div>
