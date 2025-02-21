@@ -26,7 +26,7 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
     this.fetchSensorData();
     this.intervalId = setInterval(() => {
       this.fetchSensorData();
-    }, 60000); // Recargar cada 60 segundos
+    }, 5000);
   }
 
   ngOnDestroy(): void {
@@ -52,7 +52,11 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
 
       this.temperatureData = data.map((item: any) => item.temperature);
       this.humidityData = data.map((item: any) => item.humidity);
-      this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleTimeString());
+      this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }));
 
       if (this.temperatureChart) {
         this.updateTemperatureChart();
@@ -79,10 +83,10 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
             {
               label: 'Temperatura (°C)',
               data: this.temperatureData,
-              borderColor: 'rgba(54, 162, 235, 1)',
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
               fill: true,
-              tension: 0.3
+              tension: 0.4
             }
           ]
         },
@@ -91,12 +95,23 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: true
+              display: true,
+              labels: {
+                color: 'rgba(54, 54, 54, 1)'
+              }
             }
           },
           scales: {
+            x: {
+              ticks: {
+                color: 'rgba(54, 54, 54, 1)'
+              }
+            },
             y: {
-              beginAtZero: false
+              beginAtZero: false,
+              ticks: {
+                color: 'rgba(54, 54, 54, 1)'
+              }
             }
           }
         }
@@ -118,7 +133,7 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
               borderColor: 'rgba(75, 192, 192, 1)',
               backgroundColor: 'rgba(75, 192, 192, 0.2)',
               fill: true,
-              tension: 0.3
+              tension: 0.4
             }
           ]
         },
@@ -127,12 +142,23 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy {
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: true
+              display: true,
+              labels: {
+                color: 'rgba(54, 54, 54, 1)'
+              }
             }
           },
           scales: {
+            x: {
+              ticks: {
+                color: 'rgba(54, 54, 54, 1)'
+              }
+            },
             y: {
-              beginAtZero: false
+              beginAtZero: false,
+              ticks: {
+                color: 'rgba(54, 54, 54, 1)'
+              }
             }
           }
         }

@@ -27,7 +27,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.fetchSensorData();
     this.intervalId = setInterval(() => {
       this.fetchSensorData();
-    }, 60000);
+    }, 5000);
   }
 
   ngOnDestroy(): void {
