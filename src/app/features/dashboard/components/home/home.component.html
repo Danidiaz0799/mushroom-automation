@@ -6,11 +6,17 @@
       [latestHumidity]="latestHumidity"
       [latestUpdate]="latestUpdate">
     </app-parameters>
-    <app-charts
-      [temperatureData]="temperatureData"
-      [humidityData]="humidityData"
-      [labels]="labels">
-    </app-charts>
-    <app-events></app-events>
+    <div class="flex flex-col md:flex-row">
+      <div class="flex-1">
+        <app-charts
+          [temperatureData]="temperatureData"
+          [humidityData]="humidityData"
+          [labels]="labels">
+        </app-charts>
+      </div>
+      <div class="md:w-1/3 md:ml-4">
+        <app-events></app-events>
+      </div>
+    </div>
   </div>
 </div>
