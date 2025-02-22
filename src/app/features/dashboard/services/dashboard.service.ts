@@ -28,6 +28,13 @@ export class DashboardService {
     );
   }
 
+  getEventsByTopic(topic: string, page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.eventsUrl}/FilterByTopic?topic=${topic}&page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   getActuators(page: number, pageSize: number): Observable<any> {
     return this.http.get<any>(`${this.actuatorsUrl}?page=${page}&pageSize=${pageSize}`).pipe(
       catchError(this.handleError)
