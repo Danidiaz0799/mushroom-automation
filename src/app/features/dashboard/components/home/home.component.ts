@@ -37,7 +37,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   fetchSensorData() {
-    this.dashboardService.getSensorData(1, 10).subscribe(data => {
+    this.dashboardService.getSensorData(1, 10, false).subscribe(data => {
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       this.temperatureData = data.map((item: any) => item.temperature);

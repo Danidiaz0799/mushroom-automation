@@ -5,9 +5,17 @@ import { SpinnerService } from 'src/app/shared/services/spinner.service';
 
 export const SpinnerInterceptor: HttpInterceptorFn = (req, next) => {
     const spinnerService = inject(SpinnerService);
-    spinnerService.show();
+    const showSpinner = req.headers.get('X-Show-Spinner') !== 'false';
+
+    if (showSpinner) {
+        spinnerService.show();
+    }
 
     return next(req).pipe(
-        finalize(() => spinnerService.hide())
+        finalize(() => {
+            if (showSpinner) {
+                spinnerService.hide();
+            }
+        })
     );
 };

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -14,14 +14,16 @@ export class DashboardService {
 
   constructor(private http: HttpClient) { }
 
-  getSensorData(page: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(`${this.sensorUrl}?page=${page}&pageSize=${pageSize}`).pipe(
+  getSensorData(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.sensorUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
-  getEvents(page: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(`${this.eventsUrl}?page=${page}&pageSize=${pageSize}`).pipe(
+  getEvents(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.eventsUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }

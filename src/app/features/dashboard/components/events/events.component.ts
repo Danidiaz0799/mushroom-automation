@@ -28,7 +28,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   fetchEvents() {
-    this.dashboardService.getEvents(1, 5).subscribe(data => {
+    this.dashboardService.getEvents(1, 5, false).subscribe(data => {
       this.events = data.map((event: any) => ({
         ...event,
         formattedTimestamp: this.formatTimestamp(event.timestamp)
