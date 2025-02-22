@@ -48,4 +48,17 @@ export class EventsComponent implements OnInit, OnDestroy {
     };
     return date.toLocaleString('es-ES', options);
   }
+
+  getIconForTopic(topic: string): string {
+    switch (topic) {
+      case 'humedad':
+        return '💧';
+      case 'temperatura':
+        return '🌡️';
+      case 'iluminacion':
+        return '💡';
+      default:
+        return '🔔';
+    }
+  }
 }
