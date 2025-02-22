@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -13,15 +14,35 @@ export class DashboardService {
 
   constructor(private http: HttpClient) { }
 
-  getSensorData(page: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(`${this.sensorUrl}?page=${page}&pageSize=${pageSize}`);
+  getSensorData(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.sensorUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  getEvents(page: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(`${this.eventsUrl}?page=${page}&pageSize=${pageSize}`);
+  getEvents(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.eventsUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      catchError(this.handleError)
+    );
   }
 
   getActuators(page: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(`${this.actuatorsUrl}?page=${page}&pageSize=${pageSize}`);
+    return this.http.get<any>(`${this.actuatorsUrl}?page=${page}&pageSize=${pageSize}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Unknown error!';
+    if (error.error instanceof ErrorEvent) {
+      // Client-side errors
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // Server-side errors
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    return throwError(errorMessage);
   }
 }

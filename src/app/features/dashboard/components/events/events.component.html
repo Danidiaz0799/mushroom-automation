@@ -1,0 +1,12 @@
+<div class="bg-white p-4 rounded-lg shadow-lg">
+  <h2 class="text-xl font-bold text-gray-900 mb-4">Últimos eventos registrados</h2>
+  <ul class="space-y-4">
+    <li *ngFor="let event of events" class="bg-gray-100 p-4 rounded-lg shadow-md flex items-start transition-transform transform hover:scale-95">
+      <span class="text-xl mr-3">{{ getIconForTopic(event.topic) }}</span>
+      <div>
+        <p class="font-semibold text-md">{{ event.message }}</p>
+        <p class="text-sm text-gray-600">{{ event.formattedTimestamp }}</p>
+      </div>
+    </li>
+  </ul>
+</div>
