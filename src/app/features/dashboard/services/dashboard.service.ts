@@ -35,6 +35,7 @@ export class DashboardService {
   getGy302Data(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
     return this.http.get<any>(`${this.gy302Url}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      map(data => data.map((item: any) => ({ light_level: item.light_level, timestamp: item.timestamp }))),
       catchError(this.handleError)
     );
   }

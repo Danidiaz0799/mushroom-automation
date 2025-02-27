@@ -15,6 +15,7 @@ import { DashboardService } from '../../services/dashboard.service';
 export class HomeComponent implements AfterViewInit, OnDestroy {
   temperatureData: number[] = [];
   humidityData: number[] = [];
+  lightLevelData: number[] = [];
   labels: string[] = [];
   latestTemperature: number | undefined;
   latestHumidity: number | undefined;
@@ -52,6 +53,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
       this.temperatureData = data.map((item: any) => item.temperature);
       this.latestTemperature = this.temperatureData[0];
+    });
+
+    this.dashboardService.getGy302Data(1, 10, false).subscribe(data => {
+      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      this.lightLevelData = data.map((item: any) => item.light_level);
     });
   }
 
