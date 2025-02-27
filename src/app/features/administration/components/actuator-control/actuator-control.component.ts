@@ -2,26 +2,35 @@ import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActuatorService } from '../../services/actuator.service';
 import { DashboardService } from '../../../dashboard/services/dashboard.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-actuator-control',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './actuator-control.component.html',
   styleUrls: ['./actuator-control.component.scss']
 })
 export class ActuatorControlComponent implements OnInit, OnDestroy {
   private actuatorService = inject(ActuatorService);
   private dashboardService = inject(DashboardService);
+  private fb = inject(FormBuilder);
 
   lucesEncendidas = signal(false);
   ventiladoresEncendidos = signal(false);
-  desiredTemperature!: number;
-  desiredHumidity!: number;
   latestTemperature: number | undefined;
   latestHumidity: number | undefined;
   intervalId: any;
+
+  temperatureForm: FormGroup = this.fb.group({
+    minTemperature: ['', [Validators.required, Validators.min(10), Validators.max(30)]],
+    maxTemperature: ['', [Validators.required, Validators.min(10), Validators.max(30), this.maxGreaterThanMin('minTemperature')]]
+  });
+
+  humidityForm: FormGroup = this.fb.group({
+    minHumidity: ['', [Validators.required, Validators.min(40), Validators.max(110)]],
+    maxHumidity: ['', [Validators.required, Validators.min(40), Validators.max(110), this.maxGreaterThanMin('minHumidity')]]
+  });
 
   ngOnInit(): void {
     this.fetchSensorData();
@@ -80,4 +89,36 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     });
   }
 
+  setTemperature() {
+    if (this.temperatureForm.invalid) {
+      this.temperatureForm.markAllAsTouched();
+      return;
+    }
+    const { minTemperature, maxTemperature } = this.temperatureForm.value;
+    console.log(`Establecer temperatura: Mínima = ${minTemperature}, Máxima = ${maxTemperature}`);
+    // Lógica para establecer la temperatura
+  }
+
+  setHumidity() {
+    if (this.humidityForm.invalid) {
+      this.humidityForm.markAllAsTouched();
+      return;
+    }
+    const { minHumidity, maxHumidity } = this.humidityForm.value;
+    console.log(`Establecer humedad: Mínima = ${minHumidity}, Máxima = ${maxHumidity}`);
+    // Lógica para establecer la humedad
+  }
+
+  maxGreaterThanMin(minControlName: string) {
+    return (control: any) => {
+      if (!control.parent) {
+        return null;
+      }
+      const minControl = control.parent.get(minControlName);
+      if (minControl && control.value <= minControl.value) {
+        return { maxLessThanMin: true };
+      }
+      return null;
+    };
+  }
 }
