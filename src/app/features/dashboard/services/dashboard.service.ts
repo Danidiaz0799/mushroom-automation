@@ -1,22 +1,40 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
-  private sensorUrl = `${environment.apiUrl}/DhtSensor`;
+  private dht11Url = `${environment.apiUrl}/DhtSensor`;
+  private bmp280Url = `${environment.apiUrl}/Bmp280Sensor`;
+  private gy302Url = `${environment.apiUrl}/Gy302Sensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
   private actuatorsUrl = `${environment.apiUrl}/Actuator`;
 
   constructor(private http: HttpClient) { }
 
-  getSensorData(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+  getDht11Data(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.sensorUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+    return this.http.get<any>(`${this.dht11Url}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      map(data => data.map((item: any) => ({ humidity: item.humidity, timestamp: item.timestamp }))),
+      catchError(this.handleError)
+    );
+  }
+
+  getBmp280Data(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.bmp280Url}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      map(data => data.map((item: any) => ({ temperature: item.temperature, timestamp: item.timestamp }))),
+      catchError(this.handleError)
+    );
+  }
+
+  getGy302Data(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.gy302Url}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
