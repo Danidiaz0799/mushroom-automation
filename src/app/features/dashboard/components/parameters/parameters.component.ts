@@ -24,9 +24,10 @@ export class ParametersComponent implements OnInit {
 
   fetchActuatorStates() {
     this.dashboardService.getActuators(1, 10).subscribe(data => {
-      const latestActuator = data[0];
-      this.illuminationState = latestActuator.illumination ? 'Encendido' : 'Apagado';
-      this.ventilationState = latestActuator.ventilation ? 'Encendido' : 'Apagado';
+      const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
+      const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
+      this.illuminationState = luces.state === 1 ? 'Encendido' : 'Apagado';
+      this.ventilationState = ventiladores.state === 1 ? 'Encendido' : 'Apagado';
     }, error => {
       this.errorMessage = error;
     });

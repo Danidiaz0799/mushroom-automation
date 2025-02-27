@@ -14,4 +14,8 @@ export class ActuatorService {
   lightControl(state: boolean): Observable<any> {
     return this.http.post<any>(`${this.actuatorsUrl}/toggle_light`, { state });
   }
+
+  fanControl(state: boolean): Observable<any> {
+    return this.http.post<any>(`${this.actuatorsUrl}/toggle_fan`, { state });
+  }
 }

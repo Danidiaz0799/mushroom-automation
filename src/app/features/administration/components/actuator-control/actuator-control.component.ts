@@ -16,8 +16,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   private dashboardService = inject(DashboardService);
 
   lucesEncendidas = signal(false);
-  ventiladoresEncendidos: boolean = false;
-  humidificadorEncendido: boolean = false;
+  ventiladoresEncendidos = signal(false);
   desiredTemperature!: number;
   desiredHumidity!: number;
   latestTemperature: number | undefined;
@@ -26,6 +25,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchSensorData();
+    this.fetchActuatorStates();
     this.intervalId = setInterval(() => {
       this.fetchSensorData();
     }, 5000);
@@ -46,6 +46,15 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     });
   }
 
+  fetchActuatorStates() {
+    this.dashboardService.getActuators(1, 10).subscribe(data => {
+      const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
+      const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
+      this.lucesEncendidas.set(luces.state === 1);
+      this.ventiladoresEncendidos.set(ventiladores.state === 1);
+    });
+  }
+
   toggleLuces() {
     this.lucesEncendidas.update(value => !value);
     const command = this.lucesEncendidas() ? true : false;
@@ -57,20 +66,13 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   }
 
   toggleVentiladores() {
-    this.ventiladoresEncendidos = !this.ventiladoresEncendidos;
+    this.ventiladoresEncendidos.update(value => !value);
+    const command = this.ventiladoresEncendidos() ? true : false;
+    this.actuatorService.fanControl(command).subscribe(response => {
+      console.log(response.message);
+    }, error => {
+      console.error(error);
+    });
   }
 
-  toggleHumidificador() {
-    this.humidificadorEncendido = !this.humidificadorEncendido;
-  }
-
-  setTemperature() {
-    console.log(`Temperatura establecida a: ${this.desiredTemperature}°C`);
-    // Lógica para establecer la temperatura
-  }
-
-  setHumidity() {
-    console.log(`Humedad establecida a: ${this.desiredHumidity}%`);
-    // Lógica para establecer la humedad
-  }
 }
