@@ -112,7 +112,8 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
             y: {
               beginAtZero: false,
               ticks: {
-                color: 'rgba(54, 54, 54, 1)'
+                color: 'rgba(54, 54, 54, 1)',
+                maxTicksLimit: 8
               }
             }
           }
@@ -162,7 +163,8 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
             y: {
               beginAtZero: false,
               ticks: {
-                color: 'rgba(54, 54, 54, 1)'
+                color: 'rgba(54, 54, 54, 1)',
+                maxTicksLimit: 8
               }
             }
           }
@@ -212,7 +214,8 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
             y: {
               beginAtZero: false,
               ticks: {
-                color: 'rgba(54, 54, 54, 1)'
+                color: 'rgba(54, 54, 54, 1)',
+                maxTicksLimit: 8
               }
             }
           }

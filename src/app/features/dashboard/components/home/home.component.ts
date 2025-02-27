@@ -19,6 +19,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   labels: string[] = [];
   latestTemperature: number | undefined;
   latestHumidity: number | undefined;
+  latestLightLevel: number | undefined;
   latestUpdate: string | undefined;
   intervalId: any;
 
@@ -59,6 +60,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       this.lightLevelData = data.map((item: any) => item.light_level);
+      if (this.lightLevelData[0] !== undefined) {
+        this.latestLightLevel = this.lightLevelData[0];
+      }
     });
   }
 
