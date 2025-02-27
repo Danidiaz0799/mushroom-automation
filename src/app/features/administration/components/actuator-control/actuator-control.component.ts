@@ -47,7 +47,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   }
 
   fetchActuatorStates() {
-    this.dashboardService.getActuators(1, 10).subscribe(data => {
+    this.dashboardService.getActuators(1, 10, false).subscribe(data => {
       const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
       const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
       this.lucesEncendidas.set(luces.state === 1);

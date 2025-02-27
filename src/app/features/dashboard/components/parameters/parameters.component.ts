@@ -33,7 +33,7 @@ export class ParametersComponent implements OnInit, OnDestroy {
   }
 
   fetchActuatorStates() {
-    this.dashboardService.getActuators(1, 10).subscribe(data => {
+    this.dashboardService.getActuators(1, 10, false).subscribe(data => {
       const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
       const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
       this.illuminationState = luces.state === 1 ? 'Encendido' : 'Apagado';
