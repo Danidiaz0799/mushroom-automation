@@ -1,23 +1,25 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-events',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './events.component.html',
 })
 export class EventsComponent implements OnInit, OnDestroy {
   @Input() events: any[] = [];
   intervalId: any;
+  selectedTopic: string = '';
 
   constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
     this.fetchEvents();
     this.intervalId = setInterval(() => {
-      this.fetchEvents();
+      this.fetchEvents(false); // Desactivar el spinner para actualizaciones automáticas
     }, 5000);
   }
 
@@ -27,13 +29,22 @@ export class EventsComponent implements OnInit, OnDestroy {
     }
   }
 
-  fetchEvents() {
-    this.dashboardService.getEvents(1, 5, false).subscribe(data => {
-      this.events = data.map((event: any) => ({
-        ...event,
-        formattedTimestamp: this.formatTimestamp(event.timestamp)
-      }));
-    });
+  fetchEvents(showSpinner: boolean = true) {
+    if (this.selectedTopic) {
+      this.dashboardService.getEventsByTopic(this.selectedTopic, 1, 5, showSpinner).subscribe(data => {
+        this.events = data.map((event: any) => ({
+          ...event,
+          formattedTimestamp: this.formatTimestamp(event.timestamp)
+        }));
+      });
+    } else {
+      this.dashboardService.getEvents(1, 5, showSpinner).subscribe(data => {
+        this.events = data.map((event: any) => ({
+          ...event,
+          formattedTimestamp: this.formatTimestamp(event.timestamp)
+        }));
+      });
+    }
   }
 
   formatTimestamp(timestamp: string): string {
