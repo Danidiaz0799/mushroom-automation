@@ -1,77 +1,116 @@
-<div class="control-panel space-y-8 p-8 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-xl">
+<div class="control-panel space-y-8 p-8 bg-gray-100 rounded-xl shadow-xl">
     <!-- Título -->
-    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Control de Actuadores</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Administración del Cultivo</h2>
+
+    <!-- Control de Temperatura y Humedad -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Temperatura -->
+        <form [formGroup]="temperatureForm" (ngSubmit)="setTemperature()" class="bg-white p-6 rounded-lg shadow-lg text-center border-l-4 border-red-500">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Control de Temperatura</h2>
+            <div class="flex flex-col items-center justify-center space-y-4 mb-4">
+                <div class="flex items-center space-x-4 w-full">
+                    <label for="minTemperatureInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Mínima (°C)</label>
+                    <input type="number" id="minTemperatureInput" formControlName="minTemperature" min="10" max="30"
+                        placeholder="Actualizar mínima" class="block w-2/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                    <span class="text-sm text-gray-500">Establecida: {{ minTemperatureSet }}°C</span>
+                </div>
+                <div *ngIf="temperatureForm.controls['minTemperature'].invalid && temperatureForm.controls['minTemperature'].touched" class="text-red-500 text-sm">
+                    Campo obligatorio (10°C - 30°C)
+                </div>
+                <div class="flex items-center space-x-4 w-full">
+                    <label for="maxTemperatureInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Máxima (°C)</label>
+                    <input type="number" id="maxTemperatureInput" formControlName="maxTemperature" min="10" max="30"
+                        placeholder="Actualizar máxima" class="block w-2/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                    <span class="text-sm text-gray-500">Establecida: {{ maxTemperatureSet }}°C</span>
+                </div>
+                <div *ngIf="temperatureForm.controls['maxTemperature'].invalid && temperatureForm.controls['maxTemperature'].touched" class="text-red-500 text-sm">
+                    Campo obligatorio (10°C - 30°C) y debe ser mayor que la mínima
+                </div>
+            </div>
+            <div class="flex items-center justify-center space-x-4">
+                <label class="block text-sm font-medium text-gray-700">Actual:</label>
+                <span class="text-2xl font-bold text-red-600">{{ latestTemperature?.toFixed(3) }}°C</span>
+                <span class="text-red-500 text-3xl">🌡️</span>
+            </div>
+            <button type="submit" [disabled]="temperatureForm.invalid"
+                class="mt-4 px-6 py-2 rounded-full text-white font-semibold shadow-md transition-all duration-300"
+                [ngClass]="{'bg-red-500 hover:bg-red-600': !temperatureForm.invalid, 'bg-gray-400 cursor-not-allowed': temperatureForm.invalid}">
+                Establecer Temperatura
+            </button>
+        </form>
+
+        <!-- Humedad -->
+        <form [formGroup]="humidityForm" (ngSubmit)="setHumidity()" class="bg-white p-6 rounded-lg shadow-lg text-center border-l-4 border-blue-500">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Control de Humedad</h2>
+            <div class="flex flex-col items-center justify-center space-y-4 mb-4">
+                <div class="flex items-center space-x-4 w-full">
+                    <label for="minHumidityInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Mínima (%)</label>
+                    <input type="number" id="minHumidityInput" formControlName="minHumidity" min="40" max="110"
+                        placeholder="Actualizar mínima" class="block w-2/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <span class="text-sm text-gray-500">Establecida: {{ minHumiditySet }}%</span>
+                </div>
+                <div *ngIf="humidityForm.controls['minHumidity'].invalid && humidityForm.controls['minHumidity'].touched" class="text-red-500 text-sm">
+                    Campo obligatorio (40% - 110%)
+                </div>
+                <div class="flex items-center space-x-4 w-full">
+                    <label for="maxHumidityInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Máxima (%)</label>
+                    <input type="number" id="maxHumidityInput" formControlName="maxHumidity" min="40" max="110"
+                        placeholder="Actualizar máxima" class="block w-2/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <span class="text-sm text-gray-500">Establecida: {{ maxHumiditySet }}%</span>
+                </div>
+                <div *ngIf="humidityForm.controls['maxHumidity'].invalid && humidityForm.controls['maxHumidity'].touched" class="text-red-500 text-sm">
+                    Campo obligatorio (40% - 110%) y debe ser mayor que la mínima
+                </div>
+            </div>
+            <div class="flex items-center justify-center space-x-4">
+                <label class="block text-sm font-medium text-gray-700">Actual:</label>
+                <span class="text-2xl font-bold text-blue-600">{{ latestHumidity }}%</span>
+                <span class="text-blue-500 text-3xl">💧</span>
+            </div>
+            <button type="submit" [disabled]="humidityForm.invalid"
+                class="mt-4 px-6 py-2 rounded-full text-white font-semibold shadow-md transition-all duration-300"
+                [ngClass]="{'bg-blue-500 hover:bg-blue-600': !humidityForm.invalid, 'bg-gray-400 cursor-not-allowed': humidityForm.invalid}">
+                Establecer Humedad
+            </button>
+        </form>
+    </div>
 
     <!-- Sección de controles -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Control de Luces -->
         <div
-            class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between border-l-8 border-yellow-500 hover:scale-105 transition-transform duration-300">
-            <div>
-                <h2 class="text-lg font-semibold text-gray-700">Luces</h2>
-                <p class="text-2xl font-bold text-yellow-600">{{ lucesEncendidas() ? 'Encendidas' : 'Apagadas' }}</p>
+            class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center justify-center border-l-4 border-gray-500 hover:shadow-2xl transition-shadow duration-300">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Control de Luces</h2>
+            <div class="flex items-center">
+                <button
+                    class="px-6 py-2 rounded-full text-white font-semibold shadow-md transition-all duration-300 transform hover:scale-105"
+                    [ngClass]="{'bg-green-500 hover:bg-green-600': lucesEncendidas(), 'bg-gray-400 hover:bg-gray-500': !lucesEncendidas()}"
+                    (click)="toggleLuces()">
+                    {{ lucesEncendidas() ? 'Apagar Luces' : 'Encender Luces' }}
+                </button>
+                <span class="ml-2 text-gray-500 text-3xl">💡</span>
             </div>
-            <button
-                class="px-5 py-2 rounded-lg text-white font-semibold shadow-md transition-all duration-300 transform hover:scale-110"
-                [ngClass]="{'bg-yellow-500 hover:bg-yellow-600': lucesEncendidas(), 'bg-gray-400 hover:bg-gray-500': !lucesEncendidas()}"
-                (click)="toggleLuces()">
-                {{ lucesEncendidas() ? 'Apagar' : 'Encender' }}
-            </button>
         </div>
 
         <!-- Control de Ventiladores -->
         <div
-            class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between border-l-8 border-blue-500 hover:scale-105 transition-transform duration-300">
-            <div>
-                <h2 class="text-lg font-semibold text-gray-700">Ventiladores</h2>
-                <p class="text-2xl font-bold text-blue-600">{{ ventiladoresEncendidos() ? 'Encendidos' : 'Apagados' }}</p>
-            </div>
-            <button
-                class="px-5 py-2 rounded-lg text-white font-semibold shadow-md transition-all duration-300 transform hover:scale-110"
-                [ngClass]="{'bg-blue-500 hover:bg-blue-600': ventiladoresEncendidos(), 'bg-gray-400 hover:bg-gray-500': !ventiladoresEncendidos()}"
-                (click)="toggleVentiladores()">
-                {{ ventiladoresEncendidos() ? 'Apagar' : 'Encender' }}
-            </button>
-        </div>
-
-    </div>
-
-    <!-- Control de Temperatura y Humedad -->
-    <div class="bg-white p-8 rounded-xl shadow-lg">
-        <h2 class="text-xl font-bold text-gray-700 mb-6 text-center">Control de Temperatura y Humedad</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Temperatura -->
-            <div class="bg-gray-50 p-6 rounded-lg shadow-inner text-center">
-                <label for="temperatureInput" class="block text-sm font-medium text-gray-700 mb-2">Temperatura
-                    (°C)</label>
-                <div class="flex items-center justify-center space-x-4">
-                    <input type="number" id="temperatureInput" [(ngModel)]="desiredTemperature"
-                        class="block w-1/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    <span class="text-2xl font-bold text-blue-600">{{ latestTemperature }}°C</span>
-                </div>
+            class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center justify-center border-l-4 border-gray-500 hover:shadow-2xl transition-shadow duration-300">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Control de Ventiladores</h2>
+            <div class="flex items-center">
                 <button
-                    class="mt-4 px-5 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300"
-                    >Establecer</button>
-            </div>
-
-            <!-- Humedad -->
-            <div class="bg-gray-50 p-6 rounded-lg shadow-inner text-center">
-                <label for="humidityInput" class="block text-sm font-medium text-gray-700 mb-2">Humedad (%)</label>
-                <div class="flex items-center justify-center space-x-4">
-                    <input type="number" id="humidityInput" [(ngModel)]="desiredHumidity"
-                        class="block w-1/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
-                    <span class="text-2xl font-bold text-green-600">{{ latestHumidity }}%</span>
-                </div>
-                <button
-                    class="mt-4 px-5 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all duration-300"
-                    >Establecer</button>
+                    class="px-6 py-2 rounded-full text-white font-semibold shadow-md transition-all duration-300 transform hover:scale-105"
+                    [ngClass]="{'bg-blue-500 hover:bg-blue-600': ventiladoresEncendidos(), 'bg-gray-400 hover:bg-gray-500': !ventiladoresEncendidos()}"
+                    (click)="toggleVentiladores()">
+                    {{ ventiladoresEncendidos() ? 'Apagar Ventiladores' : 'Encender Ventiladores' }}
+                </button>
+                <span class="ml-2 text-gray-500 text-3xl">🔄</span>
             </div>
         </div>
     </div>
 
     <!-- Advertencia -->
     <div
-        class="bg-yellow-50 border-l-8 border-yellow-500 text-yellow-700 p-6 rounded-xl shadow-lg mt-6 flex items-start">
+        class="bg-yellow-50 border-l-8 border-yellow-500 text-yellow-700 p-6 rounded-xl shadow-lg mt-8 flex items-start">
         <svg class="h-6 w-6 text-yellow-500 flex-shrink-0 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
             fill="currentColor">
             <path fill-rule="evenodd"

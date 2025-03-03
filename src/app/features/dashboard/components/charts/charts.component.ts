@@ -14,9 +14,11 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
   @Input() temperatureData: number[] = [];
   @Input() humidityData: number[] = [];
   @Input() labels: string[] = [];
+  @Input() lightLevelData: number[] = [];
 
   temperatureChart: Chart | undefined;
   humidityChart: Chart | undefined;
+  lightLevelChart: Chart | undefined;
   intervalId: any;
 
   constructor() {}
@@ -36,15 +38,19 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
     if (this.humidityChart) {
       this.humidityChart.destroy();
     }
+    if (this.lightLevelChart) {
+      this.lightLevelChart.destroy();
+    }
   }
 
   ngAfterViewInit(): void {
     this.renderTemperatureChart();
     this.renderHumidityChart();
+    this.renderLightLevelChart();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['temperatureData'] || changes['humidityData'] || changes['labels']) {
+    if (changes['temperatureData'] || changes['humidityData'] || changes['labels'] || changes['lightLevelData']) {
       if (this.temperatureChart) {
         this.updateTemperatureChart();
       } else {
@@ -55,6 +61,12 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
         this.updateHumidityChart();
       } else {
         this.renderHumidityChart();
+      }
+
+      if (this.lightLevelChart) {
+        this.updateLightLevelChart();
+      } else {
+        this.renderLightLevelChart();
       }
     }
   }
@@ -100,7 +112,8 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
             y: {
               beginAtZero: false,
               ticks: {
-                color: 'rgba(54, 54, 54, 1)'
+                color: 'rgba(54, 54, 54, 1)',
+                maxTicksLimit: 8
               }
             }
           }
@@ -150,7 +163,59 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
             y: {
               beginAtZero: false,
               ticks: {
+                color: 'rgba(54, 54, 54, 1)',
+                maxTicksLimit: 8
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  renderLightLevelChart() {
+    const ctx = document.getElementById('lightLevelChart') as HTMLCanvasElement;
+    if (ctx) {
+      if (this.lightLevelChart) {
+        this.lightLevelChart.destroy();
+      }
+      this.lightLevelChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: this.labels,
+          datasets: [
+            {
+              label: 'Nivel de Luz',
+              data: this.lightLevelData,
+              borderColor: 'rgba(255, 206, 86, 1)',
+              backgroundColor: 'rgba(255, 206, 86, 0.2)',
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              labels: {
                 color: 'rgba(54, 54, 54, 1)'
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: 'rgba(54, 54, 54, 1)'
+              }
+            },
+            y: {
+              beginAtZero: false,
+              ticks: {
+                color: 'rgba(54, 54, 54, 1)',
+                maxTicksLimit: 8
               }
             }
           }
@@ -172,6 +237,14 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
       this.humidityChart.data.labels = this.labels;
       this.humidityChart.data.datasets[0].data = this.humidityData;
       this.humidityChart.update();
+    }
+  }
+
+  updateLightLevelChart() {
+    if (this.lightLevelChart) {
+      this.lightLevelChart.data.labels = this.labels;
+      this.lightLevelChart.data.datasets[0].data = this.lightLevelData;
+      this.lightLevelChart.update();
     }
   }
 }

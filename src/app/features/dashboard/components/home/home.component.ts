@@ -15,9 +15,11 @@ import { DashboardService } from '../../services/dashboard.service';
 export class HomeComponent implements AfterViewInit, OnDestroy {
   temperatureData: number[] = [];
   humidityData: number[] = [];
+  lightLevelData: number[] = [];
   labels: string[] = [];
   latestTemperature: number | undefined;
   latestHumidity: number | undefined;
+  latestLightLevel: number | undefined;
   latestUpdate: string | undefined;
   intervalId: any;
 
@@ -37,16 +39,30 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   fetchSensorData() {
-    this.dashboardService.getSensorData(1, 10, false).subscribe(data => {
+    this.dashboardService.getDht11Data(1, 10, false).subscribe(data => {
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-      this.temperatureData = data.map((item: any) => item.temperature);
       this.humidityData = data.map((item: any) => item.humidity);
       this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleTimeString());
 
-      this.latestTemperature = this.temperatureData[0];
       this.latestHumidity = this.humidityData[0];
       this.latestUpdate = this.formatTimestamp(data[0].timestamp);
+    });
+
+    this.dashboardService.getBmp280Data(1, 10, false).subscribe(data => {
+      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      this.temperatureData = data.map((item: any) => item.temperature);
+      this.latestTemperature = this.temperatureData[0];
+    });
+
+    this.dashboardService.getGy302Data(1, 10, false).subscribe(data => {
+      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      this.lightLevelData = data.map((item: any) => item.light_level);
+      if (this.lightLevelData[0] !== undefined) {
+        this.latestLightLevel = this.lightLevelData[0];
+      }
     });
   }
 

@@ -12,6 +12,7 @@ export class ParametersComponent implements OnInit, OnDestroy {
   @Input() latestTemperature: number | undefined;
   @Input() latestHumidity: number | undefined;
   @Input() latestUpdate: string | undefined;
+  @Input() latestLightLevel: number | undefined;
   illuminationState: string = 'Desconocido';
   ventilationState: string = 'Desconocido';
   errorMessage: string | undefined;
@@ -38,6 +39,9 @@ export class ParametersComponent implements OnInit, OnDestroy {
       const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
       this.illuminationState = luces.state === 1 ? 'Encendido' : 'Apagado';
       this.ventilationState = ventiladores.state === 1 ? 'Encendido' : 'Apagado';
+      if (luces.light_level !== undefined) {
+        this.latestLightLevel = luces.light_level;
+      }
     }, error => {
       this.errorMessage = error;
     });

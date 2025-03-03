@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ActuatorService {
   private actuatorsUrl = `${environment.apiUrl}/Actuator`;
+  private IdealParamsUrl = `${environment.apiUrl}/IdealParams`;
 
   constructor(private http: HttpClient) { }
 
@@ -17,5 +18,14 @@ export class ActuatorService {
 
   fanControl(state: boolean): Observable<any> {
     return this.http.post<any>(`${this.actuatorsUrl}/toggle_fan`, { state });
+  }
+
+  //Endpoint /IdealParams
+  getIdealParams(param_type: string): Observable<any> {
+    return this.http.get<any>(`${this.IdealParamsUrl}/${param_type}`);
+  }
+
+  putIdealParams(param_type: string, obj: any): Observable<any> {
+    return this.http.put<any>(`${this.IdealParamsUrl}/${param_type}`, obj);
   }
 }
