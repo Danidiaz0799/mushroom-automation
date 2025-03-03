@@ -22,6 +22,11 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   latestHumidity: number | undefined;
   intervalId: any;
 
+  minTemperatureSet: number | undefined;
+  maxTemperatureSet: number | undefined;
+  minHumiditySet: number | undefined;
+  maxHumiditySet: number | undefined;
+
   temperatureForm: FormGroup = this.fb.group({
     minTemperature: ['', [Validators.required, Validators.min(10), Validators.max(30)]],
     maxTemperature: ['', [Validators.required, Validators.min(10), Validators.max(30), this.maxGreaterThanMin('minTemperature')]]
@@ -35,6 +40,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.fetchSensorData();
     this.fetchActuatorStates();
+    this.fetchIdealParams();
     this.intervalId = setInterval(() => {
       this.fetchSensorData();
     }, 5000);
@@ -69,6 +75,18 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     });
   }
 
+  fetchIdealParams() {
+    this.actuatorService.getIdealParams('temperatura').subscribe(data => {
+      this.minTemperatureSet = data.min_value;
+      this.maxTemperatureSet = data.max_value;
+    });
+
+    this.actuatorService.getIdealParams('humedad').subscribe(data => {
+      this.minHumiditySet = data.min_value;
+      this.maxHumiditySet = data.max_value;
+    });
+  }
+
   toggleLuces() {
     this.lucesEncendidas.update(value => !value);
     const command = this.lucesEncendidas() ? true : false;
@@ -95,8 +113,17 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
       return;
     }
     const { minTemperature, maxTemperature } = this.temperatureForm.value;
-    console.log(`Establecer temperatura: Mínima = ${minTemperature}, Máxima = ${maxTemperature}`);
-    // Lógica para establecer la temperatura
+    const temperatureParams = {
+      min_value: minTemperature,
+      max_value: maxTemperature
+    };
+    this.actuatorService.putIdealParams('temperatura', temperatureParams).subscribe(response => {
+      console.log('Temperatura actualizada:', response);
+      this.fetchIdealParams(); // Recargar los valores establecidos
+      this.temperatureForm.reset(); // Limpiar los campos de temperatura
+    }, error => {
+      console.error('Error al actualizar la temperatura:', error);
+    });
   }
 
   setHumidity() {
@@ -105,8 +132,17 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
       return;
     }
     const { minHumidity, maxHumidity } = this.humidityForm.value;
-    console.log(`Establecer humedad: Mínima = ${minHumidity}, Máxima = ${maxHumidity}`);
-    // Lógica para establecer la humedad
+    const humidityParams = {
+      min_value: minHumidity,
+      max_value: maxHumidity
+    };
+    this.actuatorService.putIdealParams('humedad', humidityParams).subscribe(response => {
+      console.log('Humedad actualizada:', response);
+      this.fetchIdealParams(); // Recargar los valores establecidos
+      this.humidityForm.reset(); // Limpiar los campos de humedad
+    }, error => {
+      console.error('Error al actualizar la humedad:', error);
+    });
   }
 
   maxGreaterThanMin(minControlName: string) {
