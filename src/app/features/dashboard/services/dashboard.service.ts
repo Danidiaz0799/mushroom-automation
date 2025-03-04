@@ -61,6 +61,12 @@ export class DashboardService {
     );
   }
 
+  getSensorDataByDateRange(startDate: string, endDate: string, page: number = 1, pageSize: number = 100): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/SensorData?start_date=${startDate}&end_date=${endDate}&page=${page}&pageSize=${pageSize}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Unknown error!';
     if (error.error instanceof ErrorEvent) {

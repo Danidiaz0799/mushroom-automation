@@ -12,6 +12,7 @@ export const routes: Routes = [
         children: [
         { path: 'home', loadComponent: () => import('../features/dashboard/components/home/home.component').then(m => m.HomeComponent) },
         { path: 'administration', loadChildren: () => import('../features/administration/routes').then(m => m.administrationRoutes) },
+        { path: 'information', loadChildren: () => import('../features/information/routes').then(m => m.informationRoutes) },
         ],
     },
     { path: '**', redirectTo: 'auth' },
