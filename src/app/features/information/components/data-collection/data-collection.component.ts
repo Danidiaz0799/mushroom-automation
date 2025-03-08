@@ -31,10 +31,8 @@ export class DataCollectionComponent {
     }
     const { startDate, endDate, sensorType } = this.form.value;
     this.dashboardService.getSensorDataByDateRange(startDate, endDate, this.page, this.pageSize).subscribe(data => {
-      if (sensorType === 'dht') {
-        this.data = data.dht_data;
-      } else if (sensorType === 'bmp280') {
-        this.data = data.bmp280_data;
+      if (sensorType === 'sht3x') {
+        this.data = data.sht3x_data;
       } else if (sensorType === 'gy302') {
         this.data = data.gy302_data;
       }

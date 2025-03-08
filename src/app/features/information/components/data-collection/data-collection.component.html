@@ -20,8 +20,7 @@
         <label for="sensorType" class="block text-lg font-medium text-gray-700">Tipo de Sensor</label>
         <select id="sensorType" formControlName="sensorType" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg">
           <option value="">Seleccione un tipo de sensor</option>
-          <option value="dht">DHT11</option>
-          <option value="bmp280">BMP280</option>
+          <option value="sht3x">SHT3X</option>
           <option value="gy302">GY302</option>
         </select>
         <div *ngIf="form.controls['sensorType'].invalid && form.controls['sensorType'].touched" class="text-red-500 text-sm mt-1">
@@ -44,18 +43,16 @@
         <thead>
           <tr>
             <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600">Fecha</th>
-            <th *ngIf="form.value.sensorType === 'dht'" class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600">Humedad</th>
-            <th *ngIf="form.value.sensorType === 'dht' || form.value.sensorType === 'bmp280'" class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600">Temperatura</th>
-            <th *ngIf="form.value.sensorType === 'bmp280'" class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600">Presión</th>
+            <th *ngIf="form.value.sensorType === 'sht3x'" class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600">Humedad</th>
+            <th *ngIf="form.value.sensorType === 'sht3x'" class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600">Temperatura</th>
             <th *ngIf="form.value.sensorType === 'gy302'" class="px-6 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-sm font-semibold text-gray-600">Nivel de Luz</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of data" class="hover:bg-gray-100">
             <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ item.timestamp | date: 'short' }}</td>
-            <td *ngIf="form.value.sensorType === 'dht'" class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ item.humidity || '-' }}%</td>
-            <td *ngIf="form.value.sensorType === 'dht' || form.value.sensorType === 'bmp280'" class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ item.temperature || '-' }}°C</td>
-            <td *ngIf="form.value.sensorType === 'bmp280'" class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ item.pressure || '-' }} hPa</td>
+            <td *ngIf="form.value.sensorType === 'sht3x'" class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ item.humidity || '-' }}%</td>
+            <td *ngIf="form.value.sensorType === 'sht3x'" class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ item.temperature || '-' }}°C</td>
             <td *ngIf="form.value.sensorType === 'gy302'" class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ item.light_level || '-' }} lx</td>
           </tr>
         </tbody>

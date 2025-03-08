@@ -8,26 +8,17 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class DashboardService {
-  private dht11Url = `${environment.apiUrl}/DhtSensor`;
-  private bmp280Url = `${environment.apiUrl}/Bmp280Sensor`;
+  private sht3xUrl = `${environment.apiUrl}/Sht3xSensor`;
   private gy302Url = `${environment.apiUrl}/Gy302Sensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
   private actuatorsUrl = `${environment.apiUrl}/Actuator`;
 
   constructor(private http: HttpClient) { }
 
-  getDht11Data(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+  getSht3xUrlData(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.dht11Url}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
-      map(data => data.map((item: any) => ({ humidity: item.humidity, timestamp: item.timestamp }))),
-      catchError(this.handleError)
-    );
-  }
-
-  getBmp280Data(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
-    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.bmp280Url}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
-      map(data => data.map((item: any) => ({ temperature: item.temperature, timestamp: item.timestamp }))),
+    return this.http.get<any>(`${this.sht3xUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      map(data => data.map((item: any) => ({ humidity: item.humidity, temperature: item.temperature, timestamp: item.timestamp }))),
       catchError(this.handleError)
     );
   }

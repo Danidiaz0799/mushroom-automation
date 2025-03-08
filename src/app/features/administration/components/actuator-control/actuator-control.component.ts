@@ -53,17 +53,13 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   }
 
   fetchSensorData() {
-    this.dashboardService.getDht11Data(1, 10, false).subscribe(data => {
+    this.dashboardService.getSht3xUrlData(1, 10, false).subscribe(data => {
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       this.latestHumidity = data[0].humidity;
-    });
-
-    this.dashboardService.getBmp280Data(1, 10, false).subscribe(data => {
-      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
       this.latestTemperature = data[0].temperature;
     });
+
   }
 
   fetchActuatorStates() {

@@ -39,21 +39,16 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   fetchSensorData() {
-    this.dashboardService.getDht11Data(1, 10, false).subscribe(data => {
+    this.dashboardService.getSht3xUrlData(1, 10, false).subscribe(data => {
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       this.humidityData = data.map((item: any) => item.humidity);
+      this.temperatureData = data.map((item: any) => item.temperature);
       this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleTimeString());
 
       this.latestHumidity = this.humidityData[0];
-      this.latestUpdate = this.formatTimestamp(data[0].timestamp);
-    });
-
-    this.dashboardService.getBmp280Data(1, 10, false).subscribe(data => {
-      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-      this.temperatureData = data.map((item: any) => item.temperature);
       this.latestTemperature = this.temperatureData[0];
+      this.latestUpdate = this.formatTimestamp(data[0].timestamp);
     });
 
     this.dashboardService.getGy302Data(1, 10, false).subscribe(data => {
