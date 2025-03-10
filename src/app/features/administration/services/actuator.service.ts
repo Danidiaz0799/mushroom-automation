@@ -20,6 +20,14 @@ export class ActuatorService {
     return this.http.post<any>(`${this.actuatorsUrl}/toggle_fan`, { state });
   }
 
+  humidifierControl(state: boolean): Observable<any> {
+    return this.http.post<any>(`${this.actuatorsUrl}/toggle_humidifier`, { state });
+  }
+
+  motorControl(state: boolean): Observable<any> {
+    return this.http.post<any>(`${this.actuatorsUrl}/toggle_motor`, { state });
+  }
+
   //Endpoint /IdealParams
   getIdealParams(param_type: string): Observable<any> {
     return this.http.get<any>(`${this.IdealParamsUrl}/${param_type}`);
