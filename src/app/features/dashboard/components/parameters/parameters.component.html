@@ -11,7 +11,7 @@
   <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between border-l-4 border-blue-500">
     <div>
       <h2 class="text-lg font-semibold text-gray-700">Humedad</h2>
-      <p class="text-2xl font-bold text-blue-600">{{ latestHumidity }}%</p>
+      <p class="text-2xl font-bold text-blue-600">{{ latestHumidity?.toFixed(3) }}%</p>
       <p class="text-sm text-gray-500">Última actualización: {{ latestUpdate }}</p>
     </div>
     <span class="text-blue-500 text-3xl">💧</span>
@@ -41,8 +41,4 @@
     </div>
     <span class="text-gray-500 text-3xl">🔄</span>
   </div>
-</div>
-
-<div *ngIf="errorMessage" class="text-red-500">
-  Error: {{ errorMessage }}
 </div>

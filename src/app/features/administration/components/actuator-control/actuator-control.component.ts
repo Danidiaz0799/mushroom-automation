@@ -18,6 +18,8 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   lucesEncendidas = signal(false);
   ventiladoresEncendidos = signal(false);
+  humidificadorEncendido = signal(false);
+  motorEncendido = signal(false);
   latestTemperature: number | undefined;
   latestHumidity: number | undefined;
   intervalId: any;
@@ -53,25 +55,25 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   }
 
   fetchSensorData() {
-    this.dashboardService.getDht11Data(1, 10, false).subscribe(data => {
+    this.dashboardService.getSht3xUrlData(1, 10, false).subscribe(data => {
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       this.latestHumidity = data[0].humidity;
-    });
-
-    this.dashboardService.getBmp280Data(1, 10, false).subscribe(data => {
-      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
       this.latestTemperature = data[0].temperature;
     });
+
   }
 
   fetchActuatorStates() {
     this.dashboardService.getActuators(1, 10, false).subscribe(data => {
       const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
       const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
+      const humidificador = data.find((actuator: any) => actuator.name === 'Humidificador');
+      const motor = data.find((actuator: any) => actuator.name === 'Motor');
       this.lucesEncendidas.set(luces.state === 1);
       this.ventiladoresEncendidos.set(ventiladores.state === 1);
+      this.humidificadorEncendido.set(humidificador.state === 1);
+      this.motorEncendido.set(motor.state === 1);
     });
   }
 
@@ -101,6 +103,26 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     this.ventiladoresEncendidos.update(value => !value);
     const command = this.ventiladoresEncendidos() ? true : false;
     this.actuatorService.fanControl(command).subscribe(response => {
+      console.log(response.message);
+    }, error => {
+      console.error(error);
+    });
+  }
+
+  toggleHumidificador() {
+    this.humidificadorEncendido.update(value => !value);
+    const command = this.humidificadorEncendido() ? true : false;
+    this.actuatorService.humidifierControl(command).subscribe(response => {
+      console.log(response.message);
+    }, error => {
+      console.error(error);
+    });
+  }
+
+  toggleMotor() {
+    this.motorEncendido.update(value => !value);
+    const command = this.motorEncendido() ? true : false;
+    this.actuatorService.motorControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
       console.error(error);

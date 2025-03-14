@@ -1,27 +1,58 @@
 # MushroomAutomation
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.2.
+Este proyecto fue generado con Angular CLI versión 16.0.2.
 
-## Development server
+## Arquitectura del Proyecto
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+El sistema sigue una arquitectura modular escalable en Angular, basada en la separación de responsabilidades:
 
-## Code scaffolding
+- **Core**: Contiene configuraciones globales, rutas y el componente principal de la aplicación.
+- **Config**: Maneja configuraciones e interceptores para peticiones HTTP.
+- **Features**: Agrupa módulos funcionales específicos (administración, autenticación, dashboard, información).
+- **Shared**: Componentes reutilizables como layout, barra de navegación, barra lateral y spinner.
+- **Services**: Contiene la lógica de negocio e integración con APIs.
+- **Assets**: Archivos estáticos como imágenes, íconos y estilos globales.
+- **Environments**: Configuraciones diferenciadas para desarrollo y producción.
+- **Dist**: Contiene los archivos compilados de la aplicación, que deben ser desplegados en la Raspberry Pi junto al servidor.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Desarrollo del Proyecto
 
-## Build
+El sistema opera en una arquitectura distribuida basada en MQTT, con dos Raspberry Pi interconectadas:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- **Raspberry Pi Servidor**: Aloja la aplicación Angular y el broker MQTT, administra la comunicación con la base de datos y expone los endpoints REST.
+- **Raspberry Pi Cliente**: Conectada a sensores y actuadores, transmite datos y recibe comandos desde el servidor vía MQTT.
 
-## Running unit tests
+El backend gestiona el procesamiento de datos en tiempo real y la automatización del control del entorno del cultivo.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Servidor de Desarrollo
 
-## Running end-to-end tests
+Ejecute `ng serve` para iniciar un servidor de desarrollo y acceda a `http://localhost:4200/`.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Construcción
 
-## Further help
+Ejecute `ng build` para compilar el proyecto en la carpeta `dist/`. Los archivos dentro de `dist/` deben ser transferidos a la Raspberry Pi Servidor junto con el servidor backend.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Endpoints
+
+### Sensores:
+
+- **GET `/api/Sht3xSensor`**: Datos de temperatura y humedad.
+- **GET `/api/Gy302Sensor`**: Datos del sensor de luz.
+- **GET `/api/SensorData`**: Datos en un rango de fechas.
+
+### Eventos:
+
+- **GET `/api/Event`**: Eventos registrados.
+- **GET `/api/Event/FilterByTopic`**: Filtra eventos por tema.
+
+### Actuadores:
+
+- **POST `/api/Actuator/toggle_light`**: Control de luz.
+- **POST `/api/Actuator/toggle_fan`**: Control de ventilador.
+- **POST `/api/Actuator/toggle_humidifier`**: Control de humidificador.
+- **POST `/api/Actuator/toggle_motor`**: Control de motor.
+
+### Parámetros Ideales:
+
+- **GET `/api/IdealParams/{param}`**: Obtiene parámetros ideales.
+- **PUT `/api/IdealParams/{param}`**: Actualiza parámetros ideales.
