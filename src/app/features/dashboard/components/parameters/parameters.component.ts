@@ -15,6 +15,8 @@ export class ParametersComponent implements OnInit, OnDestroy {
   @Input() latestLightLevel: number | undefined;
   illuminationState: string = 'Desconocido';
   ventilationState: string = 'Desconocido';
+  humidifierState: string = 'Desconocido';
+  motorState: string = 'Desconocido';
   errorMessage: string | undefined;
   intervalId: any;
 
@@ -37,8 +39,12 @@ export class ParametersComponent implements OnInit, OnDestroy {
     this.dashboardService.getActuators(1, 10, false).subscribe(data => {
       const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
       const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
-      this.illuminationState = luces.state === 1 ? 'Encendido' : 'Apagado';
-      this.ventilationState = ventiladores.state === 1 ? 'Encendido' : 'Apagado';
+      const humidificador = data.find((actuator: any) => actuator.name === 'Humidificador');
+      const motor = data.find((actuator: any) => actuator.name === 'Motor');
+      this.illuminationState = luces.state === 'true' ? 'Encendido' : 'Apagado';
+      this.ventilationState = ventiladores.state === 'true' ? 'Encendido' : 'Apagado';
+      this.humidifierState = humidificador.state === 'true' ? 'Encendido' : 'Apagado';
+      this.motorState = motor.state === 'true' ? 'Encendido' : 'Apagado';
       if (luces.light_level !== undefined) {
         this.latestLightLevel = luces.light_level;
       }
