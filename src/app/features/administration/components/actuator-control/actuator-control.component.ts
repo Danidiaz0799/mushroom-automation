@@ -188,4 +188,38 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
       return null;
     };
   }
+
+  getTemperatureStatus(): string {
+    if (this.latestTemperature === undefined || this.minTemperatureSet === undefined || this.maxTemperatureSet === undefined) {
+      return '';
+    }
+    if (this.latestTemperature < this.minTemperatureSet) {
+      return 'Baja';
+    } else if (this.latestTemperature > this.maxTemperatureSet) {
+      return 'Alta';
+    } else {
+      return 'Ideal';
+    }
+  }
+
+  isTemperatureIdeal(): boolean {
+    return this.getTemperatureStatus() === 'Ideal';
+  }
+
+  getHumidityStatus(): string {
+    if (this.latestHumidity === undefined || this.minHumiditySet === undefined || this.maxHumiditySet === undefined) {
+      return '';
+    }
+    if (this.latestHumidity < this.minHumiditySet) {
+      return 'Baja';
+    } else if (this.latestHumidity > this.maxHumiditySet) {
+      return 'Alta';
+    } else {
+      return 'Ideal';
+    }
+  }
+
+  isHumidityIdeal(): boolean {
+    return this.getHumidityStatus() === 'Ideal';
+  }
 }
