@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class DashboardService {
   private sht3xUrl = `${environment.apiUrl}/Sht3xSensor`;
+  private sht3xUrlManual = `${environment.apiUrl}/Sht3xSensorManual`; // Nuevo endpoint para modo manual
   private gy302Url = `${environment.apiUrl}/Gy302Sensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
   private actuatorsUrl = `${environment.apiUrl}/Actuator`;
@@ -18,6 +19,14 @@ export class DashboardService {
   getSht3xUrlData(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
     return this.http.get<any>(`${this.sht3xUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      map(data => data.map((item: any) => ({ humidity: item.humidity, temperature: item.temperature, timestamp: item.timestamp }))),
+      catchError(this.handleError)
+    );
+  }
+
+  getSht3xUrlDataManual(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.sht3xUrlManual}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       map(data => data.map((item: any) => ({ humidity: item.humidity, temperature: item.temperature, timestamp: item.timestamp }))),
       catchError(this.handleError)
     );

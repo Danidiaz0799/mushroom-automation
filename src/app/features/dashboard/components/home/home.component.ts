@@ -22,10 +22,15 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   latestLightLevel: number | undefined;
   latestUpdate: string | undefined;
   intervalId: any;
+  isAutomatic: boolean = true; // Estado para determinar si está en modo automático
 
   constructor(private dashboardService: DashboardService) {}
 
   ngAfterViewInit(): void {
+    const savedMode = localStorage.getItem('mode');
+    if (savedMode) {
+      this.isAutomatic = savedMode === 'automatico';
+    }
     this.fetchSensorData();
     this.intervalId = setInterval(() => {
       this.fetchSensorData();
@@ -39,24 +44,30 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   fetchSensorData() {
-    this.dashboardService.getSht3xUrlData(1, 10, false).subscribe(data => {
-      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    const endpoint = this.isAutomatic ? this.dashboardService.getSht3xUrlData(1, 10, false) : this.dashboardService.getSht3xUrlDataManual(1, 10, false);
+    
+    endpoint.subscribe(data => {
+      if (data && data.length > 0) {
+        data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-      this.humidityData = data.map((item: any) => item.humidity);
-      this.temperatureData = data.map((item: any) => item.temperature);
-      this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleTimeString());
+        this.humidityData = data.map((item: any) => item.humidity);
+        this.temperatureData = data.map((item: any) => item.temperature);
+        this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleTimeString());
 
-      this.latestHumidity = this.humidityData[0];
-      this.latestTemperature = this.temperatureData[0];
-      this.latestUpdate = this.formatTimestamp(data[0].timestamp);
+        this.latestHumidity = this.humidityData[0];
+        this.latestTemperature = this.temperatureData[0];
+        this.latestUpdate = this.formatTimestamp(data[0].timestamp);
+      }
     });
 
     this.dashboardService.getGy302Data(1, 10, false).subscribe(data => {
-      data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      if (data && data.length > 0) {
+        data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-      this.lightLevelData = data.map((item: any) => item.light_level);
-      if (this.lightLevelData[0] !== undefined) {
-        this.latestLightLevel = this.lightLevelData[0];
+        this.lightLevelData = data.map((item: any) => item.light_level);
+        if (this.lightLevelData[0] !== undefined) {
+          this.latestLightLevel = this.lightLevelData[0];
+        }
       }
     });
   }

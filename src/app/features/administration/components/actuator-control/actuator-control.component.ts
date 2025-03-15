@@ -42,6 +42,10 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    const savedMode = localStorage.getItem('mode');
+    if (savedMode) {
+      this.mode = savedMode as 'automatico' | 'manual';
+    }
     this.fetchSensorData();
     this.fetchActuatorStates();
     this.fetchIdealParams();
@@ -57,13 +61,14 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   }
 
   fetchSensorData() {
-    this.dashboardService.getSht3xUrlData(1, 10, false).subscribe(data => {
+    const endpoint = this.mode === 'automatico' ? this.dashboardService.getSht3xUrlData(1, 10, false) : this.dashboardService.getSht3xUrlDataManual(1, 10, false);
+    
+    endpoint.subscribe(data => {
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       this.latestHumidity = data[0].humidity;
       this.latestTemperature = data[0].temperature;
     });
-
   }
 
   fetchActuatorStates() {
@@ -93,7 +98,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   toggleLuces() {
     this.lucesEncendidas.update(value => !value);
-    const command = this.lucesEncendidas() ? true : false;
+    const command = this.lucesEncendidas() ? 'true' : 'false';
     this.actuatorService.lightControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
@@ -103,7 +108,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   toggleVentiladores() {
     this.ventiladoresEncendidos.update(value => !value);
-    const command = this.ventiladoresEncendidos() ? true : false;
+    const command = this.ventiladoresEncendidos() ? 'true' : 'false';
     this.actuatorService.fanControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
@@ -113,7 +118,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   toggleHumidificador() {
     this.humidificadorEncendido.update(value => !value);
-    const command = this.humidificadorEncendido() ? true : false;
+    const command = this.humidificadorEncendido() ? 'true' : 'false';
     this.actuatorService.humidifierControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
@@ -123,7 +128,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   toggleMotor() {
     this.motorEncendido.update(value => !value);
-    const command = this.motorEncendido() ? true : false;
+    const command = this.motorEncendido() ? 'true' : 'false';
     this.actuatorService.motorControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
@@ -171,6 +176,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   setMode(mode: 'automatico' | 'manual') {
     this.mode = mode;
+    localStorage.setItem('mode', mode); // Guardar el modo en localStorage
     if (mode === 'manual') {
       this.fetchActuatorStates();
     }
