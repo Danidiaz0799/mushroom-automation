@@ -81,6 +81,12 @@ export class DashboardService {
     );
   }
 
+  deleteEvent(id: number): Observable<any> {
+    return this.http.delete(`${this.eventsUrl}/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Unknown error!';
     if (error.error instanceof ErrorEvent) {

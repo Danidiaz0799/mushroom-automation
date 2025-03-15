@@ -1,67 +1,106 @@
-<div class="grid grid-cols-1 gap-6 mb-6">
-  <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500">
-    <div class="flex items-center justify-between">
+<div class="grid grid-cols-1 gap-8 mb-8">
+  <!-- Temperature Card -->
+  <div
+    class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg border border-gray-100 overflow-hidden relative">
+    <div class="flex items-start justify-between">
       <div>
-        <h2 class="text-md font-semibold text-gray-700">Temperatura</h2>
-        <p class="text-xl font-bold text-red-600">{{ latestTemperature?.toFixed(3) }}°C
-          <span class="text-lg font-bold" [ngClass]="{'text-green-500': isTemperatureIdeal(), 'text-red-500': !isTemperatureIdeal()}">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-rose-500 text-2xl">🌡️</span>
+          <h2 class="text-lg font-semibold text-gray-800">Temperatura</h2>
+        </div>
+        <p class="text-3xl font-bold text-rose-600">
+          {{ latestTemperature?.toFixed(3) }}°C
+          <span class="text-xl ml-2"
+            [ngClass]="{'text-emerald-500': isTemperatureIdeal(), 'text-rose-500': !isTemperatureIdeal()}">
             ({{ getTemperatureStatus() }})
           </span>
         </p>
-        <p class="text-xs text-gray-500">Última actualización: {{ latestUpdate }}</p>
+        <p class="text-xs text-gray-500 mt-1">Última actualización: {{ latestUpdate }}</p>
       </div>
-      <span class="text-red-500 text-2xl">🌡️</span>
     </div>
-    <div class="mt-4">
-      <h3 class="text-sm font-semibold text-gray-700">Iluminación</h3>
-      <p class="text-lg font-bold text-gray-600">{{ illuminationState }}</p>
-      <span class="text-gray-500 text-xl">💡</span>
-    </div>
-    <div class="mt-4">
-      <h3 class="text-sm font-semibold text-gray-700">Ventilación</h3>
-      <p class="text-lg font-bold text-gray-600">{{ ventilationState }}</p>
-      <span class="text-gray-500 text-xl">🔄</span>
+
+    <div class="mt-6 grid grid-cols-2 gap-4">
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="text-amber-500 text-xl">💡</span>
+          <h3 class="text-sm font-medium text-gray-800">Iluminación</h3>
+        </div>
+        <p class="text-lg font-semibold text-gray-700 mt-1">{{ illuminationState }}</p>
+      </div>
+
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="text-sky-500 text-xl">🔄</span>
+          <h3 class="text-sm font-medium text-gray-800">Ventilación</h3>
+        </div>
+        <p class="text-lg font-semibold text-gray-700 mt-1">{{ ventilationState }}</p>
+      </div>
     </div>
   </div>
 
-  <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
-    <div class="flex items-center justify-between">
+  <!-- Humidity Card -->
+  <div
+    class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg border border-gray-100 overflow-hidden relative">
+    <div class="flex items-start justify-between">
       <div>
-        <h2 class="text-md font-semibold text-gray-700">Humedad</h2>
-        <p class="text-xl font-bold text-blue-600">{{ latestHumidity?.toFixed(3) }}%
-          <span class="text-lg font-bold" [ngClass]="{'text-green-500': isHumidityIdeal(), 'text-red-500': !isHumidityIdeal()}">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-sky-500 text-2xl">💧</span>
+          <h2 class="text-lg font-semibold text-gray-800">Humedad</h2>
+        </div>
+        <p class="text-3xl font-bold text-sky-600">
+          {{ latestHumidity?.toFixed(3) }}%
+          <span class="text-xl ml-2"
+            [ngClass]="{'text-emerald-500': isHumidityIdeal(), 'text-rose-500': !isHumidityIdeal()}">
             ({{ getHumidityStatus() }})
           </span>
         </p>
-        <p class="text-xs text-gray-500">Última actualización: {{ latestUpdate }}</p>
+        <p class="text-xs text-gray-500 mt-1">Última actualización: {{ latestUpdate }}</p>
       </div>
-      <span class="text-blue-500 text-2xl">💧</span>
     </div>
-    <div class="mt-4">
-      <h3 class="text-sm font-semibold text-gray-700">Humidificador</h3>
-      <p class="text-lg font-bold text-gray-600">{{ humidifierState }}</p>
-      <span class="text-gray-500 text-xl">💧</span>
-    </div>
-    <div class="mt-4">
-      <h3 class="text-sm font-semibold text-gray-700">Motor</h3>
-      <p class="text-lg font-bold text-gray-600">{{ motorState }}</p>
-      <span class="text-gray-500 text-xl">🔧</span>
+
+    <div class="mt-6 grid grid-cols-2 gap-4">
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="text-sky-500 text-xl">💧</span>
+          <h3 class="text-sm font-medium text-gray-800">Humidificador</h3>
+        </div>
+        <p class="text-lg font-semibold text-gray-700 mt-1">{{ humidifierState }}</p>
+      </div>
+
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500 text-xl">🔧</span>
+          <h3 class="text-sm font-medium text-gray-800">Motor</h3>
+        </div>
+        <p class="text-lg font-semibold text-gray-700 mt-1">{{ motorState }}</p>
+      </div>
     </div>
   </div>
 
-  <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-yellow-500">
-    <div class="flex items-center justify-between">
+  <!-- Light Level Card -->
+  <div
+    class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg border border-gray-100 overflow-hidden relative">
+    <div class="flex items-start justify-between">
       <div>
-        <h2 class="text-md font-semibold text-gray-700">Nivel de Luz</h2>
-        <p class="text-xl font-bold text-yellow-600">{{ latestLightLevel?.toFixed(3) }} lx</p>
-        <p class="text-xs text-gray-500">Última actualización: {{ latestUpdate }}</p>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-amber-500 text-2xl">🔆</span>
+          <h2 class="text-lg font-semibold text-gray-800">Nivel de Luz</h2>
+        </div>
+        <p class="text-3xl font-bold text-amber-600">
+          {{ latestLightLevel?.toFixed(3) }} lx
+        </p>
+        <p class="text-xs text-gray-500 mt-1">Última actualización: {{ latestUpdate }}</p>
       </div>
-      <span class="text-yellow-500 text-2xl">🔆</span>
     </div>
-    <div class="mt-4">
-      <h3 class="text-sm font-semibold text-gray-700">Iluminación</h3>
-      <p class="text-lg font-bold text-gray-600">{{ illuminationState }}</p>
-      <span class="text-gray-500 text-xl">💡</span>
+
+    <div class="mt-6">
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="text-amber-500 text-xl">💡</span>
+          <h3 class="text-sm font-medium text-gray-800">Iluminación</h3>
+        </div>
+        <p class="text-lg font-semibold text-gray-700 mt-1">{{ illuminationState }}</p>
+      </div>
     </div>
   </div>
 </div>
