@@ -13,6 +13,8 @@ export class DashboardService {
   private gy302Url = `${environment.apiUrl}/Gy302Sensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
   private actuatorsUrl = `${environment.apiUrl}/Actuator`;
+  private appStateUrl = `${environment.apiUrl}/getState`;
+  private appStateUpdateUrl = `${environment.apiUrl}/updateState`;
 
   constructor(private http: HttpClient) { }
 
@@ -63,6 +65,18 @@ export class DashboardService {
 
   getSensorDataByDateRange(startDate: string, endDate: string, page: number = 1, pageSize: number = 100): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/SensorData?start_date=${startDate}&end_date=${endDate}&page=${page}&pageSize=${pageSize}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getAppState(): Observable<{ mode: 'automatico' | 'manual' }> {
+    return this.http.get<{ mode: 'automatico' | 'manual' }>(this.appStateUrl).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  updateAppState(mode: 'automatico' | 'manual'): Observable<any> {
+    return this.http.put(this.appStateUpdateUrl, { mode }).pipe(
       catchError(this.handleError)
     );
   }

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActuatorService } from '../../services/actuator.service';
 import { DashboardService } from '../../../dashboard/services/dashboard.service';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-actuator-control',
@@ -15,6 +17,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   private actuatorService = inject(ActuatorService);
   private dashboardService = inject(DashboardService);
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
 
   lucesEncendidas = signal(false);
   ventiladoresEncendidos = signal(false);
@@ -42,22 +45,39 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    const savedMode = localStorage.getItem('mode');
-    if (savedMode) {
-      this.mode = savedMode as 'automatico' | 'manual';
-    }
-    this.fetchSensorData();
-    this.fetchActuatorStates();
-    this.fetchIdealParams();
-    this.intervalId = setInterval(() => {
+    this.getAppState().then(() => {
       this.fetchSensorData();
-    }, 5000);
+      this.fetchActuatorStates();
+      this.fetchIdealParams();
+      this.intervalId = setInterval(() => {
+        this.fetchSensorData();
+      }, 5000);
+    });
   }
 
   ngOnDestroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+  }
+
+  async getAppState(): Promise<void> {
+    try {
+      const response = await this.dashboardService.getAppState().toPromise();
+      if (response) {
+        this.mode = response.mode;
+      }
+    } catch (error) {
+      console.error('Error al obtener el estado de la aplicación:', error);
+    }
+  }
+
+  updateAppState(mode: 'automatico' | 'manual'): void {
+    this.dashboardService.updateAppState(mode).subscribe(() => {
+      console.log('Estado de la aplicación actualizado exitosamente');
+    }, error => {
+      console.error('Error al actualizar el estado de la aplicación:', error);
+    });
   }
 
   fetchSensorData() {
@@ -176,7 +196,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   setMode(mode: 'automatico' | 'manual') {
     this.mode = mode;
-    localStorage.setItem('mode', mode); // Guardar el modo en localStorage
+    this.updateAppState(mode); // Actualizar el estado de la aplicación a través del endpoint
     if (mode === 'manual') {
       this.fetchActuatorStates();
     }

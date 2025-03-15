@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParametersComponent } from '../parameters/parameters.component';
 import { ChartsComponent } from '../charts/charts.component';
@@ -23,15 +23,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   latestUpdate: string | undefined;
   intervalId: any;
   isAutomatic: boolean = true; // Estado para determinar si está en modo automático
+  private dashboardService = inject(DashboardService);
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor() {}
 
   ngAfterViewInit(): void {
-    const savedMode = localStorage.getItem('mode');
-    if (savedMode) {
-      this.isAutomatic = savedMode === 'automatico';
-    }
-    this.fetchSensorData();
+    this.getAppState();
     this.intervalId = setInterval(() => {
       this.fetchSensorData();
     }, 5000);
@@ -41,6 +38,15 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+  }
+
+  getAppState(): void {
+    this.dashboardService.getAppState().subscribe(response => {
+      this.isAutomatic = response.mode === 'automatico';
+      this.fetchSensorData();
+    }, error => {
+      console.error('Error al obtener el estado de la aplicación:', error);
+    });
   }
 
   fetchSensorData() {
