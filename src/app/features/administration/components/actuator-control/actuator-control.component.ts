@@ -29,6 +29,8 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   minHumiditySet: number | undefined;
   maxHumiditySet: number | undefined;
 
+  mode: 'automatico' | 'manual' = 'automatico';
+
   temperatureForm: FormGroup = this.fb.group({
     minTemperature: ['', [Validators.required, Validators.min(10), Validators.max(30)]],
     maxTemperature: ['', [Validators.required, Validators.min(10), Validators.max(30), this.maxGreaterThanMin('minTemperature')]]
@@ -70,10 +72,10 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
       const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
       const humidificador = data.find((actuator: any) => actuator.name === 'Humidificador');
       const motor = data.find((actuator: any) => actuator.name === 'Motor');
-      this.lucesEncendidas.set(luces.state === 1);
-      this.ventiladoresEncendidos.set(ventiladores.state === 1);
-      this.humidificadorEncendido.set(humidificador.state === 1);
-      this.motorEncendido.set(motor.state === 1);
+      this.lucesEncendidas.set(luces.state === 'true');
+      this.ventiladoresEncendidos.set(ventiladores.state === 'true');
+      this.humidificadorEncendido.set(humidificador.state === 'true');
+      this.motorEncendido.set(motor.state === 'true');
     });
   }
 
@@ -165,6 +167,13 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     }, error => {
       console.error('Error al actualizar la humedad:', error);
     });
+  }
+
+  setMode(mode: 'automatico' | 'manual') {
+    this.mode = mode;
+    if (mode === 'manual') {
+      this.fetchActuatorStates();
+    }
   }
 
   maxGreaterThanMin(minControlName: string) {
