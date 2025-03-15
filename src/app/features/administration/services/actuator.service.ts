@@ -12,19 +12,19 @@ export class ActuatorService {
 
   constructor(private http: HttpClient) { }
 
-  lightControl(state: boolean): Observable<any> {
+  lightControl(state: string): Observable<any> {
     return this.http.post<any>(`${this.actuatorsUrl}/toggle_light`, { state });
   }
 
-  fanControl(state: boolean): Observable<any> {
+  fanControl(state: string): Observable<any> {
     return this.http.post<any>(`${this.actuatorsUrl}/toggle_fan`, { state });
   }
 
-  humidifierControl(state: boolean): Observable<any> {
+  humidifierControl(state: string): Observable<any> {
     return this.http.post<any>(`${this.actuatorsUrl}/toggle_humidifier`, { state });
   }
 
-  motorControl(state: boolean): Observable<any> {
+  motorControl(state: string): Observable<any> {
     return this.http.post<any>(`${this.actuatorsUrl}/toggle_motor`, { state });
   }
 

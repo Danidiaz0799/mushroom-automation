@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActuatorService } from '../../services/actuator.service';
 import { DashboardService } from '../../../dashboard/services/dashboard.service';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-actuator-control',
@@ -15,6 +17,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   private actuatorService = inject(ActuatorService);
   private dashboardService = inject(DashboardService);
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
 
   lucesEncendidas = signal(false);
   ventiladoresEncendidos = signal(false);
@@ -29,6 +32,8 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   minHumiditySet: number | undefined;
   maxHumiditySet: number | undefined;
 
+  mode: 'automatico' | 'manual' = 'automatico';
+
   temperatureForm: FormGroup = this.fb.group({
     minTemperature: ['', [Validators.required, Validators.min(10), Validators.max(30)]],
     maxTemperature: ['', [Validators.required, Validators.min(10), Validators.max(30), this.maxGreaterThanMin('minTemperature')]]
@@ -40,12 +45,14 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.fetchSensorData();
-    this.fetchActuatorStates();
-    this.fetchIdealParams();
-    this.intervalId = setInterval(() => {
+    this.getAppState().then(() => {
       this.fetchSensorData();
-    }, 5000);
+      this.fetchActuatorStates();
+      this.fetchIdealParams();
+      this.intervalId = setInterval(() => {
+        this.fetchSensorData();
+      }, 5000);
+    });
   }
 
   ngOnDestroy(): void {
@@ -54,14 +61,34 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     }
   }
 
+  async getAppState(): Promise<void> {
+    try {
+      const response = await this.dashboardService.getAppState().toPromise();
+      if (response) {
+        this.mode = response.mode;
+      }
+    } catch (error) {
+      console.error('Error al obtener el estado de la aplicación:', error);
+    }
+  }
+
+  updateAppState(mode: 'automatico' | 'manual'): void {
+    this.dashboardService.updateAppState(mode).subscribe(() => {
+      console.log('Estado de la aplicación actualizado exitosamente');
+    }, error => {
+      console.error('Error al actualizar el estado de la aplicación:', error);
+    });
+  }
+
   fetchSensorData() {
-    this.dashboardService.getSht3xUrlData(1, 10, false).subscribe(data => {
+    const endpoint = this.mode === 'automatico' ? this.dashboardService.getSht3xUrlData(1, 10, false) : this.dashboardService.getSht3xUrlDataManual(1, 10, false);
+    
+    endpoint.subscribe(data => {
       data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       this.latestHumidity = data[0].humidity;
       this.latestTemperature = data[0].temperature;
     });
-
   }
 
   fetchActuatorStates() {
@@ -70,10 +97,10 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
       const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
       const humidificador = data.find((actuator: any) => actuator.name === 'Humidificador');
       const motor = data.find((actuator: any) => actuator.name === 'Motor');
-      this.lucesEncendidas.set(luces.state === 1);
-      this.ventiladoresEncendidos.set(ventiladores.state === 1);
-      this.humidificadorEncendido.set(humidificador.state === 1);
-      this.motorEncendido.set(motor.state === 1);
+      this.lucesEncendidas.set(luces.state === 'true');
+      this.ventiladoresEncendidos.set(ventiladores.state === 'true');
+      this.humidificadorEncendido.set(humidificador.state === 'true');
+      this.motorEncendido.set(motor.state === 'true');
     });
   }
 
@@ -91,7 +118,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   toggleLuces() {
     this.lucesEncendidas.update(value => !value);
-    const command = this.lucesEncendidas() ? true : false;
+    const command = this.lucesEncendidas() ? 'true' : 'false';
     this.actuatorService.lightControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
@@ -101,7 +128,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   toggleVentiladores() {
     this.ventiladoresEncendidos.update(value => !value);
-    const command = this.ventiladoresEncendidos() ? true : false;
+    const command = this.ventiladoresEncendidos() ? 'true' : 'false';
     this.actuatorService.fanControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
@@ -111,7 +138,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   toggleHumidificador() {
     this.humidificadorEncendido.update(value => !value);
-    const command = this.humidificadorEncendido() ? true : false;
+    const command = this.humidificadorEncendido() ? 'true' : 'false';
     this.actuatorService.humidifierControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
@@ -121,7 +148,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
 
   toggleMotor() {
     this.motorEncendido.update(value => !value);
-    const command = this.motorEncendido() ? true : false;
+    const command = this.motorEncendido() ? 'true' : 'false';
     this.actuatorService.motorControl(command).subscribe(response => {
       console.log(response.message);
     }, error => {
@@ -167,6 +194,14 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     });
   }
 
+  setMode(mode: 'automatico' | 'manual') {
+    this.mode = mode;
+    this.updateAppState(mode); // Actualizar el estado de la aplicación a través del endpoint
+    if (mode === 'manual') {
+      this.fetchActuatorStates();
+    }
+  }
+
   maxGreaterThanMin(minControlName: string) {
     return (control: any) => {
       if (!control.parent) {
@@ -178,5 +213,39 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
       }
       return null;
     };
+  }
+
+  getTemperatureStatus(): string {
+    if (this.latestTemperature === undefined || this.minTemperatureSet === undefined || this.maxTemperatureSet === undefined) {
+      return '';
+    }
+    if (this.latestTemperature < this.minTemperatureSet) {
+      return 'Baja';
+    } else if (this.latestTemperature > this.maxTemperatureSet) {
+      return 'Alta';
+    } else {
+      return 'Ideal';
+    }
+  }
+
+  isTemperatureIdeal(): boolean {
+    return this.getTemperatureStatus() === 'Ideal';
+  }
+
+  getHumidityStatus(): string {
+    if (this.latestHumidity === undefined || this.minHumiditySet === undefined || this.maxHumiditySet === undefined) {
+      return '';
+    }
+    if (this.latestHumidity < this.minHumiditySet) {
+      return 'Baja';
+    } else if (this.latestHumidity > this.maxHumiditySet) {
+      return 'Alta';
+    } else {
+      return 'Ideal';
+    }
+  }
+
+  isHumidityIdeal(): boolean {
+    return this.getHumidityStatus() === 'Ideal';
   }
 }

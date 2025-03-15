@@ -1,27 +1,28 @@
 <header class="bg-gray-900 text-white w-full h-16 flex items-center">
+    <div class="w-full overflow-x-auto">
+        <nav class="flex-1">
+            <ul class="flex space-x-2">
+                <li>
+                    <a routerLink="/home"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition hover:bg-gray-700 hover:text-gray-300">
+                        🏠 <span class="text-lg">Dashboard</span>
+                    </a>
+                </li>
 
-    <nav class="flex-1">
-        <ul class="flex space-x-2">
-            <li>
-                <a routerLink="/home"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition hover:bg-gray-700 hover:text-gray-300">
-                    🏠 <span class="text-lg">Dashboard</span>
-                </a>
-            </li>
+                <li>
+                    <a routerLink="/administration"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition hover:bg-gray-700 hover:text-gray-300">
+                        🔐 <span class="text-lg">Administración</span>
+                    </a>
+                </li>
 
-            <li>
-                <a routerLink="/administration"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition hover:bg-gray-700 hover:text-gray-300">
-                    🔐 <span class="text-lg">Administración</span>
-                </a>
-            </li>
-
-            <li>
-                <a routerLink="/information"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition hover:bg-gray-700 hover:text-gray-300">
-                    🔐 <span class="text-lg">Información</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+                <li>
+                    <a routerLink="/information"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition hover:bg-gray-700 hover:text-gray-300">
+                        🔐 <span class="text-lg">Información</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </header>

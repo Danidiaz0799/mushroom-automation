@@ -9,15 +9,26 @@ import { environment } from 'src/environments/environment';
 })
 export class DashboardService {
   private sht3xUrl = `${environment.apiUrl}/Sht3xSensor`;
+  private sht3xUrlManual = `${environment.apiUrl}/Sht3xSensorManual`; // Nuevo endpoint para modo manual
   private gy302Url = `${environment.apiUrl}/Gy302Sensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
   private actuatorsUrl = `${environment.apiUrl}/Actuator`;
+  private appStateUrl = `${environment.apiUrl}/getState`;
+  private appStateUpdateUrl = `${environment.apiUrl}/updateState`;
 
   constructor(private http: HttpClient) { }
 
   getSht3xUrlData(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
     return this.http.get<any>(`${this.sht3xUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+      map(data => data.map((item: any) => ({ humidity: item.humidity, temperature: item.temperature, timestamp: item.timestamp }))),
+      catchError(this.handleError)
+    );
+  }
+
+  getSht3xUrlDataManual(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.sht3xUrlManual}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       map(data => data.map((item: any) => ({ humidity: item.humidity, temperature: item.temperature, timestamp: item.timestamp }))),
       catchError(this.handleError)
     );
@@ -54,6 +65,24 @@ export class DashboardService {
 
   getSensorDataByDateRange(startDate: string, endDate: string, page: number = 1, pageSize: number = 100): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/SensorData?start_date=${startDate}&end_date=${endDate}&page=${page}&pageSize=${pageSize}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getAppState(): Observable<{ mode: 'automatico' | 'manual' }> {
+    return this.http.get<{ mode: 'automatico' | 'manual' }>(this.appStateUrl).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  updateAppState(mode: 'automatico' | 'manual'): Observable<any> {
+    return this.http.put(this.appStateUpdateUrl, { mode }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  deleteEvent(id: number): Observable<any> {
+    return this.http.delete(`${this.eventsUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }

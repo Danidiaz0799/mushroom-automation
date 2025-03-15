@@ -31,17 +31,19 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   fetchEvents(showSpinner: boolean = true) {
     if (this.selectedTopic) {
-      this.dashboardService.getEventsByTopic(this.selectedTopic, 1, 5, showSpinner).subscribe(data => {
+      this.dashboardService.getEventsByTopic(this.selectedTopic, 1, 7, showSpinner).subscribe(data => {
         this.events = data.map((event: any) => ({
           ...event,
-          formattedTimestamp: this.formatTimestamp(event.timestamp)
+          formattedTimestamp: this.formatTimestamp(event.timestamp),
+          message: this.formatMessage(event.message)
         }));
       });
     } else {
-      this.dashboardService.getEvents(1, 5, showSpinner).subscribe(data => {
+      this.dashboardService.getEvents(1, 7, showSpinner).subscribe(data => {
         this.events = data.map((event: any) => ({
           ...event,
-          formattedTimestamp: this.formatTimestamp(event.timestamp)
+          formattedTimestamp: this.formatTimestamp(event.timestamp),
+          message: this.formatMessage(event.message)
         }));
       });
     }
@@ -60,6 +62,10 @@ export class EventsComponent implements OnInit, OnDestroy {
     return date.toLocaleString('es-ES', options);
   }
 
+  formatMessage(message: string): string {
+    return message.replace(/(\d+\.\d{3})\d*/g, (match, p1) => parseFloat(p1).toFixed(3));
+  }
+
   getIconForTopic(topic: string): string {
     switch (topic) {
       case 'humedad':
@@ -71,5 +77,14 @@ export class EventsComponent implements OnInit, OnDestroy {
       default:
         return '🔔';
     }
+  }
+
+  deleteEvent(id: number): void {
+    this.dashboardService.deleteEvent(id).subscribe(() => {
+      this.events = this.events.filter(event => event.id !== id);
+      console.log('Evento eliminado correctamente');
+    }, error => {
+      console.error('Error al eliminar el evento:', error);
+    });
   }
 }
