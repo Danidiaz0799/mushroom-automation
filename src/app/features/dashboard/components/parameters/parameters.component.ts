@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
+import { ActuatorService } from '../../../administration/services/actuator.service';
 
 @Component({
   selector: 'app-parameters',
@@ -19,11 +20,16 @@ export class ParametersComponent implements OnInit, OnDestroy {
   motorState: string = 'Desconocido';
   errorMessage: string | undefined;
   intervalId: any;
+  minTemperatureSet: number | undefined;
+  maxTemperatureSet: number | undefined;
+  minHumiditySet: number | undefined;
+  maxHumiditySet: number | undefined;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService, private actuatorService: ActuatorService) {}
 
   ngOnInit(): void {
     this.fetchActuatorStates();
+    this.fetchIdealParams();
     this.intervalId = setInterval(() => {
       this.fetchActuatorStates();
     }, 5000);
@@ -33,6 +39,52 @@ export class ParametersComponent implements OnInit, OnDestroy {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+  }
+
+  fetchIdealParams() {
+    this.actuatorService.getIdealParams('temperatura').subscribe(data => {
+      this.minTemperatureSet = data.min_value;
+      this.maxTemperatureSet = data.max_value;
+    });
+
+    this.actuatorService.getIdealParams('humedad').subscribe(data => {
+      this.minHumiditySet = data.min_value;
+      this.maxHumiditySet = data.max_value;
+    });
+  }
+
+  getTemperatureStatus(): string {
+    if (this.latestTemperature === undefined || this.minTemperatureSet === undefined || this.maxTemperatureSet === undefined) {
+      return '';
+    }
+    if (this.latestTemperature < this.minTemperatureSet) {
+      return 'Baja';
+    } else if (this.latestTemperature > this.maxTemperatureSet) {
+      return 'Alta';
+    } else {
+      return 'Ideal';
+    }
+  }
+
+  isTemperatureIdeal(): boolean {
+    return this.getTemperatureStatus() === 'Ideal';
+  }
+
+  getHumidityStatus(): string {
+    if (this.latestHumidity === undefined || this.minHumiditySet === undefined || this.maxHumiditySet === undefined) {
+      return '';
+    }
+    if (this.latestHumidity < this.minHumiditySet) {
+      return 'Baja';
+    } else if (this.latestHumidity > this.maxHumiditySet) {
+      return 'Alta';
+    } else {
+      return 'Ideal';
+    }
+  }
+
+  isHumidityIdeal(): boolean {
+    return this.getHumidityStatus() === 'Ideal';
   }
 
   fetchActuatorStates() {

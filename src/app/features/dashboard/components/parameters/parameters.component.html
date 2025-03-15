@@ -3,7 +3,11 @@
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-md font-semibold text-gray-700">Temperatura</h2>
-        <p class="text-xl font-bold text-red-600">{{ latestTemperature?.toFixed(3) }}°C</p>
+        <p class="text-xl font-bold text-red-600">{{ latestTemperature?.toFixed(3) }}°C
+          <span class="text-lg font-bold" [ngClass]="{'text-green-500': isTemperatureIdeal(), 'text-red-500': !isTemperatureIdeal()}">
+            ({{ getTemperatureStatus() }})
+          </span>
+        </p>
         <p class="text-xs text-gray-500">Última actualización: {{ latestUpdate }}</p>
       </div>
       <span class="text-red-500 text-2xl">🌡️</span>
@@ -24,7 +28,11 @@
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-md font-semibold text-gray-700">Humedad</h2>
-        <p class="text-xl font-bold text-blue-600">{{ latestHumidity?.toFixed(3) }}%</p>
+        <p class="text-xl font-bold text-blue-600">{{ latestHumidity?.toFixed(3) }}%
+          <span class="text-lg font-bold" [ngClass]="{'text-green-500': isHumidityIdeal(), 'text-red-500': !isHumidityIdeal()}">
+            ({{ getHumidityStatus() }})
+          </span>
+        </p>
         <p class="text-xs text-gray-500">Última actualización: {{ latestUpdate }}</p>
       </div>
       <span class="text-blue-500 text-2xl">💧</span>
@@ -48,7 +56,7 @@
         <p class="text-xl font-bold text-yellow-600">{{ latestLightLevel?.toFixed(3) }} lx</p>
         <p class="text-xs text-gray-500">Última actualización: {{ latestUpdate }}</p>
       </div>
-      <span class="text-blue-500 text-2xl">💡</span>
+      <span class="text-yellow-500 text-2xl">🔆</span>
     </div>
     <div class="mt-4">
       <h3 class="text-sm font-semibold text-gray-700">Iluminación</h3>
@@ -56,5 +64,4 @@
       <span class="text-gray-500 text-xl">💡</span>
     </div>
   </div>
-  
 </div>
