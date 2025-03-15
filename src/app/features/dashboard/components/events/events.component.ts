@@ -31,7 +31,7 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   fetchEvents(showSpinner: boolean = true) {
     if (this.selectedTopic) {
-      this.dashboardService.getEventsByTopic(this.selectedTopic, 1, 7, showSpinner).subscribe(data => {
+      this.dashboardService.getEventsByTopic(this.selectedTopic, 1, 4, showSpinner).subscribe(data => {
         this.events = data.map((event: any) => ({
           ...event,
           formattedTimestamp: this.formatTimestamp(event.timestamp),
@@ -39,7 +39,7 @@ export class EventsComponent implements OnInit, OnDestroy {
         }));
       });
     } else {
-      this.dashboardService.getEvents(1, 7, showSpinner).subscribe(data => {
+      this.dashboardService.getEvents(1, 4, showSpinner).subscribe(data => {
         this.events = data.map((event: any) => ({
           ...event,
           formattedTimestamp: this.formatTimestamp(event.timestamp),
