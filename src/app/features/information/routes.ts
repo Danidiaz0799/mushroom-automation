@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { DataCollectionComponent } from './components/data-collection/data-collection.component';
+import { StatisticsDashboardComponent } from './components/statistics-dashboard/statistics-dashboard.component';
 
 export const informationRoutes: Routes = [
-    { path: 'data-collection', component: DataCollectionComponent },
-    { path: '', redirectTo: 'data-collection', pathMatch: 'full' },
+    { path: 'statistics', component: StatisticsDashboardComponent },
+    { path: '', redirectTo: 'statistics', pathMatch: 'full' },
 ];

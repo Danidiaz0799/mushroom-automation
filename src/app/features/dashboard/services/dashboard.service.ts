@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class DashboardService {
   private sht3xUrl = `${environment.apiUrl}/Sht3xSensor`;
-  private sht3xUrlManual = `${environment.apiUrl}/Sht3xSensorManual`; // Nuevo endpoint para modo manual
+  private sht3xUrlManual = `${environment.apiUrl}/Sht3xSensorManual`;
   private gy302Url = `${environment.apiUrl}/Gy302Sensor`;
   private eventsUrl = `${environment.apiUrl}/Event`;
   private actuatorsUrl = `${environment.apiUrl}/Actuator`;
@@ -56,15 +56,15 @@ export class DashboardService {
     );
   }
 
-  getActuators(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
-    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.actuatorsUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+  deleteEvent(id: number): Observable<any> {
+    return this.http.delete(`${this.eventsUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getSensorDataByDateRange(startDate: string, endDate: string, page: number = 1, pageSize: number = 100): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/SensorData?start_date=${startDate}&end_date=${endDate}&page=${page}&pageSize=${pageSize}`).pipe(
+  getActuators(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
+    return this.http.get<any>(`${this.actuatorsUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
@@ -81,19 +81,11 @@ export class DashboardService {
     );
   }
 
-  deleteEvent(id: number): Observable<any> {
-    return this.http.delete(`${this.eventsUrl}/${id}`).pipe(
-      catchError(this.handleError)
-    );
-  }
-
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Unknown error!';
     if (error.error instanceof ErrorEvent) {
-      // Client-side errors
       errorMessage = `Error: ${error.error.message}`;
     } else {
-      // Server-side errors
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
     return throwError(errorMessage);

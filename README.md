@@ -38,7 +38,6 @@ Ejecute `ng build` para compilar el proyecto en la carpeta `dist/`. Los archivos
 
 - **GET `/api/Sht3xSensor`**: Datos de temperatura y humedad.
 - **GET `/api/Gy302Sensor`**: Datos del sensor de luz.
-- **GET `/api/SensorData`**: Datos en un rango de fechas.
 
 ### Eventos:
 
