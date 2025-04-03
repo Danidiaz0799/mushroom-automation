@@ -1,10 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../../shared/services/client.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClientSelectorComponent } from '../../../../shared/components/client-selector/client-selector.component';
+import { DashboardService } from '../../../dashboard/services/dashboard.service';
+import { ActuatorService } from '../../services/actuator.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+export class Client {
+  client_id: string = '';
+  name: string = '';
+  description: string = '';
+  status: 'online' | 'offline' = 'offline';
+  last_seen: Date = new Date();
+  controlMode: 'automatico' | 'manual' = 'automatico';
+  idealTemp: string = '';
+  idealHumidity: string = '';
+  currentTemp: number | null = null;
+  currentHumidity: number | null = null;
+  currentTempStatus: 'ideal' | 'warning' | 'critical' | 'unknown' = 'unknown';
+  currentHumidityStatus: 'ideal' | 'warning' | 'critical' | 'unknown' = 'unknown';
+  
+  // Estados de actuadores
+  lucesEncendidas: boolean = false;
+  ventiladoresEncendidos: boolean = false;
+  humidificadorEncendido: boolean = false;
+  motorEncendido: boolean = false;
+}
 
 @Component({
   selector: 'app-client-management',
@@ -13,7 +38,7 @@ import { ClientSelectorComponent } from '../../../../shared/components/client-se
   templateUrl: './client-management.component.html'
 })
 export class ClientManagementComponent implements OnInit {
-  clients: any[] = [];
+  clients: Client[] = [];
   isLoading = true;
   showAddForm = false;
   newClientForm: FormGroup;
@@ -24,6 +49,9 @@ export class ClientManagementComponent implements OnInit {
   editClientForm: FormGroup;
   editingClientId: string | null = null;
   confirmDeleteClientId: string | null = null;
+  
+  private dashboardService = inject(DashboardService);
+  private actuatorService = inject(ActuatorService);
 
   constructor(
     private authService: AuthService,
@@ -50,13 +78,103 @@ export class ClientManagementComponent implements OnInit {
     this.isLoading = true;
     this.authService.getClients().subscribe({
       next: (data) => {
+        // Obtener información básica de los clientes
         this.clients = data;
+        
+        // Para cada cliente, obtener datos adicionales
+        this.clients.forEach(client => {
+          this.enrichClientData(client);
+        });
+        
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading clients:', error);
         this.isLoading = false;
         this.error = 'Error al cargar los cultivos. Por favor, intente nuevamente.';
+      }
+    });
+  }
+  
+  enrichClientData(client: any): void {
+    // Obtener el modo de control (automático/manual)
+    this.dashboardService.getAppState(client.client_id).pipe(
+      catchError(error => {
+        console.error(`Error al obtener estado para ${client.client_id}:`, error);
+        return of({ mode: 'no-definido' });
+      })
+    ).subscribe(state => {
+      client.controlMode = state.mode || 'no-definido';
+    });
+    
+    // Obtener parámetros ideales de temperatura y humedad
+    forkJoin({
+      temp: this.actuatorService.getIdealParams(client.client_id, 'temperatura').pipe(
+        catchError(error => {
+          console.error(`Error al obtener parámetros de temperatura para ${client.client_id}:`, error);
+          return of({ min_value: 20, max_value: 28 });
+        })
+      ),
+      humidity: this.actuatorService.getIdealParams(client.client_id, 'humedad').pipe(
+        catchError(error => {
+          console.error(`Error al obtener parámetros de humedad para ${client.client_id}:`, error);
+          return of({ min_value: 70, max_value: 90 });
+        })
+      )
+    }).subscribe(params => {
+      client.idealTemp = `${params.temp.min_value}-${params.temp.max_value}`;
+      client.idealHumidity = `${params.humidity.min_value}-${params.humidity.max_value}`;
+      
+      // Obtener datos actuales de sensores
+      const endpoint = client.controlMode === 'automatico' ? 
+        this.dashboardService.getSht3xUrlData(client.client_id, 1, 1, false) : 
+        this.dashboardService.getSht3xUrlDataManual(client.client_id, 1, 1, false);
+      
+      endpoint.pipe(
+        catchError(error => {
+          console.error(`Error al obtener datos de sensores para ${client.client_id}:`, error);
+          return of([]);
+        })
+      ).subscribe(sensorData => {
+        if (sensorData && sensorData.length > 0) {
+          // Obtener los valores más recientes
+          client.currentTemp = sensorData[0].temperature;
+          client.currentHumidity = sensorData[0].humidity;
+          
+          // Determinar estado basado en los rangos ideales
+          const minTemp = params.temp.min_value;
+          const maxTemp = params.temp.max_value;
+          const minHumidity = params.humidity.min_value;
+          const maxHumidity = params.humidity.max_value;
+          
+          client.currentTempStatus = 
+            client.currentTemp < minTemp ? 'warning' : 
+            client.currentTemp > maxTemp ? 'critical' : 'ideal';
+            
+          client.currentHumidityStatus = 
+            client.currentHumidity < minHumidity ? 'warning' : 
+            client.currentHumidity > maxHumidity ? 'critical' : 'ideal';
+        }
+      });
+    });
+    
+    // Obtener estados de actuadores
+    this.dashboardService.getActuators(client.client_id, 1, 10, false).pipe(
+      catchError(error => {
+        console.error(`Error al obtener estados de actuadores para ${client.client_id}:`, error);
+        return of([]);
+      })
+    ).subscribe(data => {
+      if (data && data.length > 0) {
+        const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
+        const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
+        const humidificador = data.find((actuator: any) => actuator.name === 'Humidificador');
+        const motor = data.find((actuator: any) => actuator.name === 'Motor');
+        
+        client.lucesEncendidas = luces?.state === 'true';
+        client.ventiladoresEncendidos = ventiladores?.state === 'true';
+        client.humidificadorEncendido = humidificador?.state === 'true';
+        client.motorEncendido = motor?.state === 'true';
       }
     });
   }
@@ -136,6 +254,80 @@ export class ClientManagementComponent implements OnInit {
     const currentClientId = this.getSelectedClientId();
     const currentClient = this.clients.find(client => client.client_id === currentClientId);
     return currentClient ? currentClient.name : '';
+  }
+
+  formatNumber(value: number | null): string {
+    if (value === null || value === undefined) return '--';
+    return value.toFixed(4);
+  }
+
+  // Verifica si un valor está dentro del rango ideal
+  isInRange(value: number, rangeString: string, type: 'temp' | 'humidity'): boolean {
+    if (!rangeString) {
+      // Valores predeterminados si no hay rango definido
+      if (type === 'temp') rangeString = '20-28';
+      else rangeString = '70-90';
+    }
+    
+    const [min, max] = rangeString.split('-').map(n => parseFloat(n));
+    return value >= min && value <= max;
+  }
+  
+  // Obtiene la posición inicial del rango ideal como porcentaje (0-100)
+  getRangeStart(rangeString: string, type: 'temp' | 'humidity'): number {
+    if (!rangeString) {
+      // Valores predeterminados si no hay rango definido
+      if (type === 'temp') rangeString = '20-28';
+      else rangeString = '70-90';
+    }
+    
+    const [min] = rangeString.split('-').map(n => parseFloat(n));
+    
+    // Convertimos a porcentaje según el tipo
+    if (type === 'temp') {
+      // Consideramos un rango total de 0-40°C
+      return (min / 40) * 100;
+    } else {
+      // Consideramos un rango total de 0-100%
+      return min;
+    }
+  }
+  
+  // Obtiene la posición final del rango ideal como porcentaje (0-100)
+  getRangeEnd(rangeString: string, type: 'temp' | 'humidity'): number {
+    if (!rangeString) {
+      // Valores predeterminados si no hay rango definido
+      if (type === 'temp') rangeString = '20-28';
+      else rangeString = '70-90';
+    }
+    
+    const [_, max] = rangeString.split('-').map(n => parseFloat(n));
+    
+    // Convertimos a porcentaje según el tipo
+    if (type === 'temp') {
+      // Consideramos un rango total de 0-40°C
+      return (max / 40) * 100;
+    } else {
+      // Consideramos un rango total de 0-100%
+      return max;
+    }
+  }
+  
+  // Obtiene el ancho del rango ideal como porcentaje (0-100)
+  getRangeWidth(rangeString: string, type: 'temp' | 'humidity'): number {
+    return this.getRangeEnd(rangeString, type) - this.getRangeStart(rangeString, type);
+  }
+  
+  // Obtiene la posición del valor actual como porcentaje (0-100)
+  getValuePosition(value: number, type: 'temp' | 'humidity'): number {
+    // Convertimos a porcentaje según el tipo
+    if (type === 'temp') {
+      // Consideramos un rango total de 0-40°C
+      return (value / 40) * 100;
+    } else {
+      // Consideramos un rango total de 0-100%
+      return value;
+    }
   }
 
   openEditForm(client: any): void {

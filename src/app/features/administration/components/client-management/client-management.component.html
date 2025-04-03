@@ -7,8 +7,8 @@
         <div class="px-6 py-4 flex items-center">
           <div class="bg-emerald-50 rounded-full p-2 mr-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
           </div>
           <h2 class="text-xl font-semibold text-gray-800">Selección de Cultivo Activo</h2>
         </div>
@@ -31,20 +31,20 @@
           <!-- Botones de acción -->
           <div class="flex flex-col sm:flex-row gap-3">
             <a [routerLink]="['/home']" class="flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-              </svg>
-              Dashboard
-            </a>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+          Dashboard
+        </a>
             
             <a [routerLink]="['/administration/actuator-control']" class="flex items-center justify-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
-              </svg>
-              Controlar Actuadores
-            </a>
-          </div>
-        </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+          </svg>
+          Controlar Actuadores
+        </a>
+      </div>
+    </div>
       </div>
     </div>
 
@@ -60,23 +60,23 @@
               </svg>
             </div>
             <h2 class="text-xl font-semibold text-gray-800">Mis Cultivos</h2>
-          </div>
-          
-          <button 
-            (click)="toggleAddForm()" 
+  </div>
+
+      <button 
+        (click)="toggleAddForm()" 
             class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2 font-medium">
-            <span *ngIf="!showAddForm">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-              </svg>
-            </span>
-            {{ showAddForm ? 'Cancelar' : 'Agregar Cultivo' }}
-          </button>
+        <span *ngIf="!showAddForm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+        </span>
+        {{ showAddForm ? 'Cancelar' : 'Agregar Cultivo' }}
+      </button>
         </div>
-      </div>
+    </div>
 
       <div class="p-6">
-        <!-- Formulario para agregar nuevo cultivo -->
+    <!-- Formulario para agregar nuevo cultivo -->
         <div *ngIf="showAddForm" class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-100">
           <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -84,60 +84,60 @@
             </svg>
             Registrar Nuevo Cultivo
           </h3>
+      
+      <form [formGroup]="newClientForm" (ngSubmit)="registerClient()" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="client_id" class="block text-sm font-medium text-gray-700 mb-1">ID del Cultivo *</label>
+            <input 
+              type="text" 
+              id="client_id" 
+              formControlName="client_id" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="mushroom1, shiitake2, etc.">
+            <div *ngIf="formSubmitted && newClientForm.get('client_id')?.invalid" class="text-red-500 text-sm mt-1">
+              <span *ngIf="newClientForm.get('client_id')?.errors?.['required']">Este campo es requerido.</span>
+              <span *ngIf="newClientForm.get('client_id')?.errors?.['pattern']">Solo se permiten letras, números, guiones y guiones bajos.</span>
+            </div>
+          </div>
           
-          <form [formGroup]="newClientForm" (ngSubmit)="registerClient()" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label for="client_id" class="block text-sm font-medium text-gray-700 mb-1">ID del Cultivo *</label>
-                <input 
-                  type="text" 
-                  id="client_id" 
-                  formControlName="client_id" 
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="mushroom1, shiitake2, etc.">
-                <div *ngIf="formSubmitted && newClientForm.get('client_id')?.invalid" class="text-red-500 text-sm mt-1">
-                  <span *ngIf="newClientForm.get('client_id')?.errors?.['required']">Este campo es requerido.</span>
-                  <span *ngIf="newClientForm.get('client_id')?.errors?.['pattern']">Solo se permiten letras, números, guiones y guiones bajos.</span>
-                </div>
-              </div>
-              
-              <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Cultivo *</label>
-                <input 
-                  type="text" 
-                  id="name" 
-                  formControlName="name" 
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Orellana Rosada, Shiitake, etc.">
-                <div *ngIf="formSubmitted && newClientForm.get('name')?.invalid" class="text-red-500 text-sm mt-1">
-                  Este campo es requerido.
-                </div>
-              </div>
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Cultivo *</label>
+            <input 
+              type="text" 
+              id="name" 
+              formControlName="name" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="Orellana Rosada, Shiitake, etc.">
+            <div *ngIf="formSubmitted && newClientForm.get('name')?.invalid" class="text-red-500 text-sm mt-1">
+              Este campo es requerido.
             </div>
-            
-            <div>
-              <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-              <textarea 
-                id="description" 
-                formControlName="description" 
-                rows="3" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Descripción detallada del cultivo..."></textarea>
-            </div>
-            
-            <div class="flex justify-end">
-              <button 
-                type="submit" 
-                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
-                Registrar Cultivo
-              </button>
-            </div>
-          </form>
-          
-          <!-- Mensajes de error/éxito -->
-          <div *ngIf="error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">{{ error }}</div>
-          <div *ngIf="success" class="mt-4 p-3 bg-green-100 text-green-700 rounded-lg">{{ success }}</div>
+          </div>
         </div>
+        
+        <div>
+          <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+          <textarea 
+            id="description" 
+            formControlName="description" 
+            rows="3" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="Descripción detallada del cultivo..."></textarea>
+        </div>
+        
+        <div class="flex justify-end">
+          <button 
+            type="submit" 
+                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
+            Registrar Cultivo
+          </button>
+        </div>
+      </form>
+      
+      <!-- Mensajes de error/éxito -->
+      <div *ngIf="error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">{{ error }}</div>
+      <div *ngIf="success" class="mt-4 p-3 bg-green-100 text-green-700 rounded-lg">{{ success }}</div>
+    </div>
 
         <!-- Formulario para editar cultivo -->
         <div *ngIf="showEditForm" class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-100">
@@ -217,15 +217,15 @@
               </button>
             </div>
           </div>
-        </div>
+    </div>
 
-        <!-- Spinner de carga -->
-        <div *ngIf="isLoading" class="flex justify-center my-8">
-          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        </div>
+    <!-- Spinner de carga -->
+    <div *ngIf="isLoading" class="flex justify-center my-8">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+    </div>
 
-        <!-- Mensaje si no hay cultivos -->
-        <div *ngIf="!isLoading && clients.length === 0" class="bg-blue-50 p-6 rounded-xl shadow-sm text-center">
+    <!-- Mensaje si no hay cultivos -->
+    <div *ngIf="!isLoading && clients.length === 0" class="bg-blue-50 p-6 rounded-xl shadow-sm text-center">
           <div class="text-blue-600 flex flex-col items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -233,121 +233,296 @@
             <p class="text-lg">No hay cultivos registrados.</p>
             <p class="text-sm mt-2">Use el botón "Agregar Cultivo" para crear uno nuevo.</p>
           </div>
-        </div>
+    </div>
 
         <!-- Lista de cultivos -->
-        <div *ngIf="!isLoading && clients.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div *ngFor="let client of clients" 
-               [ngClass]="{'ring-2 ring-indigo-500 ring-offset-2': client.client_id === getSelectedClientId()}"
-               class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300">
-            <!-- Cabecera de la tarjeta -->
-            <div class="p-4 border-b border-gray-100 flex justify-between items-center"
-                 [ngClass]="{'bg-emerald-50': client.client_id === getSelectedClientId()}">
-              <h3 class="text-lg font-semibold text-gray-800 truncate">{{ client.name }}</h3>
-              <span 
-                [ngClass]="{'bg-emerald-100 text-emerald-800 border-emerald-200': client.status === 'online', 
-                          'bg-gray-100 text-gray-800 border-gray-200': client.status === 'offline'}" 
-                class="px-3 py-1 rounded-full text-xs font-semibold border">
-                {{ client.status === 'online' ? 'En línea' : 'Desconectado' }}
+        <div *ngIf="!isLoading && clients.length > 0" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let client of clients" 
+               class="relative bg-white rounded-xl shadow-md overflow-hidden transition duration-300"
+               [ngClass]="{
+                 'border-4 border-emerald-500 ring-2 ring-emerald-300 shadow-lg scale-[1.02] z-10': client.client_id === getSelectedClientId(),
+                 'border border-gray-200 hover:shadow-lg': client.client_id !== getSelectedClientId()
+               }">
+            
+            <!-- Estado online/offline -->
+            <div class="absolute top-2 right-2 z-20">
+            <span 
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 border-emerald-200': client.status === 'online',
+                  'bg-gray-50 text-gray-500 border-gray-200': client.status === 'offline'
+                }" 
+                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border shadow-sm">
+                <span class="flex h-2 w-2 relative mr-1.5">
+                  <span [ngClass]="{'bg-emerald-500': client.status === 'online', 'bg-gray-400': client.status === 'offline'}" 
+                        class="absolute inline-flex h-full w-full rounded-full opacity-75"
+                        [class.animate-ping]="client.status === 'online'"></span>
+                  <span [ngClass]="{'bg-emerald-500': client.status === 'online', 'bg-gray-400': client.status === 'offline'}" 
+                        class="relative inline-flex rounded-full h-2 w-2"></span>
+                </span>
+              {{ client.status === 'online' ? 'En línea' : 'Desconectado' }}
+            </span>
+          </div>
+          
+            <!-- Indicador activo -->
+            <div *ngIf="client.client_id === getSelectedClientId()" class="absolute top-2 left-2 z-20">
+              <span class="inline-flex items-center p-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </span>
+          </div>
+          
+            <!-- Cabecera con imagen de fondo (estilo similar a la imagen de referencia) -->
+            <div class="h-24 relative overflow-hidden"
+                 [ngClass]="{'bg-slate-900': client.client_id === getSelectedClientId(), 'bg-slate-800': client.client_id !== getSelectedClientId()}">
+              <!-- Contenido de la cabecera -->
+              <div class="absolute inset-0 flex flex-col justify-end p-4">
+                <h3 class="text-xl font-bold text-white">{{ client.name }}</h3>
+                <div class="flex items-center mt-1">
+                  <span class="text-white/80 text-sm font-mono">{{ client.client_id }}</span>
+                </div>
+              </div>
             </div>
             
             <!-- Cuerpo de la tarjeta -->
-            <div class="p-4">
-              <div class="space-y-2 mb-4">
-                <div class="flex items-center">
-                  <span class="text-sm text-gray-500 min-w-[80px]">ID:</span>
-                  <span class="text-sm font-medium">{{ client.client_id }}</span>
+            <div class="p-4" [ngClass]="{'bg-emerald-50': client.client_id === getSelectedClientId(), 'bg-white': client.client_id !== getSelectedClientId()}">
+              <!-- Descripción -->
+              <div class="mb-4">
+                <h4 class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-1">Descripción</h4>
+                <p class="text-sm text-gray-700">{{ client.description || 'Sin descripción' }}</p>
+              </div>
+              
+              <!-- Información de estado -->
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <h4 class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-1">Última conexión</h4>
+                  <p class="text-sm text-gray-700">{{ client.last_seen | date:'medium' }}</p>
                 </div>
-                <div class="flex items-start">
-                  <span class="text-sm text-gray-500 min-w-[80px]">Descripción:</span>
-                  <span class="text-sm">{{ client.description || 'Sin descripción' }}</span>
+                
+                <div>
+                  <h4 class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-1">Modo</h4>
+                  <div class="flex items-center">
+                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium"
+                          [ngClass]="{'bg-blue-50 text-blue-700': client.controlMode === 'automatico', 'bg-amber-50 text-amber-700': client.controlMode === 'manual'}">
+                      <svg *ngIf="client.controlMode === 'automatico'" class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 15a9.11 9.11 0 01-5 8.1l-.9-1.8A7.07 7.07 0 0019 15h2zm-9-9a9.11 9.11 0 015 8.1l-2 .2A7.07 7.07 0 0112 8V6zM3 15a9.11 9.11 0 015-8.1l.9 1.8A7.07 7.07 0 005 15H3zm9 9a9.11 9.11 0 01-5-8.1l2-.2A7.07 7.07 0 0112 22v2zM12 1a11 11 0 00-11 11 11 11 0 1022 0 11 11 0 00-11-11zm0 20a9 9 0 110-18 9 9 0 010 18z"/>
+                      </svg>
+                      <svg *ngIf="client.controlMode === 'manual'" class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11 16.7a1 1 0 002 0V11a1 1 0 10-2 0v5.7zm1-10.9a1.3 1.3 0 100 2.6 1.3 1.3 0 000-2.6z"/>
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"/>
+                      </svg>
+                      {{ client.controlMode === 'automatico' ? 'Automático' : (client.controlMode === 'manual' ? 'Manual' : 'No definido') }}
+                    </span>
+                  </div>
                 </div>
-                <div class="flex items-center">
-                  <span class="text-sm text-gray-500 min-w-[80px]">Conexión:</span>
-                  <span class="text-sm">{{ client.last_seen | date:'medium' }}</span>
+              </div>
+              
+              <!-- Estados de actuadores -->
+              <div class="mb-4 p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
+                <h4 class="text-xs uppercase tracking-wider text-gray-600 font-semibold mb-2 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                </svg>
+                  Actuadores
+                </h4>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-2 h-2 rounded-full" [ngClass]="{'bg-emerald-500': client.lucesEncendidas, 'bg-gray-300': !client.lucesEncendidas}"></div>
+                    <span class="text-xs text-gray-700">Iluminación</span>
+                    <span class="text-xs text-gray-500 ml-auto">{{ client.lucesEncendidas ? 'ON' : 'OFF' }}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-2 h-2 rounded-full" [ngClass]="{'bg-emerald-500': client.ventiladoresEncendidos, 'bg-gray-300': !client.ventiladoresEncendidos}"></div>
+                    <span class="text-xs text-gray-700">Ventilación</span>
+                    <span class="text-xs text-gray-500 ml-auto">{{ client.ventiladoresEncendidos ? 'ON' : 'OFF' }}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-2 h-2 rounded-full" [ngClass]="{'bg-emerald-500': client.humidificadorEncendido, 'bg-gray-300': !client.humidificadorEncendido}"></div>
+                    <span class="text-xs text-gray-700">Humidificador</span>
+                    <span class="text-xs text-gray-500 ml-auto">{{ client.humidificadorEncendido ? 'ON' : 'OFF' }}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-2 h-2 rounded-full" [ngClass]="{'bg-emerald-500': client.motorEncendido, 'bg-gray-300': !client.motorEncendido}"></div>
+                    <span class="text-xs text-gray-700">Motor</span>
+                    <span class="text-xs text-gray-500 ml-auto">{{ client.motorEncendido ? 'ON' : 'OFF' }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Parámetros de cultivo -->
+              <div class="mb-5 p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
+                <h4 class="text-xs uppercase tracking-wider text-gray-600 font-semibold mb-2 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                </svg>
+                  Parámetros ideales
+                </h4>
+                
+                <div class="space-y-3">
+                  <!-- Temperatura -->
+                  <div>
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-xs text-gray-500">Temperatura</span>
+                      <span class="text-xs font-medium text-gray-700">{{ client.idealTemp || '20-28' }}°C</span>
+                    </div>
+                    
+                    <!-- Valor numérico con color según si está en rango -->
+                    <div class="flex items-center mb-1">
+                      <span class="text-sm font-medium mr-2 w-16 text-right"
+                            [ngClass]="{
+                              'text-emerald-600': client.currentTemp !== null && isInRange(client.currentTemp, client.idealTemp, 'temp'),
+                              'text-amber-600': client.currentTemp !== null && !isInRange(client.currentTemp, client.idealTemp, 'temp')
+                            }">
+                        {{ client.currentTemp !== null ? formatNumber(client.currentTemp) : '--' }}°C
+                      </span>
+                      
+                      <!-- Barra de progreso con zona de rango ideal -->
+                      <div class="flex-grow relative h-6">
+                        <!-- Fondo gris de la barra -->
+                        <div class="absolute inset-0 bg-gray-200 rounded-md"></div>
+                        
+                        <!-- Zona de rango ideal -->
+                        <div class="absolute inset-y-0 bg-emerald-100 rounded-md"
+                              [style.left.%]="getRangeStart(client.idealTemp, 'temp')"
+                              [style.width.%]="getRangeWidth(client.idealTemp, 'temp')">
+                        </div>
+                        
+                        <!-- Líneas de mínimo y máximo -->
+                        <div class="absolute inset-y-0 w-0.5 bg-gray-300" 
+                             [style.left.%]="getRangeStart(client.idealTemp, 'temp')"></div>
+                        <div class="absolute inset-y-0 w-0.5 bg-gray-300" 
+                             [style.left.%]="getRangeEnd(client.idealTemp, 'temp')"></div>
+                        
+                        <!-- Valor actual -->
+                        <div *ngIf="client.currentTemp !== null" class="absolute inset-y-0 flex items-center justify-center"
+                             [style.left.%]="getValuePosition(client.currentTemp, 'temp')">
+                          <div class="w-3 h-3 rounded-full border-2 border-white shadow"
+                              [ngClass]="{
+                                'bg-emerald-500': isInRange(client.currentTemp, client.idealTemp, 'temp'),
+                                'bg-amber-500': !isInRange(client.currentTemp, client.idealTemp, 'temp')
+                              }"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Humedad -->
+                  <div>
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-xs text-gray-500">Humedad</span>
+                      <span class="text-xs font-medium text-gray-700">{{ client.idealHumidity || '70-90' }}%</span>
+                    </div>
+                    
+                    <!-- Valor numérico con color según si está en rango -->
+                    <div class="flex items-center mb-1">
+                      <span class="text-sm font-medium mr-2 w-16 text-right"
+                            [ngClass]="{
+                              'text-blue-600': client.currentHumidity !== null && isInRange(client.currentHumidity, client.idealHumidity, 'humidity'),
+                              'text-amber-600': client.currentHumidity !== null && !isInRange(client.currentHumidity, client.idealHumidity, 'humidity')
+                            }">
+                        {{ client.currentHumidity !== null ? formatNumber(client.currentHumidity) : '--' }}%
+                      </span>
+                      
+                      <!-- Barra de progreso con zona de rango ideal -->
+                      <div class="flex-grow relative h-6">
+                        <!-- Fondo gris de la barra -->
+                        <div class="absolute inset-0 bg-gray-200 rounded-md"></div>
+                        
+                        <!-- Zona de rango ideal -->
+                        <div class="absolute inset-y-0 bg-blue-100 rounded-md"
+                              [style.left.%]="getRangeStart(client.idealHumidity, 'humidity')"
+                              [style.width.%]="getRangeWidth(client.idealHumidity, 'humidity')">
+                        </div>
+                        
+                        <!-- Líneas de mínimo y máximo -->
+                        <div class="absolute inset-y-0 w-0.5 bg-gray-300" 
+                             [style.left.%]="getRangeStart(client.idealHumidity, 'humidity')"></div>
+                        <div class="absolute inset-y-0 w-0.5 bg-gray-300" 
+                             [style.left.%]="getRangeEnd(client.idealHumidity, 'humidity')"></div>
+                        
+                        <!-- Valor actual -->
+                        <div *ngIf="client.currentHumidity !== null" class="absolute inset-y-0 flex items-center justify-center"
+                             [style.left.%]="getValuePosition(client.currentHumidity, 'humidity')">
+                          <div class="w-3 h-3 rounded-full border-2 border-white shadow"
+                              [ngClass]="{
+                                'bg-blue-500': isInRange(client.currentHumidity, client.idealHumidity, 'humidity'),
+                                'bg-amber-500': !isInRange(client.currentHumidity, client.idealHumidity, 'humidity')
+                              }"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               
               <!-- Botones de acción -->
-              <div class="space-y-3">
-                <!-- Editar/Eliminar -->
-                <div class="flex gap-2">
+              <div class="space-y-2">
+                <!-- Botón seleccionar cultivo (solo si no está seleccionado) -->
+                <button *ngIf="client.client_id !== getSelectedClientId()"
+                    (click)="setAsCurrentClient(client)"
+                    class="w-full flex items-center justify-center px-4 py-2.5 bg-slate-700 hover:bg-slate-800 text-white rounded-lg shadow-sm transition-colors gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Seleccionar como Cultivo Activo
+                </button>
+                
+                <!-- Acciones cuando es cultivo activo -->
+                <div *ngIf="client.client_id === getSelectedClientId()" class="grid grid-cols-2 gap-2">
+              <a [routerLink]="['/administration/actuator-control']" 
+                     class="flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                </svg>
+                Controlar
+              </a>
+            
                   <button 
-                    (click)="openEditForm(client)" 
-                    class="flex-1 flex items-center justify-center px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg shadow-sm transition-all duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              (click)="updateClientStatus(client)" 
+                    class="flex items-center justify-center px-4 py-2.5 text-white rounded-lg shadow-sm transition-colors"
+                    [ngClass]="{'bg-amber-500 hover:bg-amber-600': client.status === 'online', 'bg-emerald-600 hover:bg-emerald-700': client.status === 'offline'}">
+                    <svg *ngIf="client.status === 'online'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+              </svg>
+                    <svg *ngIf="client.status === 'offline'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              {{ client.status === 'online' ? 'Desactivar' : 'Activar' }}
+            </button>
+          </div>
+
+                <!-- Acciones comunes para todos -->
+                <div class="grid grid-cols-2 gap-2">
+                  <button (click)="openEditForm(client)" 
+                      class="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                     Editar
                   </button>
-                  <button 
-                    (click)="showDeleteConfirmation(client.client_id)" 
-                    class="flex-1 flex items-center justify-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-sm transition-all duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  
+                  <button (click)="showDeleteConfirmation(client.client_id)" 
+                      class="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
                     Eliminar
                   </button>
                 </div>
                 
-                <!-- Seleccionar cultivo (si no está seleccionado) -->
-                <button *ngIf="client.client_id !== getSelectedClientId()"
-                  (click)="setAsCurrentClient(client)"
-                  class="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
-                  </svg>
-                  Seleccionar Cultivo
-                </button>
-                
-                <!-- Accion para el cultivo seleccionado -->
-                <div *ngIf="client.client_id === getSelectedClientId()" class="flex gap-2">
-                  <button 
+                <!-- Botón de activar/desactivar para cultivos no seleccionados -->
+                <button *ngIf="client.client_id !== getSelectedClientId()" 
                     (click)="updateClientStatus(client)" 
-                    [ngClass]="{'bg-amber-500 hover:bg-amber-600': client.status === 'online', 'bg-emerald-600 hover:bg-emerald-700': client.status === 'offline'}" 
-                    class="flex-1 flex items-center justify-center px-4 py-2 text-white rounded-lg shadow-sm transition-all duration-200">
-                    <svg *ngIf="client.status === 'online'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
-                    </svg>
-                    <svg *ngIf="client.status === 'offline'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    {{ client.status === 'online' ? 'Desactivar' : 'Activar' }}
-                  </button>
-                  
-                  <a [routerLink]="['/administration/actuator-control']" 
-                     class="flex-1 flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
-                    </svg>
-                    Controlar
-                  </a>
-                </div>
-                
-                <!-- Botón para cultivoso no seleccionados -->
-                <button *ngIf="client.client_id !== getSelectedClientId()"
-                  (click)="updateClientStatus(client)" 
-                  [ngClass]="{'bg-amber-500 hover:bg-amber-600': client.status === 'online', 'bg-emerald-600 hover:bg-emerald-700': client.status === 'offline'}" 
-                  class="w-full flex items-center justify-center px-4 py-2 text-white rounded-lg shadow-sm transition-all duration-200">
-                  <svg *ngIf="client.status === 'online'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    class="w-full flex items-center justify-center px-4 py-2.5 text-white rounded-lg shadow-sm transition-colors"
+                    [ngClass]="{'bg-amber-500 hover:bg-amber-600': client.status === 'online', 'bg-emerald-600 hover:bg-emerald-700': client.status === 'offline'}">
+                  <svg *ngIf="client.status === 'online'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
                   </svg>
-                  <svg *ngIf="client.status === 'offline'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
+                  <svg *ngIf="client.status === 'offline'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
                   {{ client.status === 'online' ? 'Desactivar' : 'Activar' }}
                 </button>
-              </div>
-
-              <!-- Indicador de selección actual -->
-              <div *ngIf="client.client_id === getSelectedClientId()" class="mt-4 pt-4 border-t border-gray-100">
-                <div class="flex items-center text-emerald-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="font-medium">Este es el cultivo activo actualmente</span>
-                </div>
               </div>
             </div>
           </div>
