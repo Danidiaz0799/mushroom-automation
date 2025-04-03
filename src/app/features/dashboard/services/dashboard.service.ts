@@ -22,7 +22,7 @@ export class DashboardService {
 
   getSht3xUrlDataManual(clientId: string, page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.baseUrl}/${clientId}/Sht3xSensor?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+    return this.http.get<any>(`${this.baseUrl}/${clientId}/Sht3xSensorManual?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       map(data => data.map((item: any) => ({ humidity: item.humidity, temperature: item.temperature, timestamp: item.timestamp }))),
       catchError(this.handleError)
     );
@@ -44,6 +44,12 @@ export class DashboardService {
 
   deleteEvent(clientId: string, id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${clientId}/Event/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  createEvent(clientId: string, event: { message: string; topic: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/${clientId}/Event`, event).pipe(
       catchError(this.handleError)
     );
   }

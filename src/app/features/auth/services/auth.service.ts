@@ -28,4 +28,8 @@ export class AuthService {
   updateClientStatus(clientId: string, status: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/clients/${clientId}/status`, status);
   }
+
+  registerClient(client: { client_id: string; name: string; description: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/clients`, client);
+  }
 }
