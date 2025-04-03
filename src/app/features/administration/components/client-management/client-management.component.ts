@@ -20,6 +20,10 @@ export class ClientManagementComponent implements OnInit {
   formSubmitted = false;
   error: string | null = null;
   success: string | null = null;
+  showEditForm = false;
+  editClientForm: FormGroup;
+  editingClientId: string | null = null;
+  confirmDeleteClientId: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -28,6 +32,11 @@ export class ClientManagementComponent implements OnInit {
   ) {
     this.newClientForm = this.fb.group({
       client_id: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9_-]+$')]],
+      name: ['', Validators.required],
+      description: ['']
+    });
+
+    this.editClientForm = this.fb.group({
       name: ['', Validators.required],
       description: ['']
     });
@@ -121,5 +130,118 @@ export class ClientManagementComponent implements OnInit {
     const currentClientId = this.getSelectedClientId();
     const currentClient = this.clients.find(client => client.client_id === currentClientId);
     return currentClient ? currentClient.name : '';
+  }
+
+  openEditForm(client: any): void {
+    this.editingClientId = client.client_id;
+    this.showEditForm = true;
+    this.editClientForm.patchValue({
+      name: client.name,
+      description: client.description || ''
+    });
+    this.error = null;
+    this.success = null;
+  }
+
+  closeEditForm(): void {
+    this.showEditForm = false;
+    this.editingClientId = null;
+    this.editClientForm.reset();
+    this.error = null;
+    this.success = null;
+  }
+
+  updateClient(): void {
+    this.formSubmitted = true;
+    this.error = null;
+    this.success = null;
+    
+    if (this.editClientForm.valid && this.editingClientId) {
+      const clientData = this.editClientForm.value;
+      
+      this.authService.updateClientInfo(this.editingClientId, clientData).subscribe({
+        next: () => {
+          this.success = 'Cultivo actualizado con éxito.';
+          this.loadClients();
+          
+          // Si actualizamos el cultivo actualmente seleccionado, actualizamos la UI
+          if (this.editingClientId === this.getSelectedClientId()) {
+            const updatedClient = this.clients.find(client => client.client_id === this.editingClientId);
+            if (updatedClient) {
+              updatedClient.name = clientData.name;
+              updatedClient.description = clientData.description;
+            }
+          }
+          
+          setTimeout(() => {
+            this.closeEditForm();
+            this.success = null;
+          }, 3000);
+        },
+        error: (err) => {
+          console.error('Error al actualizar cultivo:', err);
+          this.error = 'Error al actualizar el cultivo. Por favor, intente nuevamente.';
+        }
+      });
+    }
+  }
+
+  showDeleteConfirmation(clientId: string): void {
+    this.confirmDeleteClientId = clientId;
+  }
+
+  cancelDelete(): void {
+    this.confirmDeleteClientId = null;
+  }
+
+  deleteClient(clientId: string): void {
+    this.error = null;
+    this.success = null;
+    
+    this.authService.deleteClient(clientId).subscribe({
+      next: () => {
+        // Cerrar modal inmediatamente
+        this.confirmDeleteClientId = null;
+        
+        // Si eliminamos el cultivo actualmente seleccionado, cambiamos a otro
+        if (clientId === this.getSelectedClientId()) {
+          // Encuentra otro cultivo para seleccionar
+          const otherClient = this.clients.find(client => client.client_id !== clientId);
+          if (otherClient) {
+            this.clientService.setCurrentClientId(otherClient.client_id);
+          }
+        }
+        
+        // Actualizar lista de clientes y mostrar mensaje de éxito
+        this.loadClients();
+        this.success = 'Cultivo eliminado con éxito.';
+        
+        // Limpiar mensaje después de un tiempo
+        setTimeout(() => {
+          this.success = null;
+        }, 3000);
+      },
+      error: (err) => {
+        console.error('Error al eliminar cultivo:', err);
+        
+        // Cerrar modal inmediatamente
+        this.confirmDeleteClientId = null;
+        
+        // Actualizar lista de clientes de todos modos
+        this.loadClients();
+        
+        // Mostrar mensaje de error adecuado
+        if (err?.error?.error && err.error.error.includes('no such table: sensor_data')) {
+          this.error = 'No se pudo eliminar el cultivo debido a un problema con la base de datos. Contacte al administrador del sistema.';
+        } else {
+          this.error = 'Error al eliminar el cultivo. Por favor, intente nuevamente.';
+        }
+        
+        // Limpiar mensaje después de un tiempo
+        setTimeout(() => {
+          this.error = null;
+        }, 3000);
+      }
+    });
   }
 } 

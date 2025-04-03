@@ -32,4 +32,12 @@ export class AuthService {
   registerClient(client: { client_id: string; name: string; description: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/clients`, client);
   }
+
+  updateClientInfo(clientId: string, data: { name: string; description?: string }): Observable<any> {
+    return this.http.put(`${this.baseUrl}/clients/${clientId}/info`, data);
+  }
+
+  deleteClient(clientId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/clients/${clientId}`);
+  }
 }
