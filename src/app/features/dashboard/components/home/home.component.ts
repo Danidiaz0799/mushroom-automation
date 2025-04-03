@@ -1,14 +1,15 @@
-import { Component, AfterViewInit, OnDestroy, inject } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParametersComponent } from '../parameters/parameters.component';
 import { ChartsComponent } from '../charts/charts.component';
 import { EventsComponent } from '../events/events.component';
 import { DashboardService } from '../../services/dashboard.service';
 import { ClientService } from 'src/app/shared/services/client.service';
+import { ClientSelectorComponent } from 'src/app/shared/components/client-selector/client-selector.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, ParametersComponent, ChartsComponent, EventsComponent],
+  imports: [CommonModule, ParametersComponent, ChartsComponent, EventsComponent, ClientSelectorComponent],
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
@@ -27,7 +28,21 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private dashboardService = inject(DashboardService);
   private clientService = inject(ClientService);
 
-  constructor() {}
+  constructor() {
+    // Create an effect to respond to client ID changes
+    effect(() => {
+      // Reading the signal value triggers the effect when it changes
+      const clientId = this.clientService.currentClientId$();
+      // Limpiar los datos existentes
+      this.clearData();
+      
+      // Don't call these methods during construction
+      if (this.intervalId) {
+        this.getAppState();
+        this.fetchSensorData();
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     this.getAppState();
@@ -42,12 +57,27 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  clearData(): void {
+    // Limpiar todos los datos actuales
+    this.temperatureData = [];
+    this.humidityData = [];
+    this.lightLevelData = [];
+    this.labels = [];
+    this.latestTemperature = undefined;
+    this.latestHumidity = undefined;
+    this.latestLightLevel = undefined;
+    this.latestUpdate = undefined;
+  }
+
   getAppState(): void {
-    this.dashboardService.getAppState(this.clientService.getCurrentClientId()).subscribe(response => {
-      this.isAutomatic = response.mode === 'automatico';
-      this.fetchSensorData();
-    }, error => {
-      console.error('Error al obtener el estado de la aplicación:', error);
+    this.dashboardService.getAppState(this.clientService.getCurrentClientId()).subscribe({
+      next: (response) => {
+        this.isAutomatic = response.mode === 'automatico';
+        this.fetchSensorData();
+      },
+      error: (error) => {
+        console.error('Error al obtener el estado de la aplicación:', error);
+      }
     });
   }
 
@@ -57,20 +87,29 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       this.dashboardService.getSht3xUrlData(clientId, 1, 10, false) : 
       this.dashboardService.getSht3xUrlDataManual(clientId, 1, 10, false);
     
-    endpoint.subscribe(data => {
-      if (data && data.length > 0) {
-        data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    endpoint.subscribe({
+      next: (data) => {
+        if (data && data.length > 0) {
+          data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-        this.humidityData = data.map((item: any) => item.humidity);
-        this.temperatureData = data.map((item: any) => item.temperature);
-        this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleTimeString());
+          this.humidityData = data.map((item: any) => item.humidity);
+          this.temperatureData = data.map((item: any) => item.temperature);
+          this.labels = data.map((item: any) => new Date(item.timestamp).toLocaleTimeString());
 
-        this.latestHumidity = this.humidityData[0];
-        this.latestTemperature = this.temperatureData[0];
-        this.latestUpdate = this.formatTimestamp(data[0].timestamp);
+          this.latestHumidity = this.humidityData[0];
+          this.latestTemperature = this.temperatureData[0];
+          this.latestUpdate = this.formatTimestamp(data[0].timestamp);
+        } else {
+          // Si no hay datos, asegurarse de que los arrays estén vacíos
+          this.clearData();
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener datos de sensores:', error);
+        // En caso de error, limpiar los datos
+        this.clearData();
       }
     });
-
   }
 
   formatTimestamp(timestamp: string): string {

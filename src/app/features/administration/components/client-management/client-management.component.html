@@ -1,0 +1,127 @@
+<!-- Submenu de navegación -->
+<div class="flex items-center mb-6 bg-white rounded-xl shadow-sm overflow-hidden">
+  <a routerLink="/administration/client-management" class="py-4 px-6 font-medium border-b-2 border-indigo-500 text-indigo-600">Gestión de Cultivos</a>
+  <a routerLink="/administration/actuator-control" class="py-4 px-6 font-medium text-gray-600 hover:text-gray-800">Control de Actuadores</a>
+</div>
+
+<div class="client-management p-8 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-100">
+  <!-- Título y botón para agregar nuevo cultivo -->
+  <div class="flex justify-between items-center mb-8">
+    <h2 class="text-3xl font-bold text-gray-800">Gestión de Cultivos</h2>
+    <button 
+      (click)="toggleAddForm()" 
+      class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg shadow-md transition-all duration-300 flex items-center gap-2">
+      <span *ngIf="!showAddForm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+      </span>
+      {{ showAddForm ? 'Cancelar' : 'Agregar Cultivo' }}
+    </button>
+  </div>
+
+  <!-- Formulario para agregar nuevo cultivo -->
+  <div *ngIf="showAddForm" class="mb-8 bg-white p-6 rounded-xl shadow-md border border-gray-100">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Registrar Nuevo Cultivo</h3>
+    
+    <form [formGroup]="newClientForm" (ngSubmit)="registerClient()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="client_id" class="block text-sm font-medium text-gray-700 mb-1">ID del Cultivo *</label>
+          <input 
+            type="text" 
+            id="client_id" 
+            formControlName="client_id" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="mushroom1, shiitake2, etc.">
+          <div *ngIf="formSubmitted && newClientForm.get('client_id')?.invalid" class="text-red-500 text-sm mt-1">
+            <span *ngIf="newClientForm.get('client_id')?.errors?.['required']">Este campo es requerido.</span>
+            <span *ngIf="newClientForm.get('client_id')?.errors?.['pattern']">Solo se permiten letras, números, guiones y guiones bajos.</span>
+          </div>
+        </div>
+        
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Cultivo *</label>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="Orellana Rosada, Shiitake, etc.">
+          <div *ngIf="formSubmitted && newClientForm.get('name')?.invalid" class="text-red-500 text-sm mt-1">
+            Este campo es requerido.
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+        <textarea 
+          id="description" 
+          formControlName="description" 
+          rows="3" 
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Descripción detallada del cultivo..."></textarea>
+      </div>
+      
+      <div class="flex justify-end">
+        <button 
+          type="submit" 
+          class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md transition-all duration-300">
+          Registrar Cultivo
+        </button>
+      </div>
+    </form>
+    
+    <!-- Mensajes de error/éxito -->
+    <div *ngIf="error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">{{ error }}</div>
+    <div *ngIf="success" class="mt-4 p-3 bg-green-100 text-green-700 rounded-lg">{{ success }}</div>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="isLoading" class="flex justify-center my-8">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+  </div>
+
+  <!-- Mensaje si no hay cultivos -->
+  <div *ngIf="!isLoading && clients.length === 0" class="bg-blue-50 p-6 rounded-xl shadow-sm text-center">
+    <p class="text-blue-600">No hay cultivos registrados. Use el botón "Agregar Cultivo" para crear uno nuevo.</p>
+  </div>
+
+  <!-- Lista de cultivos -->
+  <div *ngIf="!isLoading && clients.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div *ngFor="let client of clients" class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300">
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+          <h3 class="text-xl font-semibold text-gray-800">{{ client.name }}</h3>
+          <span 
+            [ngClass]="{'bg-emerald-100 text-emerald-700': client.status === 'online', 'bg-gray-100 text-gray-700': client.status === 'offline'}" 
+            class="px-3 py-1 rounded-full text-sm font-medium">
+            {{ client.status === 'online' ? 'En línea' : 'Desconectado' }}
+          </span>
+        </div>
+        
+        <div class="space-y-2 mb-6">
+          <p class="text-sm text-gray-500"><span class="font-medium">ID:</span> {{ client.client_id }}</p>
+          <p class="text-sm text-gray-500"><span class="font-medium">Descripción:</span> {{ client.description || 'Sin descripción' }}</p>
+          <p class="text-sm text-gray-500"><span class="font-medium">Última conexión:</span> {{ client.last_seen | date:'medium' }}</p>
+          <p class="text-sm text-gray-500"><span class="font-medium">Creado:</span> {{ client.created_at | date:'mediumDate' }}</p>
+        </div>
+        
+        <div class="flex space-x-3">
+          <button 
+            (click)="setAsCurrentClient(client.client_id)" 
+            class="flex-1 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm transition-all duration-300">
+            Seleccionar
+          </button>
+          <button 
+            (click)="updateClientStatus(client)" 
+            [ngClass]="{'bg-amber-500 hover:bg-amber-600': client.status === 'online', 'bg-emerald-500 hover:bg-emerald-600': client.status === 'offline'}" 
+            class="flex-1 px-4 py-2 text-white rounded-lg shadow-sm transition-all duration-300">
+            {{ client.status === 'online' ? 'Desactivar' : 'Activar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

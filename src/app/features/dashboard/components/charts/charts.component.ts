@@ -6,9 +6,12 @@ import {
   type OnDestroy,
   type OnChanges,
   type SimpleChanges,
+  effect,
+  inject
 } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { Chart, registerables } from "chart.js"
+import { ClientService } from "src/app/shared/services/client.service"
 
 Chart.register(...registerables)
 
@@ -28,8 +31,20 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
   humidityChart: Chart | undefined
   lightLevelChart: Chart | undefined
   intervalId: any
+  private clientService = inject(ClientService)
 
-  constructor() {}
+  constructor() {
+    // Efecto para responder a cambios en el ID del cliente
+    effect(() => {
+      // Leer el valor de la señal activa el efecto cuando cambia
+      const clientId = this.clientService.currentClientId$()
+      
+      // Destruir los gráficos existentes para recrearlos con los nuevos datos
+      this.destroyCharts()
+      
+      // Los gráficos se recrearán cuando lleguen los nuevos datos
+    })
+  }
 
   ngOnInit(): void {
     this.intervalId = setInterval(() => {}, 5000)
@@ -39,14 +54,21 @@ export class ChartsComponent implements AfterViewInit, OnInit, OnDestroy, OnChan
     if (this.intervalId) {
       clearInterval(this.intervalId)
     }
+    this.destroyCharts()
+  }
+
+  destroyCharts(): void {
     if (this.temperatureChart) {
       this.temperatureChart.destroy()
+      this.temperatureChart = undefined
     }
     if (this.humidityChart) {
       this.humidityChart.destroy()
+      this.humidityChart = undefined
     }
     if (this.lightLevelChart) {
       this.lightLevelChart.destroy()
+      this.lightLevelChart = undefined
     }
   }
 
