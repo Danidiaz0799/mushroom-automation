@@ -298,7 +298,6 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     const command = this.lucesEncendidas() ? 'true' : 'false';
     this.actuatorService.lightControl(clientId, command).subscribe({
       next: (response) => {
-        console.log(response.message);
       },
       error: (error) => {
         console.error('Error al controlar luces:', error);
@@ -316,7 +315,6 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     const command = this.ventiladoresEncendidos() ? 'true' : 'false';
     this.actuatorService.fanControl(clientId, command).subscribe({
       next: (response) => {
-        console.log(response.message);
       },
       error: (error) => {
         console.error('Error al controlar ventiladores:', error);
@@ -334,7 +332,6 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     const command = this.humidificadorEncendido() ? 'true' : 'false';
     this.actuatorService.humidifierControl(clientId, command).subscribe({
       next: (response) => {
-        console.log(response.message);
       },
       error: (error) => {
         console.error('Error al controlar humidificador:', error);
@@ -352,7 +349,6 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     const command = this.motorEncendido() ? 'true' : 'false';
     this.actuatorService.motorControl(clientId, command).subscribe({
       next: (response) => {
-        console.log(response.message);
       },
       error: (error) => {
         console.error('Error al controlar motor:', error);
