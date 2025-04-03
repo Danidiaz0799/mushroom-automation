@@ -8,75 +8,61 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class DashboardService {
-  private sht3xUrl = `${environment.apiUrl}/Sht3xSensor`;
-  private sht3xUrlManual = `${environment.apiUrl}/Sht3xSensorManual`;
-  private gy302Url = `${environment.apiUrl}/Gy302Sensor`;
-  private eventsUrl = `${environment.apiUrl}/Event`;
-  private actuatorsUrl = `${environment.apiUrl}/Actuator`;
-  private appStateUrl = `${environment.apiUrl}/getState`;
-  private appStateUpdateUrl = `${environment.apiUrl}/updateState`;
+  private baseUrl = `${environment.apiUrl}/api/clients`;
 
   constructor(private http: HttpClient) { }
 
-  getSht3xUrlData(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+  getSht3xUrlData(clientId: string, page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.sht3xUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+    return this.http.get<any>(`${this.baseUrl}/${clientId}/Sht3xSensor?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       map(data => data.map((item: any) => ({ humidity: item.humidity, temperature: item.temperature, timestamp: item.timestamp }))),
       catchError(this.handleError)
     );
   }
 
-  getSht3xUrlDataManual(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+  getSht3xUrlDataManual(clientId: string, page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.sht3xUrlManual}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+    return this.http.get<any>(`${this.baseUrl}/${clientId}/Sht3xSensor?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       map(data => data.map((item: any) => ({ humidity: item.humidity, temperature: item.temperature, timestamp: item.timestamp }))),
       catchError(this.handleError)
     );
   }
 
-  getGy302Data(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+  getEvents(clientId: string, page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.gy302Url}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
-      map(data => data.map((item: any) => ({ light_level: item.light_level, timestamp: item.timestamp }))),
+    return this.http.get<any>(`${this.baseUrl}/${clientId}/Event?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
-  getEvents(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+  getEventsByTopic(clientId: string, topic: string, page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.eventsUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+    return this.http.get<any>(`${this.baseUrl}/${clientId}/Event/FilterByTopic?topic=${topic}&page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
-  getEventsByTopic(topic: string, page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
+  deleteEvent(clientId: string, id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${clientId}/Event/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getActuators(clientId: string, page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
     const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.eventsUrl}/FilterByTopic?topic=${topic}&page=${page}&pageSize=${pageSize}`, { headers }).pipe(
+    return this.http.get<any>(`${this.baseUrl}/${clientId}/Actuator?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
-  deleteEvent(id: number): Observable<any> {
-    return this.http.delete(`${this.eventsUrl}/${id}`).pipe(
+  getAppState(clientId: string): Observable<{ mode: 'automatico' | 'manual' }> {
+    return this.http.get<{ mode: 'automatico' | 'manual' }>(`${this.baseUrl}/${clientId}/getState`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getActuators(page: number, pageSize: number, showSpinner: boolean = true): Observable<any> {
-    const headers = new HttpHeaders().set('X-Show-Spinner', showSpinner ? 'true' : 'false');
-    return this.http.get<any>(`${this.actuatorsUrl}?page=${page}&pageSize=${pageSize}`, { headers }).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  getAppState(): Observable<{ mode: 'automatico' | 'manual' }> {
-    return this.http.get<{ mode: 'automatico' | 'manual' }>(this.appStateUrl).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  updateAppState(mode: 'automatico' | 'manual'): Observable<any> {
-    return this.http.put(this.appStateUpdateUrl, { mode }).pipe(
+  updateAppState(clientId: string, mode: 'automatico' | 'manual'): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${clientId}/updateState`, { mode }).pipe(
       catchError(this.handleError)
     );
   }

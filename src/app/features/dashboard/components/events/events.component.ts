@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardService } from '../../services/dashboard.service';
+import { ClientService } from 'src/app/shared/services/client.service';
 
 @Component({
   selector: 'app-events',
@@ -14,12 +15,13 @@ export class EventsComponent implements OnInit, OnDestroy {
   intervalId: any;
   selectedTopic: string = '';
 
-  constructor(private dashboardService: DashboardService) {}
+  private dashboardService = inject(DashboardService);
+  private clientService = inject(ClientService);
 
   ngOnInit(): void {
     this.fetchEvents();
     this.intervalId = setInterval(() => {
-      this.fetchEvents(false); // Desactivar el spinner para actualizaciones automáticas
+      this.fetchEvents(false);
     }, 5000);
   }
 
@@ -30,8 +32,9 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   fetchEvents(showSpinner: boolean = true) {
+    const clientId = this.clientService.getCurrentClientId();
     if (this.selectedTopic) {
-      this.dashboardService.getEventsByTopic(this.selectedTopic, 1, 5, showSpinner).subscribe(data => {
+      this.dashboardService.getEventsByTopic(clientId, this.selectedTopic, 1, 5, showSpinner).subscribe(data => {
         this.events = data.map((event: any) => ({
           ...event,
           formattedTimestamp: this.formatTimestamp(event.timestamp),
@@ -39,7 +42,7 @@ export class EventsComponent implements OnInit, OnDestroy {
         }));
       });
     } else {
-      this.dashboardService.getEvents(1, 5, showSpinner).subscribe(data => {
+      this.dashboardService.getEvents(clientId, 1, 5, showSpinner).subscribe(data => {
         this.events = data.map((event: any) => ({
           ...event,
           formattedTimestamp: this.formatTimestamp(event.timestamp),
@@ -63,7 +66,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   formatMessage(message: string): string {
-    return message.replace(/(\d+\.\d{3})\d*/g, (match, p1) => parseFloat(p1).toFixed(3));
+    return message.replace(/\n/g, '<br>');
   }
 
   getIconForTopic(topic: string): string {
@@ -72,15 +75,14 @@ export class EventsComponent implements OnInit, OnDestroy {
         return '💧';
       case 'temperatura':
         return '🌡️';
-      case 'iluminacion':
-        return '💡';
       default:
         return '🔔';
     }
   }
 
   deleteEvent(id: number): void {
-    this.dashboardService.deleteEvent(id).subscribe(() => {
+    const clientId = this.clientService.getCurrentClientId();
+    this.dashboardService.deleteEvent(clientId, id).subscribe(() => {
       this.events = this.events.filter(event => event.id !== id);
       console.log('Evento eliminado correctamente');
     }, error => {

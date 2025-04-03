@@ -5,12 +5,12 @@
     <!-- Selección de Modo -->
     <div class="flex justify-center mb-10">
         <div class="bg-gray-100 p-1 rounded-xl shadow-sm">
-            <button (click)="setMode('automatico')" 
+            <button (click)="setMode('automatico')"
                 [ngClass]="{'bg-blue-500 text-white shadow-md': mode === 'automatico', 'bg-transparent text-gray-700 hover:bg-gray-200': mode !== 'automatico'}" 
                 class="px-6 py-3 rounded-xl font-medium transition-all duration-200">
                 Automático
             </button>
-            <button (click)="setMode('manual')" 
+            <button (click)="setMode('manual')"
                 [ngClass]="{'bg-blue-500 text-white shadow-md': mode === 'manual', 'bg-transparent text-gray-700 hover:bg-gray-200': mode !== 'manual'}" 
                 class="px-6 py-3 rounded-xl font-medium transition-all duration-200">
                 Manual
@@ -21,7 +21,7 @@
     <!-- Controles Automáticos -->
     <div *ngIf="mode === 'automatico'" class="space-y-8">
         <!-- Control de Temperatura y Humedad -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Temperatura -->
             <form [formGroup]="temperatureForm" (ngSubmit)="setTemperature()" class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg text-center border border-gray-100 overflow-hidden relative">
                 <div class="absolute top-0 left-0 w-2 h-full bg-rose-500"></div>
@@ -38,9 +38,6 @@
                             <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ minTemperatureSet }}°C</span>
                         </div>
                     </div>
-                    <div *ngIf="temperatureForm.controls['minTemperature'].invalid && temperatureForm.controls['minTemperature'].touched" class="text-rose-500 text-sm">
-                        Campo obligatorio (10°C - 30°C)
-                    </div>
                     <div class="flex items-center space-x-4 w-full">
                         <label for="maxTemperatureInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Máxima (°C)</label>
                         <div class="w-2/3 flex items-center gap-2">
@@ -49,25 +46,15 @@
                             <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ maxTemperatureSet }}°C</span>
                         </div>
                     </div>
-                    <div *ngIf="temperatureForm.controls['maxTemperature'].invalid && temperatureForm.controls['maxTemperature'].touched" class="text-rose-500 text-sm">
-                        Campo obligatorio (10°C - 30°C) y debe ser mayor que la mínima
-                    </div>
                 </div>
                 <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-3">
                         <label class="block text-sm font-medium text-gray-700">Actual:</label>
                         <span class="text-2xl font-bold text-rose-600">{{ latestTemperature?.toFixed(3) }}°C</span>
                     </div>
-                    
                     <div class="mt-2 flex items-center justify-center w-full">
                         <div class="py-2 px-4 rounded-full shadow-md flex items-center gap-2 animate-pulse" 
                             [ngClass]="{'bg-emerald-100 border border-emerald-200': isTemperatureIdeal(), 'bg-rose-100 border border-rose-200': !isTemperatureIdeal()}">
-                            <svg *ngIf="isTemperatureIdeal()" class="h-5 w-5 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                            </svg>
-                            <svg *ngIf="!isTemperatureIdeal()" class="h-5 w-5 text-rose-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                            </svg>
                             <span class="font-bold" [ngClass]="{'text-emerald-700': isTemperatureIdeal(), 'text-rose-700': !isTemperatureIdeal()}">
                                 {{ getTemperatureStatus() }}
                             </span>
@@ -97,9 +84,6 @@
                             <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ minHumiditySet }}%</span>
                         </div>
                     </div>
-                    <div *ngIf="humidityForm.controls['minHumidity'].invalid && humidityForm.controls['minHumidity'].touched" class="text-sky-500 text-sm">
-                        Campo obligatorio (40% - 110%)
-                    </div>
                     <div class="flex items-center space-x-4 w-full">
                         <label for="maxHumidityInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Máxima (%)</label>
                         <div class="w-2/3 flex items-center gap-2">
@@ -108,25 +92,15 @@
                             <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ maxHumiditySet }}%</span>
                         </div>
                     </div>
-                    <div *ngIf="humidityForm.controls['maxHumidity'].invalid && humidityForm.controls['maxHumidity'].touched" class="text-sky-500 text-sm">
-                        Campo obligatorio (40% - 110%) y debe ser mayor que la mínima
-                    </div>
                 </div>
                 <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-3">
                         <label class="block text-sm font-medium text-gray-700">Actual:</label>
                         <span class="text-2xl font-bold text-sky-600">{{ latestHumidity?.toFixed(3) }}%</span>
                     </div>
-                    
                     <div class="mt-2 flex items-center justify-center w-full">
                         <div class="py-2 px-4 rounded-full shadow-md flex items-center gap-2 animate-pulse" 
                             [ngClass]="{'bg-emerald-100 border border-emerald-200': isHumidityIdeal(), 'bg-rose-100 border border-rose-200': !isHumidityIdeal()}">
-                            <svg *ngIf="isHumidityIdeal()" class="h-5 w-5 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                            </svg>
-                            <svg *ngIf="!isHumidityIdeal()" class="h-5 w-5 text-rose-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                            </svg>
                             <span class="font-bold" [ngClass]="{'text-emerald-700': isHumidityIdeal(), 'text-rose-700': !isHumidityIdeal()}">
                                 {{ getHumidityStatus() }}
                             </span>

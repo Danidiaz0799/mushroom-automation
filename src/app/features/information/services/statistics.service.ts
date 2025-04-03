@@ -8,12 +8,12 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class StatisticsService {
-  private baseUrl = environment.apiUrl;
+  private baseUrl = `${environment.apiUrl}/api/clients`;
 
   constructor(private http: HttpClient) { }
 
-  getDashboardStatistics(days: number = 7): Observable<any> {
-    return this.http.get(`${this.baseUrl}/statistics/dashboard?days=${days}`)
+  getDashboardStatistics(clientId: string, days: number = 7): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${clientId}/statistics/dashboard?days=${days}`)
       .pipe(
         catchError(error => {
           console.error('Error al obtener estadísticas:', error);

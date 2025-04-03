@@ -4,6 +4,7 @@ import { ParametersComponent } from '../parameters/parameters.component';
 import { ChartsComponent } from '../charts/charts.component';
 import { EventsComponent } from '../events/events.component';
 import { DashboardService } from '../../services/dashboard.service';
+import { ClientService } from 'src/app/shared/services/client.service';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +25,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   intervalId: any;
   isAutomatic: boolean = true; // Estado para determinar si está en modo automático
   private dashboardService = inject(DashboardService);
+  private clientService = inject(ClientService);
 
   constructor() {}
 
@@ -41,7 +43,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   getAppState(): void {
-    this.dashboardService.getAppState().subscribe(response => {
+    this.dashboardService.getAppState(this.clientService.getCurrentClientId()).subscribe(response => {
       this.isAutomatic = response.mode === 'automatico';
       this.fetchSensorData();
     }, error => {
@@ -50,7 +52,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   fetchSensorData() {
-    const endpoint = this.isAutomatic ? this.dashboardService.getSht3xUrlData(1, 10, false) : this.dashboardService.getSht3xUrlDataManual(1, 10, false);
+    const clientId = this.clientService.getCurrentClientId();
+    const endpoint = this.isAutomatic ? 
+      this.dashboardService.getSht3xUrlData(clientId, 1, 10, false) : 
+      this.dashboardService.getSht3xUrlDataManual(clientId, 1, 10, false);
     
     endpoint.subscribe(data => {
       if (data && data.length > 0) {
@@ -66,28 +71,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    this.dashboardService.getGy302Data(1, 10, false).subscribe(data => {
-      if (data && data.length > 0) {
-        data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-        this.lightLevelData = data.map((item: any) => item.light_level);
-        if (this.lightLevelData[0] !== undefined) {
-          this.latestLightLevel = this.lightLevelData[0];
-        }
-      }
-    });
   }
 
   formatTimestamp(timestamp: string): string {
-    const date = new Date(timestamp);
-    const options: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour12: true
-    };
-    return date.toLocaleString('es-ES', options);
+    return new Date(timestamp).toLocaleString();
   }
 }
