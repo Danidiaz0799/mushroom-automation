@@ -9,6 +9,14 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { ClientSelectorComponent } from 'src/app/shared/components/client-selector/client-selector.component';
 import { AuthService } from 'src/app/features/auth/services/auth.service';
+import { finalize } from 'rxjs/operators';
+
+// Crear una clase temporal para el servicio de Toast si no existe
+class TempToastService {
+  showError(message: string): void {
+    console.error(message);
+  }
+}
 
 @Component({
   selector: 'app-actuator-control',
@@ -24,6 +32,7 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private toastService = new TempToastService();
 
   // Array para almacenar información de los clientes
   private clients: any[] = [];
@@ -53,6 +62,11 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     minHumidity: new FormControl(40, [Validators.required, Validators.min(30), Validators.max(90)]),
     maxHumidity: new FormControl(80, [Validators.required, Validators.min(40), Validators.max(100)])
   });
+
+  procesandoLuces = false;
+  procesandoVentiladores = false;
+  procesandoHumidificador = false;
+  procesandoMotor = false;
 
   constructor() {
     // Efecto para responder a cambios en el ID del cliente
@@ -290,72 +304,143 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleLuces() {
-    const clientId = this.clientService.getCurrentClientId();
-    if (!clientId) return;
+  toggleLuces(): void {
+    if (this.procesandoLuces) return;
     
-    this.lucesEncendidas.update(value => !value);
-    const command = this.lucesEncendidas() ? 'true' : 'false';
-    this.actuatorService.lightControl(clientId, command).subscribe({
-      next: (response) => {
-      },
-      error: (error) => {
-        console.error('Error al controlar luces:', error);
-        // Revertir el cambio si hay error
-        this.lucesEncendidas.update(value => !value);
-      }
-    });
+    this.procesandoLuces = true;
+    const nuevoEstado = !this.lucesEncendidas();
+    
+    // Optimistic UI update - actualizamos la UI inmediatamente
+    this.lucesEncendidas.set(nuevoEstado);
+    
+    const clientId = this.clientService.getCurrentClientId();
+    if (!clientId) {
+      this.procesandoLuces = false;
+      return;
+    }
+    
+    // Enviamos la petición al servidor
+    const command = nuevoEstado ? 'true' : 'false';
+    this.actuatorService.lightControl(clientId, command)
+      .pipe(
+        finalize(() => {
+          // Completamos la operación
+          setTimeout(() => this.procesandoLuces = false, 300);
+        })
+      )
+      .subscribe({
+        next: () => {
+          // Éxito - nada que hacer, ya actualizamos optimísticamente la UI
+        },
+        error: (error: unknown) => {
+          // Si hay error, revertimos el cambio optimista
+          console.error('Error al cambiar estado de luces:', error);
+          this.lucesEncendidas.set(!nuevoEstado);
+          this.toastService.showError('Error al cambiar el estado de las luces');
+        }
+      });
   }
 
-  toggleVentiladores() {
-    const clientId = this.clientService.getCurrentClientId();
-    if (!clientId) return;
+  toggleVentiladores(): void {
+    if (this.procesandoVentiladores) return;
     
-    this.ventiladoresEncendidos.update(value => !value);
-    const command = this.ventiladoresEncendidos() ? 'true' : 'false';
-    this.actuatorService.fanControl(clientId, command).subscribe({
-      next: (response) => {
-      },
-      error: (error) => {
-        console.error('Error al controlar ventiladores:', error);
-        // Revertir el cambio si hay error
-        this.ventiladoresEncendidos.update(value => !value);
-      }
-    });
+    this.procesandoVentiladores = true;
+    const nuevoEstado = !this.ventiladoresEncendidos();
+    
+    // Optimistic UI update
+    this.ventiladoresEncendidos.set(nuevoEstado);
+    
+    const clientId = this.clientService.getCurrentClientId();
+    if (!clientId) {
+      this.procesandoVentiladores = false;
+      return;
+    }
+    
+    const command = nuevoEstado ? 'true' : 'false';
+    this.actuatorService.fanControl(clientId, command)
+      .pipe(
+        finalize(() => {
+          setTimeout(() => this.procesandoVentiladores = false, 300);
+        })
+      )
+      .subscribe({
+        next: () => {
+          // Éxito - nada que hacer, ya actualizamos optimísticamente la UI
+        },
+        error: (error: unknown) => {
+          console.error('Error al cambiar estado de ventiladores:', error);
+          this.ventiladoresEncendidos.set(!nuevoEstado);
+          this.toastService.showError('Error al cambiar el estado de los ventiladores');
+        }
+      });
   }
 
-  toggleHumidificador() {
-    const clientId = this.clientService.getCurrentClientId();
-    if (!clientId) return;
+  toggleHumidificador(): void {
+    if (this.procesandoHumidificador) return;
     
-    this.humidificadorEncendido.update(value => !value);
-    const command = this.humidificadorEncendido() ? 'true' : 'false';
-    this.actuatorService.humidifierControl(clientId, command).subscribe({
-      next: (response) => {
-      },
-      error: (error) => {
-        console.error('Error al controlar humidificador:', error);
-        // Revertir el cambio si hay error
-        this.humidificadorEncendido.update(value => !value);
-      }
-    });
+    this.procesandoHumidificador = true;
+    const nuevoEstado = !this.humidificadorEncendido();
+    
+    // Optimistic UI update
+    this.humidificadorEncendido.set(nuevoEstado);
+    
+    const clientId = this.clientService.getCurrentClientId();
+    if (!clientId) {
+      this.procesandoHumidificador = false;
+      return;
+    }
+    
+    const command = nuevoEstado ? 'true' : 'false';
+    this.actuatorService.humidifierControl(clientId, command)
+      .pipe(
+        finalize(() => {
+          setTimeout(() => this.procesandoHumidificador = false, 300);
+        })
+      )
+      .subscribe({
+        next: () => {
+          // Éxito - nada que hacer, ya actualizamos optimísticamente la UI
+        },
+        error: (error: unknown) => {
+          console.error('Error al cambiar estado del humidificador:', error);
+          this.humidificadorEncendido.set(!nuevoEstado);
+          this.toastService.showError('Error al cambiar el estado del humidificador');
+        }
+      });
   }
 
-  toggleMotor() {
-    const clientId = this.clientService.getCurrentClientId();
-    if (!clientId) return;
+  toggleMotor(): void {
+    if (this.procesandoMotor) return;
     
-    this.motorEncendido.update(value => !value);
-    const command = this.motorEncendido() ? 'true' : 'false';
-    this.actuatorService.motorControl(clientId, command).subscribe({
-      next: (response) => {
-      },
-      error: (error) => {
-        console.error('Error al controlar motor:', error);
-        // Revertir el cambio si hay error
-        this.motorEncendido.update(value => !value);
-      }
-    });
+    this.procesandoMotor = true;
+    const nuevoEstado = !this.motorEncendido();
+    
+    // Optimistic UI update
+    this.motorEncendido.set(nuevoEstado);
+    
+    const clientId = this.clientService.getCurrentClientId();
+    if (!clientId) {
+      this.procesandoMotor = false;
+      return;
+    }
+    
+    const command = nuevoEstado ? 'true' : 'false';
+    this.actuatorService.motorControl(clientId, command)
+      .pipe(
+        finalize(() => {
+          setTimeout(() => this.procesandoMotor = false, 300);
+        })
+      )
+      .subscribe({
+        next: () => {
+          // Éxito - nada que hacer, ya actualizamos optimísticamente la UI
+        },
+        error: (error: unknown) => {
+          console.error('Error al cambiar estado del motor:', error);
+          this.motorEncendido.set(!nuevoEstado);
+          this.toastService.showError('Error al cambiar el estado del motor');
+        }
+      });
   }
 
   setTemperature() {

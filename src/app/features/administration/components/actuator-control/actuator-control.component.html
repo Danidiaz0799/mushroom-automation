@@ -17,8 +17,8 @@
       <div class="text-sm text-gray-500 mt-1">ID: {{ clientService.getCurrentClientId() }}</div>
     </div>
     
-    <div class="flex">
-      <a [routerLink]="['/home']" class="inline-flex items-center justify-center px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm transition-all duration-300 mr-2">
+    <div class="flex flex-wrap gap-2">
+      <a [routerLink]="['/home']" class="inline-flex items-center justify-center px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm transition-all duration-300">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
         </svg>
@@ -44,7 +44,7 @@
   </div>
 </div>
 
-<div *ngIf="clientService.getCurrentClientId()" class="control-panel p-8 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-100">
+<div *ngIf="clientService.getCurrentClientId()" class="control-panel p-8 bg-gradient-to-br from-indigo-50 to-white rounded-2xl shadow-xl border border-indigo-100">
     <!-- Título -->
     <h2 class="text-2xl font-bold text-gray-800 mb-10 flex items-center justify-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
@@ -55,18 +55,18 @@
 
     <!-- Selección de Modo -->
     <div class="flex justify-center mb-10">
-      <div class="bg-gray-100 p-1 rounded-xl shadow-sm">
+      <div class="bg-indigo-100 p-1 rounded-xl shadow-sm border border-indigo-200">
         <button (click)="setMode('automatico')"
-          [ngClass]="{'bg-indigo-500 text-white shadow-md': mode === 'automatico', 'bg-transparent text-gray-700 hover:bg-gray-200': mode !== 'automatico'}" 
-          class="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center">
+          [ngClass]="{'bg-indigo-600 text-white shadow-md': mode === 'automatico', 'bg-transparent text-gray-700 hover:bg-indigo-200': mode !== 'automatico'}" 
+          class="px-8 py-3.5 rounded-xl font-medium transition-all duration-200 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
           </svg>
           Automático
         </button>
         <button (click)="setMode('manual')"
-          [ngClass]="{'bg-indigo-500 text-white shadow-md': mode === 'manual', 'bg-transparent text-gray-700 hover:bg-gray-200': mode !== 'manual'}" 
-          class="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center">
+          [ngClass]="{'bg-indigo-600 text-white shadow-md': mode === 'manual', 'bg-transparent text-gray-700 hover:bg-indigo-200': mode !== 'manual'}" 
+          class="px-8 py-3.5 rounded-xl font-medium transition-all duration-200 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd" />
           </svg>
@@ -83,7 +83,7 @@
         <form [formGroup]="temperatureForm" (ngSubmit)="setTemperature()" class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg text-center border border-gray-100 overflow-hidden relative">
             <div class="absolute top-0 left-0 w-2 h-full bg-rose-500"></div>
             <h2 class="text-lg font-semibold text-gray-800 mb-6 flex items-center justify-center gap-2">
-                <span class="text-rose-500 text-xl">🌡️</span>
+                <span class="text-2xl">🌡️</span>
                 Control de Temperatura
             </h2>
             <div class="flex flex-col items-center justify-center space-y-5 mb-6">
@@ -104,7 +104,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg">
+            <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <div class="flex items-center gap-3">
                     <label class="block text-sm font-medium text-gray-700">Actual:</label>
                     <span class="text-2xl font-bold text-rose-600">{{ latestTemperature?.toFixed(3) || '--' }}°C</span>
@@ -120,7 +120,7 @@
             </div>
             <button type="submit" [disabled]="!clientService.getCurrentClientId()"
                 class="mt-6 px-8 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300"
-                [ngClass]="{'bg-rose-500 hover:bg-rose-600': clientService.getCurrentClientId(), 'bg-gray-400 cursor-not-allowed': !clientService.getCurrentClientId()}">
+                [ngClass]="{'bg-indigo-600 hover:bg-indigo-700': clientService.getCurrentClientId(), 'bg-gray-400 cursor-not-allowed': !clientService.getCurrentClientId()}">
                 Aplicar Parámetros
             </button>
         </form>
@@ -129,7 +129,7 @@
         <form [formGroup]="humidityForm" (ngSubmit)="setHumidity()" class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg text-center border border-gray-100 overflow-hidden relative">
             <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
             <h2 class="text-lg font-semibold text-gray-800 mb-6 flex items-center justify-center gap-2">
-                <span class="text-sky-500 text-xl">💧</span>
+                <span class="text-2xl">💧</span>
                 Control de Humedad
             </h2>
             <div class="flex flex-col items-center justify-center space-y-5 mb-6">
@@ -150,7 +150,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg">
+            <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <div class="flex items-center gap-3">
                     <label class="block text-sm font-medium text-gray-700">Actual:</label>
                     <span class="text-2xl font-bold text-sky-600">{{ latestHumidity?.toFixed(3) || '--' }}%</span>
@@ -166,7 +166,7 @@
             </div>
             <button type="submit" [disabled]="!clientService.getCurrentClientId()"
                 class="mt-6 px-8 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300"
-                [ngClass]="{'bg-sky-500 hover:bg-sky-600': clientService.getCurrentClientId(), 'bg-gray-400 cursor-not-allowed': !clientService.getCurrentClientId()}">
+                [ngClass]="{'bg-indigo-600 hover:bg-indigo-700': clientService.getCurrentClientId(), 'bg-gray-400 cursor-not-allowed': !clientService.getCurrentClientId()}">
                 Aplicar Parámetros
             </button>
         </form>
@@ -176,99 +176,175 @@
     <!-- Controles Manuales -->
     <div *ngIf="mode === 'manual'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Control de Luces -->
-        <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center justify-center border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 left-0 w-2 h-full bg-amber-500"></div>
-            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <span class="text-amber-500 text-xl">💡</span>
-                Luces
-            </h2>
-            <button
-                class="px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 w-full"
-                [ngClass]="{'bg-amber-500 hover:bg-amber-600': lucesEncendidas(), 'bg-gray-400 hover:bg-gray-500': !lucesEncendidas()}"
-                (click)="toggleLuces()">
-                {{ lucesEncendidas() ? 'Apagar' : 'Encender' }}
-            </button>
-            <div class="mt-3 px-3 py-1 rounded-full text-sm font-medium"
-                [ngClass]="{'bg-emerald-100 text-emerald-700': lucesEncendidas(), 'bg-gray-100 text-gray-500': !lucesEncendidas()}">
-                {{ lucesEncendidas() ? 'Encendidas' : 'Apagadas' }}
+        <div class="bg-white p-0 rounded-xl shadow-lg flex flex-col items-center justify-center border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="w-full bg-amber-500 py-3 text-center">
+                <h2 class="text-lg font-semibold text-white flex items-center justify-center gap-2">
+                    <span class="text-2xl">💡</span>
+                    Luces
+                </h2>
+            </div>
+            <div class="p-6 flex flex-col items-center justify-center w-full space-y-4">
+                <div class="mt-1 px-4 py-2.5 rounded-md text-sm font-medium w-full text-center bg-gray-50 border border-gray-100 shadow-inner transition-all duration-200"
+                    [ngClass]="{'text-emerald-700': lucesEncendidas(), 'text-gray-500': !lucesEncendidas()}">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="h-2.5 w-2.5 rounded-full transition-colors duration-200" [ngClass]="{'bg-emerald-500 animate-pulse': lucesEncendidas(), 'bg-gray-300': !lucesEncendidas()}"></span>
+                        <span class="font-medium">{{ lucesEncendidas() ? 'Encendidas' : 'Apagadas' }}</span>
+                    </div>
+                </div>
+                <button
+                    class="w-full px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 relative overflow-hidden"
+                    [ngClass]="{'bg-emerald-600 hover:bg-emerald-700': lucesEncendidas(), 'bg-indigo-600 hover:bg-indigo-700': !lucesEncendidas()}"
+                    (click)="toggleLuces()"
+                    [disabled]="procesandoLuces">
+                    <div class="flex items-center justify-center">
+                        <svg *ngIf="!procesandoLuces" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"
+                            [class.rotate-180]="lucesEncendidas()">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                        </svg>
+                        <svg *ngIf="procesandoLuces" class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>{{ procesandoLuces ? 'Procesando...' : (lucesEncendidas() ? 'Apagar' : 'Encender') }}</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 h-1 bg-white/20 transition-all duration-500 ease-out" 
+                        [style.width]="procesandoLuces ? '100%' : '0'"></div>
+                </button>
             </div>
         </div>
 
         <!-- Control de Ventiladores -->
-        <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center justify-center border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
-            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <span class="text-sky-500 text-xl">🔄</span>
-                Ventiladores
-            </h2>
-            <button
-                class="px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 w-full"
-                [ngClass]="{'bg-sky-500 hover:bg-sky-600': ventiladoresEncendidos(), 'bg-gray-400 hover:bg-gray-500': !ventiladoresEncendidos()}"
-                (click)="toggleVentiladores()">
-                {{ ventiladoresEncendidos() ? 'Apagar' : 'Encender' }}
-            </button>
-            <div class="mt-3 px-3 py-1 rounded-full text-sm font-medium"
-                [ngClass]="{'bg-emerald-100 text-emerald-700': ventiladoresEncendidos(), 'bg-gray-100 text-gray-500': !ventiladoresEncendidos()}">
-                {{ ventiladoresEncendidos() ? 'Encendidos' : 'Apagados' }}
+        <div class="bg-white p-0 rounded-xl shadow-lg flex flex-col items-center justify-center border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="w-full bg-sky-500 py-3 text-center">
+                <h2 class="text-lg font-semibold text-white flex items-center justify-center gap-2">
+                    <span class="text-2xl">🔄</span>
+                    Ventiladores
+                </h2>
+            </div>
+            <div class="p-6 flex flex-col items-center justify-center w-full space-y-4">
+                <div class="mt-1 px-4 py-2.5 rounded-md text-sm font-medium w-full text-center bg-gray-50 border border-gray-100 shadow-inner transition-all duration-200"
+                    [ngClass]="{'text-emerald-700': ventiladoresEncendidos(), 'text-gray-500': !ventiladoresEncendidos()}">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="h-2.5 w-2.5 rounded-full transition-colors duration-200" [ngClass]="{'bg-emerald-500 animate-pulse': ventiladoresEncendidos(), 'bg-gray-300': !ventiladoresEncendidos()}"></span>
+                        <span class="font-medium">{{ ventiladoresEncendidos() ? 'Encendidos' : 'Apagados' }}</span>
+                    </div>
+                </div>
+                <button
+                    class="w-full px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 relative overflow-hidden"
+                    [ngClass]="{'bg-emerald-600 hover:bg-emerald-700': ventiladoresEncendidos(), 'bg-indigo-600 hover:bg-indigo-700': !ventiladoresEncendidos()}"
+                    (click)="toggleVentiladores()"
+                    [disabled]="procesandoVentiladores">
+                    <div class="flex items-center justify-center">
+                        <svg *ngIf="!procesandoVentiladores" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"
+                            [class.rotate-180]="ventiladoresEncendidos()">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                        </svg>
+                        <svg *ngIf="procesandoVentiladores" class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>{{ procesandoVentiladores ? 'Procesando...' : (ventiladoresEncendidos() ? 'Apagar' : 'Encender') }}</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 h-1 bg-white/20 transition-all duration-500 ease-out" 
+                        [style.width]="procesandoVentiladores ? '100%' : '0'"></div>
+                </button>
             </div>
         </div>
 
         <!-- Control de Humidificador -->
-        <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center justify-center border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
-            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <span class="text-sky-500 text-xl">☁️</span>
-                Humidificador
-            </h2>
-            <button
-                class="px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 w-full"
-                [ngClass]="{'bg-sky-500 hover:bg-sky-600': humidificadorEncendido(), 'bg-gray-400 hover:bg-gray-500': !humidificadorEncendido()}"
-                (click)="toggleHumidificador()">
-                {{ humidificadorEncendido() ? 'Apagar' : 'Encender' }}
-            </button>
-            <div class="mt-3 px-3 py-1 rounded-full text-sm font-medium"
-                [ngClass]="{'bg-emerald-100 text-emerald-700': humidificadorEncendido(), 'bg-gray-100 text-gray-500': !humidificadorEncendido()}">
-                {{ humidificadorEncendido() ? 'Encendido' : 'Apagado' }}
+        <div class="bg-white p-0 rounded-xl shadow-lg flex flex-col items-center justify-center border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="w-full bg-sky-500 py-3 text-center">
+                <h2 class="text-lg font-semibold text-white flex items-center justify-center gap-2">
+                    <span class="text-2xl">☁️</span>
+                    Humidificador
+                </h2>
+            </div>
+            <div class="p-6 flex flex-col items-center justify-center w-full space-y-4">
+                <div class="mt-1 px-4 py-2.5 rounded-md text-sm font-medium w-full text-center bg-gray-50 border border-gray-100 shadow-inner transition-all duration-200"
+                    [ngClass]="{'text-emerald-700': humidificadorEncendido(), 'text-gray-500': !humidificadorEncendido()}">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="h-2.5 w-2.5 rounded-full transition-colors duration-200" [ngClass]="{'bg-emerald-500 animate-pulse': humidificadorEncendido(), 'bg-gray-300': !humidificadorEncendido()}"></span>
+                        <span class="font-medium">{{ humidificadorEncendido() ? 'Encendido' : 'Apagado' }}</span>
+                    </div>
+                </div>
+                <button
+                    class="w-full px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 relative overflow-hidden"
+                    [ngClass]="{'bg-emerald-600 hover:bg-emerald-700': humidificadorEncendido(), 'bg-indigo-600 hover:bg-indigo-700': !humidificadorEncendido()}"
+                    (click)="toggleHumidificador()"
+                    [disabled]="procesandoHumidificador">
+                    <div class="flex items-center justify-center">
+                        <svg *ngIf="!procesandoHumidificador" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"
+                            [class.rotate-180]="humidificadorEncendido()">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                        </svg>
+                        <svg *ngIf="procesandoHumidificador" class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>{{ procesandoHumidificador ? 'Procesando...' : (humidificadorEncendido() ? 'Apagar' : 'Encender') }}</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 h-1 bg-white/20 transition-all duration-500 ease-out" 
+                        [style.width]="procesandoHumidificador ? '100%' : '0'"></div>
+                </button>
             </div>
         </div>
 
         <!-- Control de Motor -->
-        <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center justify-center border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 left-0 w-2 h-full bg-slate-500"></div>
-            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <span class="text-slate-500 text-xl">🔧</span>
-                Motor
-            </h2>
-            <button
-                class="px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 w-full"
-                [ngClass]="{'bg-slate-500 hover:bg-slate-600': motorEncendido(), 'bg-gray-400 hover:bg-gray-500': !motorEncendido()}"
-                (click)="toggleMotor()">
-                {{ motorEncendido() ? 'Apagar' : 'Encender' }}
-            </button>
-            <div class="mt-3 px-3 py-1 rounded-full text-sm font-medium"
-                [ngClass]="{'bg-emerald-100 text-emerald-700': motorEncendido(), 'bg-gray-100 text-gray-500': !motorEncendido()}">
-                {{ motorEncendido() ? 'Encendido' : 'Apagado' }}
+        <div class="bg-white p-0 rounded-xl shadow-lg flex flex-col items-center justify-center border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="w-full bg-slate-500 py-3 text-center">
+                <h2 class="text-lg font-semibold text-white flex items-center justify-center gap-2">
+                    <span class="text-2xl">🔧</span>
+                    Motor
+                </h2>
+            </div>
+            <div class="p-6 flex flex-col items-center justify-center w-full space-y-4">
+                <div class="mt-1 px-4 py-2.5 rounded-md text-sm font-medium w-full text-center bg-gray-50 border border-gray-100 shadow-inner transition-all duration-200"
+                    [ngClass]="{'text-emerald-700': motorEncendido(), 'text-gray-500': !motorEncendido()}">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="h-2.5 w-2.5 rounded-full transition-colors duration-200" [ngClass]="{'bg-emerald-500 animate-pulse': motorEncendido(), 'bg-gray-300': !motorEncendido()}"></span>
+                        <span class="font-medium">{{ motorEncendido() ? 'Encendido' : 'Apagado' }}</span>
+                    </div>
+                </div>
+                <button
+                    class="w-full px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 relative overflow-hidden"
+                    [ngClass]="{'bg-emerald-600 hover:bg-emerald-700': motorEncendido(), 'bg-indigo-600 hover:bg-indigo-700': !motorEncendido()}"
+                    (click)="toggleMotor()"
+                    [disabled]="procesandoMotor">
+                    <div class="flex items-center justify-center">
+                        <svg *ngIf="!procesandoMotor" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"
+                            [class.rotate-180]="motorEncendido()">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                        </svg>
+                        <svg *ngIf="procesandoMotor" class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>{{ procesandoMotor ? 'Procesando...' : (motorEncendido() ? 'Apagar' : 'Encender') }}</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 h-1 bg-white/20 transition-all duration-500 ease-out" 
+                        [style.width]="procesandoMotor ? '100%' : '0'"></div>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Información sobre modos de control -->
-    <div class="bg-gradient-to-r from-amber-50 to-white border border-amber-100 rounded-xl shadow-lg mt-10 overflow-hidden relative">
-        <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+    <div class="bg-gradient-to-r from-indigo-50 to-white border border-indigo-100 rounded-xl shadow-lg mt-10 overflow-hidden relative">
+        <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
         <div class="p-5">
             <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd" />
                 </svg>
                 Información
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded-lg shadow-sm">
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-indigo-50">
                     <p class="font-medium text-indigo-600 mb-2">Modo Automático</p>
                     <p class="text-gray-600 text-sm">Los actuadores se controlan según los parámetros configurados de temperatura y humedad establecidos.</p>
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow-sm">
-                    <p class="font-medium text-amber-600 mb-2">Modo Manual</p>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-indigo-50">
+                    <p class="font-medium text-indigo-600 mb-2">Modo Manual</p>
                     <p class="text-gray-600 text-sm">Controla directamente los actuadores según tus necesidades, sin considerar los parámetros automáticos.</p>
                 </div>
             </div>
@@ -277,14 +353,14 @@
 </div>
 
 <!-- Mensaje cuando no hay cultivo seleccionado -->
-<div *ngIf="!clientService.getCurrentClientId()" class="p-8 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md border border-gray-100">
+<div *ngIf="!clientService.getCurrentClientId()" class="p-8 bg-gradient-to-br from-indigo-50 to-white rounded-2xl shadow-md border border-indigo-100">
   <div class="text-center py-16">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-indigo-400 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     <h2 class="text-2xl font-bold text-gray-800 mb-4">No hay cultivo seleccionado</h2>
     <p class="text-gray-600 mb-8 max-w-md mx-auto">Por favor, seleccione un cultivo en la sección de "Gestión de Cultivos" para poder administrar sus parámetros y controlar sus actuadores.</p>
-    <a routerLink="/administration/client-management" class="inline-flex items-center justify-center px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-md transition-all duration-300">
+    <a routerLink="/administration/client-management" class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md transition-all duration-300">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clip-rule="evenodd" />
       </svg>
