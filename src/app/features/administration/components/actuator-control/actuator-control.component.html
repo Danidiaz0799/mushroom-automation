@@ -1,125 +1,192 @@
-<!-- Submenu de navegación -->
-<div class="flex items-center mb-6 bg-white rounded-xl shadow-sm overflow-hidden">
-  <a routerLink="/administration/client-management" class="py-4 px-6 font-medium text-gray-600 hover:text-gray-800">Gestión de Cultivos</a>
-  <a routerLink="/administration/actuator-control" class="py-4 px-6 font-medium border-b-2 border-indigo-500 text-indigo-600">Control de Actuadores</a>
+<!-- Submenu de navegación mejorado con pestañas más claras -->
+<div class="flex items-center mb-6 bg-gradient-to-r from-indigo-50 to-white rounded-xl shadow-sm overflow-hidden">
+  <a routerLink="/administration/client-management" class="py-4 px-6 font-medium text-gray-600 hover:text-gray-800 flex items-center transition-colors duration-200">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+    </svg>
+    Gestión de Cultivos
+  </a>
+  <a routerLink="/administration/actuator-control" class="py-4 px-6 font-medium border-b-2 border-indigo-500 text-indigo-600 flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+    </svg>
+    Control de Actuadores
+  </a>
 </div>
 
-<div class="control-panel p-8 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-100">
+<!-- Estado actual del cultivo seleccionado -->
+<div class="mb-6 bg-gradient-to-br from-emerald-50 to-white p-6 rounded-xl shadow-md border border-emerald-100">
+  <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+    </svg>
+    Cultivo Activo
+  </h3>
+  
+  <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+    <div class="flex-1 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+      <div class="text-sm text-gray-500 mb-1">Nombre del cultivo:</div>
+      <div class="flex items-center">
+        <div class="w-3 h-3 rounded-full bg-emerald-500 mr-2"></div>
+        <span class="text-lg font-medium text-gray-800">{{ getCurrentClientName() || 'No hay cultivo seleccionado' }}</span>
+      </div>
+      <div class="text-sm text-gray-500 mt-1">ID: {{ clientService.getCurrentClientId() }}</div>
+    </div>
+    
+    <div class="flex">
+      <a [routerLink]="['/home']" class="inline-flex items-center justify-center px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm transition-all duration-300 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+        </svg>
+        Dashboard
+      </a>
+      <a [routerLink]="['/administration/client-management']" class="inline-flex items-center justify-center px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg shadow-sm transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8z" />
+          <path d="M2 12a2 2 0 012-2h7a2 2 0 012 2v3a2 2 0 01-2 2H4a2 2 0 01-2-2v-3z" />
+        </svg>
+        Gestionar Cultivos
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="!clientService.getCurrentClientId()" class="bg-amber-50 p-3 rounded-lg border border-amber-100">
+    <div class="flex items-center text-amber-700">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      <span class="text-sm font-medium">Por favor, seleccione un cultivo para realizar el control.</span>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="clientService.getCurrentClientId()" class="control-panel p-8 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-100">
     <!-- Título -->
-    <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">Administración del Cultivo</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-10 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+      </svg>
+      Control del Cultivo: <span class="text-indigo-600 ml-2">{{ getCurrentClientName() }}</span>
+    </h2>
 
     <!-- Selección de Modo -->
     <div class="flex justify-center mb-10">
-        <div class="bg-gray-100 p-1 rounded-xl shadow-sm">
-            <button (click)="setMode('automatico')"
-                [ngClass]="{'bg-blue-500 text-white shadow-md': mode === 'automatico', 'bg-transparent text-gray-700 hover:bg-gray-200': mode !== 'automatico'}" 
-                class="px-6 py-3 rounded-xl font-medium transition-all duration-200">
-                Automático
-            </button>
-            <button (click)="setMode('manual')"
-                [ngClass]="{'bg-blue-500 text-white shadow-md': mode === 'manual', 'bg-transparent text-gray-700 hover:bg-gray-200': mode !== 'manual'}" 
-                class="px-6 py-3 rounded-xl font-medium transition-all duration-200">
-                Manual
-            </button>
-        </div>
+      <div class="bg-gray-100 p-1 rounded-xl shadow-sm">
+        <button (click)="setMode('automatico')"
+          [ngClass]="{'bg-indigo-500 text-white shadow-md': mode === 'automatico', 'bg-transparent text-gray-700 hover:bg-gray-200': mode !== 'automatico'}" 
+          class="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+          </svg>
+          Automático
+        </button>
+        <button (click)="setMode('manual')"
+          [ngClass]="{'bg-indigo-500 text-white shadow-md': mode === 'manual', 'bg-transparent text-gray-700 hover:bg-gray-200': mode !== 'manual'}" 
+          class="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd" />
+          </svg>
+          Manual
+        </button>
+      </div>
     </div>
 
     <!-- Controles Automáticos -->
     <div *ngIf="mode === 'automatico'" class="space-y-8">
-        <!-- Control de Temperatura y Humedad -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Temperatura -->
-            <form [formGroup]="temperatureForm" (ngSubmit)="setTemperature()" class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg text-center border border-gray-100 overflow-hidden relative">
-                <div class="absolute top-0 left-0 w-2 h-full bg-rose-500"></div>
-                <h2 class="text-lg font-semibold text-gray-800 mb-6 flex items-center justify-center gap-2">
-                    <span class="text-rose-500 text-xl">🌡️</span>
-                    Control de Temperatura
-                </h2>
-                <div class="flex flex-col items-center justify-center space-y-5 mb-6">
-                    <div class="flex items-center space-x-4 w-full">
-                        <label for="minTemperatureInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Mínima (°C)</label>
-                        <div class="w-2/3 flex items-center gap-2">
-                            <input type="number" id="minTemperatureInput" formControlName="minTemperature" min="10" max="30"
-                                placeholder="Actualizar mínima" class="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-300 sm:text-sm">
-                            <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ minTemperatureSet }}°C</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4 w-full">
-                        <label for="maxTemperatureInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Máxima (°C)</label>
-                        <div class="w-2/3 flex items-center gap-2">
-                            <input type="number" id="maxTemperatureInput" formControlName="maxTemperature" min="10" max="30"
-                                placeholder="Actualizar máxima" class="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-300 sm:text-sm">
-                            <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ maxTemperatureSet }}°C</span>
-                        </div>
+      <!-- Control de Temperatura y Humedad -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Temperatura -->
+        <form [formGroup]="temperatureForm" (ngSubmit)="setTemperature()" class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg text-center border border-gray-100 overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-2 h-full bg-rose-500"></div>
+            <h2 class="text-lg font-semibold text-gray-800 mb-6 flex items-center justify-center gap-2">
+                <span class="text-rose-500 text-xl">🌡️</span>
+                Control de Temperatura
+            </h2>
+            <div class="flex flex-col items-center justify-center space-y-5 mb-6">
+                <div class="flex items-center space-x-4 w-full">
+                    <label for="minTemperatureInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Mínima (°C)</label>
+                    <div class="w-2/3 flex items-center gap-2">
+                        <input type="number" id="minTemperatureInput" formControlName="minTemperature" min="10" max="30"
+                            placeholder="Actualizar mínima" class="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-300 sm:text-sm">
+                        <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ minTemperatureSet }}°C</span>
                     </div>
                 </div>
-                <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <label class="block text-sm font-medium text-gray-700">Actual:</label>
-                        <span class="text-2xl font-bold text-rose-600">{{ latestTemperature?.toFixed(3) }}°C</span>
-                    </div>
-                    <div class="mt-2 flex items-center justify-center w-full">
-                        <div class="py-2 px-4 rounded-full shadow-md flex items-center gap-2 animate-pulse" 
-                            [ngClass]="{'bg-emerald-100 border border-emerald-200': isTemperatureIdeal(), 'bg-rose-100 border border-rose-200': !isTemperatureIdeal()}">
-                            <span class="font-bold" [ngClass]="{'text-emerald-700': isTemperatureIdeal(), 'text-rose-700': !isTemperatureIdeal()}">
-                                {{ getTemperatureStatus() }}
-                            </span>
-                        </div>
+                <div class="flex items-center space-x-4 w-full">
+                    <label for="maxTemperatureInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Máxima (°C)</label>
+                    <div class="w-2/3 flex items-center gap-2">
+                        <input type="number" id="maxTemperatureInput" formControlName="maxTemperature" min="10" max="35"
+                            placeholder="Actualizar máxima" class="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-300 sm:text-sm">
+                        <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ maxTemperatureSet }}°C</span>
                     </div>
                 </div>
-                <button type="submit" [disabled]="temperatureForm.invalid"
-                    class="mt-6 px-8 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300"
-                    [ngClass]="{'bg-rose-500 hover:bg-rose-600': !temperatureForm.invalid, 'bg-gray-400 cursor-not-allowed': temperatureForm.invalid}">
-                    Establecer Temperatura
-                </button>
-            </form>
+            </div>
+            <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <label class="block text-sm font-medium text-gray-700">Actual:</label>
+                    <span class="text-2xl font-bold text-rose-600">{{ latestTemperature?.toFixed(3) || '--' }}°C</span>
+                </div>
+                <div class="mt-2 flex items-center justify-center w-full">
+                    <div class="py-2 px-4 rounded-full shadow-md flex items-center gap-2 animate-pulse" 
+                        [ngClass]="{'bg-emerald-100 border border-emerald-200': isTemperatureIdeal(), 'bg-rose-100 border border-rose-200': !isTemperatureIdeal()}">
+                        <span class="font-bold" [ngClass]="{'text-emerald-700': isTemperatureIdeal(), 'text-rose-700': !isTemperatureIdeal()}">
+                            {{ getTemperatureStatus() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" [disabled]="!clientService.getCurrentClientId()"
+                class="mt-6 px-8 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300"
+                [ngClass]="{'bg-rose-500 hover:bg-rose-600': clientService.getCurrentClientId(), 'bg-gray-400 cursor-not-allowed': !clientService.getCurrentClientId()}">
+                Aplicar Parámetros
+            </button>
+        </form>
 
-            <!-- Humedad -->
-            <form [formGroup]="humidityForm" (ngSubmit)="setHumidity()" class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg text-center border border-gray-100 overflow-hidden relative">
-                <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
-                <h2 class="text-lg font-semibold text-gray-800 mb-6 flex items-center justify-center gap-2">
-                    <span class="text-sky-500 text-xl">💧</span>
-                    Control de Humedad
-                </h2>
-                <div class="flex flex-col items-center justify-center space-y-5 mb-6">
-                    <div class="flex items-center space-x-4 w-full">
-                        <label for="minHumidityInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Mínima (%)</label>
-                        <div class="w-2/3 flex items-center gap-2">
-                            <input type="number" id="minHumidityInput" formControlName="minHumidity" min="40" max="110"
-                                placeholder="Actualizar mínima" class="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-300 sm:text-sm">
-                            <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ minHumiditySet }}%</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4 w-full">
-                        <label for="maxHumidityInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Máxima (%)</label>
-                        <div class="w-2/3 flex items-center gap-2">
-                            <input type="number" id="maxHumidityInput" formControlName="maxHumidity" min="40" max="110"
-                                placeholder="Actualizar máxima" class="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-300 sm:text-sm">
-                            <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ maxHumiditySet }}%</span>
-                        </div>
+        <!-- Humedad -->
+        <form [formGroup]="humidityForm" (ngSubmit)="setHumidity()" class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg text-center border border-gray-100 overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
+            <h2 class="text-lg font-semibold text-gray-800 mb-6 flex items-center justify-center gap-2">
+                <span class="text-sky-500 text-xl">💧</span>
+                Control de Humedad
+            </h2>
+            <div class="flex flex-col items-center justify-center space-y-5 mb-6">
+                <div class="flex items-center space-x-4 w-full">
+                    <label for="minHumidityInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Mínima (%)</label>
+                    <div class="w-2/3 flex items-center gap-2">
+                        <input type="number" id="minHumidityInput" formControlName="minHumidity" min="30" max="90"
+                            placeholder="Actualizar mínima" class="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-300 sm:text-sm">
+                        <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ minHumiditySet }}%</span>
                     </div>
                 </div>
-                <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <label class="block text-sm font-medium text-gray-700">Actual:</label>
-                        <span class="text-2xl font-bold text-sky-600">{{ latestHumidity?.toFixed(3) }}%</span>
-                    </div>
-                    <div class="mt-2 flex items-center justify-center w-full">
-                        <div class="py-2 px-4 rounded-full shadow-md flex items-center gap-2 animate-pulse" 
-                            [ngClass]="{'bg-emerald-100 border border-emerald-200': isHumidityIdeal(), 'bg-rose-100 border border-rose-200': !isHumidityIdeal()}">
-                            <span class="font-bold" [ngClass]="{'text-emerald-700': isHumidityIdeal(), 'text-rose-700': !isHumidityIdeal()}">
-                                {{ getHumidityStatus() }}
-                            </span>
-                        </div>
+                <div class="flex items-center space-x-4 w-full">
+                    <label for="maxHumidityInput" class="block text-sm font-medium text-gray-700 w-1/3 text-right">Máxima (%)</label>
+                    <div class="w-2/3 flex items-center gap-2">
+                        <input type="number" id="maxHumidityInput" formControlName="maxHumidity" min="40" max="100"
+                            placeholder="Actualizar máxima" class="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-300 sm:text-sm">
+                        <span class="text-sm text-gray-500 whitespace-nowrap">Actual: {{ maxHumiditySet }}%</span>
                     </div>
                 </div>
-                <button type="submit" [disabled]="humidityForm.invalid"
-                    class="mt-6 px-8 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300"
-                    [ngClass]="{'bg-sky-500 hover:bg-sky-600': !humidityForm.invalid, 'bg-gray-400 cursor-not-allowed': humidityForm.invalid}">
-                    Establecer Humedad
-                </button>
-            </form>
-        </div>
+            </div>
+            <div class="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <label class="block text-sm font-medium text-gray-700">Actual:</label>
+                    <span class="text-2xl font-bold text-sky-600">{{ latestHumidity?.toFixed(3) || '--' }}%</span>
+                </div>
+                <div class="mt-2 flex items-center justify-center w-full">
+                    <div class="py-2 px-4 rounded-full shadow-md flex items-center gap-2 animate-pulse" 
+                        [ngClass]="{'bg-emerald-100 border border-emerald-200': isHumidityIdeal(), 'bg-rose-100 border border-rose-200': !isHumidityIdeal()}">
+                        <span class="font-bold" [ngClass]="{'text-emerald-700': isHumidityIdeal(), 'text-rose-700': !isHumidityIdeal()}">
+                            {{ getHumidityStatus() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" [disabled]="!clientService.getCurrentClientId()"
+                class="mt-6 px-8 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300"
+                [ngClass]="{'bg-sky-500 hover:bg-sky-600': clientService.getCurrentClientId(), 'bg-gray-400 cursor-not-allowed': !clientService.getCurrentClientId()}">
+                Aplicar Parámetros
+            </button>
+        </form>
+      </div>
     </div>
 
     <!-- Controles Manuales -->
@@ -129,13 +196,13 @@
             <div class="absolute top-0 left-0 w-2 h-full bg-amber-500"></div>
             <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <span class="text-amber-500 text-xl">💡</span>
-                Control de Luces
+                Luces
             </h2>
             <button
                 class="px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 w-full"
                 [ngClass]="{'bg-amber-500 hover:bg-amber-600': lucesEncendidas(), 'bg-gray-400 hover:bg-gray-500': !lucesEncendidas()}"
                 (click)="toggleLuces()">
-                {{ lucesEncendidas() ? 'Apagar Luces' : 'Encender Luces' }}
+                {{ lucesEncendidas() ? 'Apagar' : 'Encender' }}
             </button>
             <div class="mt-3 px-3 py-1 rounded-full text-sm font-medium"
                 [ngClass]="{'bg-emerald-100 text-emerald-700': lucesEncendidas(), 'bg-gray-100 text-gray-500': !lucesEncendidas()}">
@@ -148,13 +215,13 @@
             <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
             <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <span class="text-sky-500 text-xl">🔄</span>
-                Control de Ventiladores
+                Ventiladores
             </h2>
             <button
                 class="px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 w-full"
                 [ngClass]="{'bg-sky-500 hover:bg-sky-600': ventiladoresEncendidos(), 'bg-gray-400 hover:bg-gray-500': !ventiladoresEncendidos()}"
                 (click)="toggleVentiladores()">
-                {{ ventiladoresEncendidos() ? 'Apagar Ventiladores' : 'Encender Ventiladores' }}
+                {{ ventiladoresEncendidos() ? 'Apagar' : 'Encender' }}
             </button>
             <div class="mt-3 px-3 py-1 rounded-full text-sm font-medium"
                 [ngClass]="{'bg-emerald-100 text-emerald-700': ventiladoresEncendidos(), 'bg-gray-100 text-gray-500': !ventiladoresEncendidos()}">
@@ -167,13 +234,13 @@
             <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
             <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <span class="text-sky-500 text-xl">☁️</span>
-                Control de Humidificador
+                Humidificador
             </h2>
             <button
                 class="px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 w-full"
                 [ngClass]="{'bg-sky-500 hover:bg-sky-600': humidificadorEncendido(), 'bg-gray-400 hover:bg-gray-500': !humidificadorEncendido()}"
                 (click)="toggleHumidificador()">
-                {{ humidificadorEncendido() ? 'Apagar Humidificador' : 'Encender Humidificador' }}
+                {{ humidificadorEncendido() ? 'Apagar' : 'Encender' }}
             </button>
             <div class="mt-3 px-3 py-1 rounded-full text-sm font-medium"
                 [ngClass]="{'bg-emerald-100 text-emerald-700': humidificadorEncendido(), 'bg-gray-100 text-gray-500': !humidificadorEncendido()}">
@@ -186,13 +253,13 @@
             <div class="absolute top-0 left-0 w-2 h-full bg-slate-500"></div>
             <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <span class="text-slate-500 text-xl">🔧</span>
-                Control de Motor
+                Motor
             </h2>
             <button
                 class="px-6 py-3 rounded-xl text-white font-semibold shadow-md transition-all duration-300 w-full"
                 [ngClass]="{'bg-slate-500 hover:bg-slate-600': motorEncendido(), 'bg-gray-400 hover:bg-gray-500': !motorEncendido()}"
                 (click)="toggleMotor()">
-                {{ motorEncendido() ? 'Apagar Motor' : 'Encender Motor' }}
+                {{ motorEncendido() ? 'Apagar' : 'Encender' }}
             </button>
             <div class="mt-3 px-3 py-1 rounded-full text-sm font-medium"
                 [ngClass]="{'bg-emerald-100 text-emerald-700': motorEncendido(), 'bg-gray-100 text-gray-500': !motorEncendido()}">
@@ -201,23 +268,44 @@
         </div>
     </div>
 
-    <!-- Advertencia -->
+    <!-- Información sobre modos de control -->
     <div class="bg-gradient-to-r from-amber-50 to-white border border-amber-100 rounded-xl shadow-lg mt-10 overflow-hidden relative">
-        <div class="absolute top-0 left-0 w-2 h-full bg-amber-500"></div>
-        <div class="p-6 flex items-start">
-            <div class="bg-amber-100 p-2 rounded-full">
-                <svg class="h-6 w-6 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+        <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+        <div class="p-5">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd" />
                 </svg>
-            </div>
-            <div class="ml-4">
-                <h3 class="text-lg font-bold text-amber-800">Precaución</h3>
-                <p class="mt-2 text-sm text-amber-700">
-                    El uso indebido de los actuadores podría causar daños en el cultivo. Por favor, asegúrese de utilizarlos
-                    correctamente y monitoree los cambios después de cada ajuste.
-                </p>
+                Información
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <p class="font-medium text-indigo-600 mb-2">Modo Automático</p>
+                    <p class="text-gray-600 text-sm">Los actuadores se controlan según los parámetros configurados de temperatura y humedad establecidos.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <p class="font-medium text-amber-600 mb-2">Modo Manual</p>
+                    <p class="text-gray-600 text-sm">Controla directamente los actuadores según tus necesidades, sin considerar los parámetros automáticos.</p>
+                </div>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Mensaje cuando no hay cultivo seleccionado -->
+<div *ngIf="!clientService.getCurrentClientId()" class="p-8 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md border border-gray-100">
+  <div class="text-center py-16">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">No hay cultivo seleccionado</h2>
+    <p class="text-gray-600 mb-8 max-w-md mx-auto">Por favor, seleccione un cultivo en la sección de "Gestión de Cultivos" para poder administrar sus parámetros y controlar sus actuadores.</p>
+    <a routerLink="/administration/client-management" class="inline-flex items-center justify-center px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-md transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clip-rule="evenodd" />
+      </svg>
+      Ir a Gestión de Cultivos
+    </a>
+  </div>
 </div>
 

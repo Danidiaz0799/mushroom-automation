@@ -109,7 +109,17 @@ export class ClientManagementComponent implements OnInit {
     });
   }
 
-  setAsCurrentClient(clientId: string): void {
-    this.clientService.setCurrentClientId(clientId);
+  setAsCurrentClient(client: any): void {
+    this.clientService.setCurrentClientId(client.client_id);
+  }
+
+  getSelectedClientId(): string {
+    return this.clientService.getCurrentClientId();
+  }
+
+  getCurrentClientName(): string {
+    const currentClientId = this.getSelectedClientId();
+    const currentClient = this.clients.find(client => client.client_id === currentClientId);
+    return currentClient ? currentClient.name : '';
   }
 } 

@@ -1,15 +1,17 @@
 import { Component, AfterViewInit, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ParametersComponent } from '../parameters/parameters.component';
 import { ChartsComponent } from '../charts/charts.component';
 import { EventsComponent } from '../events/events.component';
 import { DashboardService } from '../../services/dashboard.service';
 import { ClientService } from 'src/app/shared/services/client.service';
 import { ClientSelectorComponent } from 'src/app/shared/components/client-selector/client-selector.component';
+import { AuthService } from 'src/app/features/auth/services/auth.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, ParametersComponent, ChartsComponent, EventsComponent, ClientSelectorComponent],
+  imports: [CommonModule, RouterModule, ParametersComponent, ChartsComponent, EventsComponent, ClientSelectorComponent],
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
@@ -27,6 +29,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   isAutomatic: boolean = true; // Estado para determinar si está en modo automático
   private dashboardService = inject(DashboardService);
   private clientService = inject(ClientService);
+  private authService = inject(AuthService);
+  
+  // Array para almacenar información de los clientes
+  private clients: any[] = [];
 
   constructor() {
     // Create an effect to respond to client ID changes
@@ -40,12 +46,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       if (this.intervalId) {
         this.getAppState();
         this.fetchSensorData();
+        this.loadClients(); // Cargar los clientes cuando cambia el ID
       }
     });
   }
 
   ngAfterViewInit(): void {
     this.getAppState();
+    this.loadClients(); // Cargar los clientes al inicializar
     this.intervalId = setInterval(() => {
       this.fetchSensorData();
     }, 5000);
@@ -55,6 +63,25 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+  }
+
+  // Cargar la lista de clientes para obtener información
+  loadClients(): void {
+    this.authService.getClients().subscribe({
+      next: (data) => {
+        this.clients = data;
+      },
+      error: (error) => {
+        console.error('Error loading clients:', error);
+      }
+    });
+  }
+
+  // Obtener el nombre del cliente seleccionado
+  getCurrentClientName(): string {
+    const currentClientId = this.clientService.getCurrentClientId();
+    const currentClient = this.clients.find(client => client.client_id === currentClientId);
+    return currentClient ? currentClient.name : '';
   }
 
   clearData(): void {
