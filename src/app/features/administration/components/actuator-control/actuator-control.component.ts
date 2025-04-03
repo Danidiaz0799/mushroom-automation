@@ -165,8 +165,6 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
     // Actualizamos el estado en el servidor y esperamos su respuesta antes de obtener datos actualizados
     this.dashboardService.updateAppState(clientId, mode).subscribe({
       next: () => {
-        console.log('Estado de la aplicación actualizado exitosamente');
-        
         // Solo después de que el servidor confirme el cambio obtenemos los datos actualizados
         // Pequeño retraso para asegurar que el servidor procesó completamente el cambio
         setTimeout(() => {
@@ -201,16 +199,12 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   fetchSensorData() {
     const clientId = this.clientService.getCurrentClientId();
     if (!clientId) return;
-    
-    console.log(`Obteniendo datos de sensores en modo ${this.mode} para cliente ${clientId}`);
-    
     const endpoint = this.mode === 'automatico' ? 
       this.dashboardService.getSht3xUrlData(clientId, 1, 10, false) : 
       this.dashboardService.getSht3xUrlDataManual(clientId, 1, 10, false);
     
     endpoint.subscribe({
       next: (data) => {
-        console.log('Datos de sensores recibidos:', data);
         if (data && data.length > 0) {
           data.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
           this.latestHumidity = data[0].humidity;
@@ -226,17 +220,12 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
   fetchActuatorStates() {
     const clientId = this.clientService.getCurrentClientId();
     if (!clientId) return;
-    
-    console.log(`Obteniendo estados de actuadores en modo ${this.mode} para cliente ${clientId}`);
-    
     this.dashboardService.getActuators(clientId, 1, 10, false).subscribe({
       next: (data) => {
-        console.log('Datos de actuadores recibidos:', data);
         const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
         const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
         const humidificador = data.find((actuator: any) => actuator.name === 'Humidificador');
         const motor = data.find((actuator: any) => actuator.name === 'Motor');
-        
         if (luces) this.lucesEncendidas.set(luces.state === 'true');
         if (ventiladores) this.ventiladoresEncendidos.set(ventiladores.state === 'true');
         if (humidificador) this.humidificadorEncendido.set(humidificador.state === 'true');
@@ -401,7 +390,6 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
       
       this.actuatorService.putIdealParams(clientId, 'temperatura', data).subscribe({
         next: () => {
-          console.log('Parámetros de temperatura actualizados correctamente');
           this.minTemperatureSet = minTemperature;
           this.maxTemperatureSet = maxTemperature;
         },
@@ -445,7 +433,6 @@ export class ActuatorControlComponent implements OnInit, OnDestroy {
       
       this.actuatorService.putIdealParams(clientId, 'humedad', data).subscribe({
         next: () => {
-          console.log('Parámetros de humedad actualizados correctamente');
           this.minHumiditySet = minHumidity;
           this.maxHumiditySet = maxHumidity;
         },

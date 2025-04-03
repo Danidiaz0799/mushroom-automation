@@ -112,7 +112,6 @@ export class EventsComponent implements OnInit, OnDestroy {
     this.dashboardService.deleteEvent(clientId, id).subscribe({
       next: () => {
         this.events = this.events.filter(event => event.id !== id);
-        console.log('Evento eliminado correctamente');
       },
       error: (error) => {
         console.error('Error al eliminar el evento:', error);
