@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ParametersComponent } from '../parameters/parameters.component';
 import { ChartsComponent } from '../charts/charts.component';
 import { EventsComponent } from '../events/events.component';
@@ -11,7 +12,7 @@ import { AuthService } from 'src/app/features/auth/services/auth.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, ParametersComponent, ChartsComponent, EventsComponent, ClientSelectorComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ParametersComponent, ChartsComponent, EventsComponent, ClientSelectorComponent],
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
@@ -28,11 +29,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   intervalId: any;
   isAutomatic: boolean = true; // Estado para determinar si está en modo automático
   private dashboardService = inject(DashboardService);
-  private clientService = inject(ClientService);
+  clientService = inject(ClientService);
   private authService = inject(AuthService);
   
   // Array para almacenar información de los clientes
-  private clients: any[] = [];
+  clients: any[] = [];
 
   constructor() {
     // Create an effect to respond to client ID changes
@@ -52,8 +53,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.getAppState();
-    this.loadClients(); // Cargar los clientes al inicializar
+    // Primero cargamos los clientes para asegurar que tenemos la lista actualizada
+    this.loadClients().then(() => {
+      // Una vez cargados los clientes, obtenemos el estado y los datos del sensor
+      this.getAppState();
+      this.fetchSensorData();
+    });
+    
+    // Configurar la actualización periódica
     this.intervalId = setInterval(() => {
       this.fetchSensorData();
     }, 5000);
@@ -66,14 +73,18 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   // Cargar la lista de clientes para obtener información
-  loadClients(): void {
-    this.authService.getClients().subscribe({
-      next: (data) => {
-        this.clients = data;
-      },
-      error: (error) => {
-        console.error('Error loading clients:', error);
-      }
+  loadClients(): Promise<void> {
+    return new Promise((resolve) => {
+      this.authService.getClients().subscribe({
+        next: (data) => {
+          this.clients = data;
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error loading clients:', error);
+          resolve(); // Resolver de todas formas para continuar con el flujo
+        }
+      });
     });
   }
 
@@ -82,6 +93,21 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const currentClientId = this.clientService.getCurrentClientId();
     const currentClient = this.clients.find(client => client.client_id === currentClientId);
     return currentClient ? currentClient.name : '';
+  }
+
+  // Verificar si un cliente está online
+  isClientOnline(clientId: string): boolean {
+    const client = this.clients.find(c => c.client_id === clientId);
+    return client ? client.status === 'online' : false;
+  }
+
+  // Manejar la selección de cultivo
+  onClientSelect(clientId: string): void {
+    // Actualizar el cultivo seleccionado
+    this.clientService.setCurrentClientId(clientId);
+    
+    // Forzar recarga completa de la página para actualizar todos los datos
+    window.location.reload();
   }
 
   clearData(): void {

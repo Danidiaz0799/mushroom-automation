@@ -122,6 +122,12 @@ export class ClientManagementComponent implements OnInit {
     this.clientService.setCurrentClientId(client.client_id);
   }
 
+  onClientSelect(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const clientId = selectElement.value;
+    this.clientService.setCurrentClientId(clientId);
+  }
+
   getSelectedClientId(): string {
     return this.clientService.getCurrentClientId();
   }
