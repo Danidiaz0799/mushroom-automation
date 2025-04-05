@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { StatisticsService } from '../../services/statistics.service';
 import { ClientService } from 'src/app/shared/services/client.service';
 
@@ -17,7 +18,7 @@ interface SensorStats {
 @Component({
   selector: 'app-statistics-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './statistics-dashboard.component.html'
 })
 export class StatisticsDashboardComponent implements OnInit {
