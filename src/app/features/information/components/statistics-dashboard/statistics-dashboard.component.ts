@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { StatisticsService } from '../../services/statistics.service';
+import { ClientService } from 'src/app/shared/services/client.service';
 
 interface SensorStats {
   mean: number;
@@ -16,7 +18,7 @@ interface SensorStats {
 @Component({
   selector: 'app-statistics-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './statistics-dashboard.component.html'
 })
 export class StatisticsDashboardComponent implements OnInit {
@@ -25,10 +27,11 @@ export class StatisticsDashboardComponent implements OnInit {
   humidityStats: SensorStats | null = null;
   noData = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private statisticsService: StatisticsService
-  ) {
+  private fb = inject(FormBuilder);
+  private statisticsService = inject(StatisticsService);
+  private clientService = inject(ClientService);
+
+  constructor() {
     this.filterForm = this.fb.group({
       days: [7]
     });
@@ -41,8 +44,9 @@ export class StatisticsDashboardComponent implements OnInit {
   loadDashboard(): void {
     this.noData = false;
     const formValues = this.filterForm.value;
+    const clientId = this.clientService.getCurrentClientId();
     
-    this.statisticsService.getDashboardStatistics(formValues.days).subscribe({
+    this.statisticsService.getDashboardStatistics(clientId, formValues.days).subscribe({
       next: (data) => {
         if (!data?.sht3x_stats?.temperature || !data?.sht3x_stats?.humidity) {
           this.noData = true;

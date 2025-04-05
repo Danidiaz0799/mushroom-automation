@@ -1,7 +1,15 @@
 import { Routes } from '@angular/router';
-import { StatisticsDashboardComponent } from './components/statistics-dashboard/statistics-dashboard.component';
 
 export const informationRoutes: Routes = [
-    { path: 'statistics', component: StatisticsDashboardComponent },
-    { path: '', redirectTo: 'statistics', pathMatch: 'full' },
+    {
+        path: 'reports',
+        loadComponent: () => import('./components/reports/reports.component').then(m => m.ReportsComponent),
+        title: 'Reportes'
+    },
+    {
+        path: 'reports/:clientId/:reportId',
+        loadComponent: () => import('./components/report-details/report-details.component').then(m => m.ReportDetailsComponent),
+        title: 'Detalles del Reporte'
+    },
+    { path: '', redirectTo: 'reports', pathMatch: 'full' },
 ];

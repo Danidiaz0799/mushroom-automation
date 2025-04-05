@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
 import { ActuatorService } from '../../../administration/services/actuator.service';
+import { ClientService } from 'src/app/shared/services/client.service';
 
 @Component({
   selector: 'app-parameters',
@@ -25,7 +26,9 @@ export class ParametersComponent implements OnInit, OnDestroy {
   minHumiditySet: number | undefined;
   maxHumiditySet: number | undefined;
 
-  constructor(private dashboardService: DashboardService, private actuatorService: ActuatorService) {}
+  private dashboardService = inject(DashboardService);
+  private actuatorService = inject(ActuatorService);
+  private clientService = inject(ClientService);
 
   ngOnInit(): void {
     this.fetchActuatorStates();
@@ -42,12 +45,13 @@ export class ParametersComponent implements OnInit, OnDestroy {
   }
 
   fetchIdealParams() {
-    this.actuatorService.getIdealParams('temperatura').subscribe(data => {
+    const clientId = this.clientService.getCurrentClientId();
+    this.actuatorService.getIdealParams(clientId, 'temperatura').subscribe(data => {
       this.minTemperatureSet = data.min_value;
       this.maxTemperatureSet = data.max_value;
     });
 
-    this.actuatorService.getIdealParams('humedad').subscribe(data => {
+    this.actuatorService.getIdealParams(clientId, 'humedad').subscribe(data => {
       this.minHumiditySet = data.min_value;
       this.maxHumiditySet = data.max_value;
     });
@@ -88,7 +92,8 @@ export class ParametersComponent implements OnInit, OnDestroy {
   }
 
   fetchActuatorStates() {
-    this.dashboardService.getActuators(1, 10, false).subscribe(data => {
+    const clientId = this.clientService.getCurrentClientId();
+    this.dashboardService.getActuators(clientId, 1, 10, false).subscribe(data => {
       const luces = data.find((actuator: any) => actuator.name === 'Iluminacion');
       const ventiladores = data.find((actuator: any) => actuator.name === 'Ventilacion');
       const humidificador = data.find((actuator: any) => actuator.name === 'Humidificador');

@@ -1,12 +1,72 @@
 <div class="flex flex-col bg-gray-100">
-  <div class="p-3 bg-white shadow-md rounded-lg">
-    <p class="text-lg font-semibold flex items-center">
-      <span class="mr-2">Modo de la aplicación:</span>
-      <span [ngClass]="{'bg-green-100 text-green-800': isAutomatic, 'bg-red-100 text-red-800': !isAutomatic}" class="px-3 py-1 rounded-full text-sm font-medium">
-        {{ isAutomatic ? 'Automático' : 'Manual' }}
-      </span>
-    </p>
+  <!-- Client selector and app mode row -->
+  <div class="p-4 bg-white shadow-md rounded-lg mb-4">
+    <div class="flex flex-row items-center justify-between gap-4">
+      <!-- Cultivo seleccionado actualmente -->
+      <div class="flex items-center bg-gradient-to-r from-emerald-50 to-white p-1.5 rounded-lg border border-emerald-100 shadow-sm">
+        <div class="mr-2 bg-emerald-100 rounded-full p-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <div>
+          <div class="text-xs text-gray-500">Cultivo seleccionado:</div>
+          <div class="flex items-center">
+            <div class="w-2 h-2 rounded-full" 
+                 [ngClass]="{'bg-green-500': isClientOnline(clientService.getCurrentClientId()), 
+                            'bg-red-500': !isClientOnline(clientService.getCurrentClientId())}">
+            </div>
+            <span class="text-base font-medium text-gray-800 ml-1.5">
+              {{ getCurrentClientName() || 'No hay cultivo seleccionado' }}
+              <span class="text-xs ml-1 font-normal" 
+                    [ngClass]="{'text-green-600': isClientOnline(clientService.getCurrentClientId()), 
+                               'text-red-600': !isClientOnline(clientService.getCurrentClientId())}">
+                {{ isClientOnline(clientService.getCurrentClientId()) ? '(En línea)' : '(Offline)' }}
+              </span>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Selector de cultivos -->
+        <div class="ml-3">
+          <div *ngIf="clients && clients.length > 0" class="relative">
+            <!-- Indicador de estado (punto de color) -->
+            <div class="absolute right-8 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full"
+                 [ngClass]="{'bg-green-500': isClientOnline(clientService.getCurrentClientId()), 'bg-red-500': !isClientOnline(clientService.getCurrentClientId())}">
+            </div>
+            
+            <!-- Selector con borde que cambia de color según el estado -->
+            <select 
+              [ngModel]="clientService.getCurrentClientId()" 
+              (ngModelChange)="onClientSelect($event)" 
+              class="pl-2 pr-8 py-1 text-sm rounded-lg focus:ring-2 focus:ring-indigo-500"
+              [ngClass]="{'border-2 border-green-500': isClientOnline(clientService.getCurrentClientId()), 'border-2 border-red-500': !isClientOnline(clientService.getCurrentClientId())}">
+              <option *ngFor="let client of clients" [value]="client.client_id">
+                {{ client.name }} {{ client.status === 'online' ? '(En línea)' : '(Offline)' }}
+              </option>
+            </select>
+          </div>
+          
+          <a *ngIf="!clients || clients.length === 0" [routerLink]="['/administration/client-management']" class="text-indigo-600 hover:text-indigo-800 flex items-center text-sm">
+            <span>Gestionar cultivos</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Modo de aplicación -->
+      <div class="flex items-center">
+        <span class="text-base font-semibold mr-2">Modo de la aplicación:</span>
+        <span [ngClass]="{'bg-green-100 text-green-800 border border-green-200': isAutomatic, 'bg-amber-100 text-amber-800 border border-amber-200': !isAutomatic}" 
+              class="px-2 py-0.5 rounded-full text-sm font-medium">
+          {{ isAutomatic ? 'Automático' : 'Manual' }}
+        </span>
+      </div>
+    </div>
   </div>
+  
   <div class="flex flex-col md:flex-row p-6">
     <div class="md:w-1/3 md:mr-4">
       <app-parameters

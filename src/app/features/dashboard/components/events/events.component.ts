@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardService } from '../../services/dashboard.service';
+import { ClientService } from 'src/app/shared/services/client.service';
 
 @Component({
   selector: 'app-events',
@@ -14,12 +15,28 @@ export class EventsComponent implements OnInit, OnDestroy {
   intervalId: any;
   selectedTopic: string = '';
 
-  constructor(private dashboardService: DashboardService) {}
+  private dashboardService = inject(DashboardService);
+  private clientService = inject(ClientService);
+
+  constructor() {
+    // Crear un efecto para responder a cambios en el ID del cliente
+    effect(() => {
+      // Leer el valor de la señal activa el efecto cuando cambia
+      const clientId = this.clientService.currentClientId$();
+      // Limpiar los eventos actuales
+      this.events = [];
+      
+      // No llamar a estos métodos durante la construcción
+      if (this.intervalId) {
+        this.fetchEvents();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.fetchEvents();
     this.intervalId = setInterval(() => {
-      this.fetchEvents(false); // Desactivar el spinner para actualizaciones automáticas
+      this.fetchEvents(false);
     }, 5000);
   }
 
@@ -30,21 +47,34 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   fetchEvents(showSpinner: boolean = true) {
+    const clientId = this.clientService.getCurrentClientId();
     if (this.selectedTopic) {
-      this.dashboardService.getEventsByTopic(this.selectedTopic, 1, 5, showSpinner).subscribe(data => {
-        this.events = data.map((event: any) => ({
-          ...event,
-          formattedTimestamp: this.formatTimestamp(event.timestamp),
-          message: this.formatMessage(event.message)
-        }));
+      this.dashboardService.getEventsByTopic(clientId, this.selectedTopic, 1, 5, showSpinner).subscribe({
+        next: (data) => {
+          this.events = data.map((event: any) => ({
+            ...event,
+            formattedTimestamp: this.formatTimestamp(event.timestamp),
+            message: this.formatMessage(event.message)
+          }));
+        },
+        error: (error) => {
+          console.error('Error al obtener eventos filtrados:', error);
+          this.events = [];
+        }
       });
     } else {
-      this.dashboardService.getEvents(1, 5, showSpinner).subscribe(data => {
-        this.events = data.map((event: any) => ({
-          ...event,
-          formattedTimestamp: this.formatTimestamp(event.timestamp),
-          message: this.formatMessage(event.message)
-        }));
+      this.dashboardService.getEvents(clientId, 1, 5, showSpinner).subscribe({
+        next: (data) => {
+          this.events = data.map((event: any) => ({
+            ...event,
+            formattedTimestamp: this.formatTimestamp(event.timestamp),
+            message: this.formatMessage(event.message)
+          }));
+        },
+        error: (error) => {
+          console.error('Error al obtener eventos:', error);
+          this.events = [];
+        }
       });
     }
   }
@@ -63,7 +93,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   formatMessage(message: string): string {
-    return message.replace(/(\d+\.\d{3})\d*/g, (match, p1) => parseFloat(p1).toFixed(3));
+    return message.replace(/\n/g, '<br>');
   }
 
   getIconForTopic(topic: string): string {
@@ -72,19 +102,25 @@ export class EventsComponent implements OnInit, OnDestroy {
         return '💧';
       case 'temperatura':
         return '🌡️';
-      case 'iluminacion':
-        return '💡';
       default:
         return '🔔';
     }
   }
 
   deleteEvent(id: number): void {
-    this.dashboardService.deleteEvent(id).subscribe(() => {
-      this.events = this.events.filter(event => event.id !== id);
-      console.log('Evento eliminado correctamente');
-    }, error => {
-      console.error('Error al eliminar el evento:', error);
+    const clientId = this.clientService.getCurrentClientId();
+    this.dashboardService.deleteEvent(clientId, id).subscribe({
+      next: () => {
+        this.events = this.events.filter(event => event.id !== id);
+      },
+      error: (error) => {
+        console.error('Error al eliminar el evento:', error);
+      }
     });
+  }
+
+  onTopicChange(): void {
+    this.events = []; // Limpiar eventos al cambiar el filtro
+    this.fetchEvents();
   }
 }

@@ -7,33 +7,32 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ActuatorService {
-  private actuatorsUrl = `${environment.apiUrl}/Actuator`;
-  private IdealParamsUrl = `${environment.apiUrl}/IdealParams`;
+  private baseUrl = `${environment.apiUrl}/api/clients`;
 
   constructor(private http: HttpClient) { }
 
-  lightControl(state: string): Observable<any> {
-    return this.http.post<any>(`${this.actuatorsUrl}/toggle_light`, { state });
+  lightControl(clientId: string, state: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/${clientId}/Actuator/toggle_light`, { state });
   }
 
-  fanControl(state: string): Observable<any> {
-    return this.http.post<any>(`${this.actuatorsUrl}/toggle_fan`, { state });
+  fanControl(clientId: string, state: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/${clientId}/Actuator/toggle_fan`, { state });
   }
 
-  humidifierControl(state: string): Observable<any> {
-    return this.http.post<any>(`${this.actuatorsUrl}/toggle_humidifier`, { state });
+  humidifierControl(clientId: string, state: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/${clientId}/Actuator/toggle_humidifier`, { state });
   }
 
-  motorControl(state: string): Observable<any> {
-    return this.http.post<any>(`${this.actuatorsUrl}/toggle_motor`, { state });
+  motorControl(clientId: string, state: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/${clientId}/Actuator/toggle_motor`, { state });
   }
 
   //Endpoint /IdealParams
-  getIdealParams(param_type: string): Observable<any> {
-    return this.http.get<any>(`${this.IdealParamsUrl}/${param_type}`);
+  getIdealParams(clientId: string, param_type: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${clientId}/IdealParams/${param_type}`);
   }
 
-  putIdealParams(param_type: string, obj: any): Observable<any> {
-    return this.http.put<any>(`${this.IdealParamsUrl}/${param_type}`, obj);
+  putIdealParams(clientId: string, param_type: string, obj: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${clientId}/IdealParams/${param_type}`, obj);
   }
 }

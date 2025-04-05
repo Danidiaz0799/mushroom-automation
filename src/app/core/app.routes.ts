@@ -12,7 +12,8 @@ export const routes: Routes = [
         children: [
         { path: 'home', loadComponent: () => import('../features/dashboard/components/home/home.component').then(m => m.HomeComponent) },
         { path: 'administration', loadChildren: () => import('../features/administration/routes').then(m => m.administrationRoutes) },
-        { path: 'statistics', loadChildren: () => import('../features/information/routes').then(m => m.informationRoutes) },
+        { path: 'information', loadChildren: () => import('../features/information/routes').then(m => m.informationRoutes) },
+        { path: 'database', loadChildren: () => import('../features/database/database.routes').then(m => m.DATABASE_ROUTES) },
         ],
     },
     { path: '**', redirectTo: 'auth' },

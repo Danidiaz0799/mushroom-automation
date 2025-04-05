@@ -1,0 +1,382 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header with title and client display -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900 mb-1">Reportes MSAD</h1>
+        <p class="text-sm text-gray-500">Visualice y descargue informes de datos para sus cultivos</p>
+      </div>
+      
+      <!-- Highlighted Current Client Display -->
+      <div class="bg-indigo-50 px-5 py-4 rounded-xl shadow-sm border border-indigo-100 flex items-center">
+        <div class="flex flex-col">
+          <span class="text-sm font-medium text-indigo-600 mb-1">Cultivo activo</span>
+          <span class="text-lg font-bold text-indigo-700">{{ getCurrentClientName() || 'Sin cultivo seleccionado' }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Actions section -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">      
+      <!-- Generate report card -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+        <div class="p-5">
+          <div class="flex items-center mb-3">
+            <div class="flex-shrink-0 bg-indigo-100 p-2 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900 ml-3">Nuevo Reporte</h2>
+          </div>
+          <p class="text-sm text-gray-500 mb-4">Cree un nuevo reporte con los datos y formato deseado</p>
+          <button 
+            (click)="openGenerateReportModal()" 
+            class="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            <span>Generar Reporte</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Empty columns for grid alignment -->
+      <div class="md:col-span-3">
+        <!-- Filters section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros de Búsqueda</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="space-y-2">
+              <label for="clientSelect" class="block text-sm font-medium text-gray-700">Cliente</label>
+              <select 
+                id="clientSelect" 
+                [(ngModel)]="selectedClient"
+                class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                <option *ngFor="let client of clients" [value]="client.client_id">{{ client.name }}</option>
+              </select>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="dataTypeSelect" class="block text-sm font-medium text-gray-700">Tipo de Datos</label>
+              <select 
+                id="dataTypeSelect" 
+                [(ngModel)]="selectedDataType"
+                class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                <option *ngFor="let option of dataTypeOptions" [value]="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="formatSelect" class="block text-sm font-medium text-gray-700">Formato</label>
+              <select 
+                id="formatSelect" 
+                [(ngModel)]="selectedFormat"
+                class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                <option *ngFor="let option of formatOptions" [value]="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3 mt-5 justify-end">
+            <button 
+              (click)="applyFilters()" 
+              class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V19a1 1 0 01-1 1H9a1 1 0 01-1-1v-7.586l-4.707-4.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+              </svg>
+              Aplicar Filtros
+            </button>
+            <button 
+              (click)="clearFilters()" 
+              class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg shadow-sm transition-all duration-200 font-medium flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+              </svg>
+              Restablecer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-r-2 border-indigo-600 mb-4"></div>
+      <span class="ml-4 text-gray-700 font-medium">Cargando reportes...</span>
+    </div>
+    
+    <!-- Error message -->
+    <div *ngIf="error" class="bg-red-50 p-5 rounded-xl border border-red-100 text-red-700 mb-8 flex items-start gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-red-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      <div>
+        <p class="font-medium">{{ error }}</p>
+        <p class="text-sm mt-1">Inténtelo nuevamente o contacte al administrador.</p>
+      </div>
+    </div>
+    
+    <!-- Reports table -->
+    <div *ngIf="!isLoading && reports.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="px-5 py-4 border-b border-gray-100">
+        <h2 class="text-lg font-semibold text-gray-900">Reportes Disponibles</h2>
+        <p class="text-sm text-gray-500 mt-1">Lista de todos los reportes generados</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formato</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tamaño</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creación</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-100">
+            <tr *ngFor="let report of reports" 
+                class="hover:bg-gray-50 cursor-pointer transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 group-hover:text-indigo-800"
+                  (click)="viewReportDetails(report)">
+                #{{ report.report_id }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                  (click)="viewReportDetails(report)">
+                {{ getClientNameById(report.client_id) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap"
+                  (click)="viewReportDetails(report)">
+                <span class="px-2.5 py-1 text-xs font-medium rounded-full"
+                      [ngClass]="{
+                        'bg-green-100 text-green-800': report.data_type === 'sensors',
+                        'bg-blue-100 text-blue-800': report.data_type === 'actuators',
+                        'bg-purple-100 text-purple-800': report.data_type === 'events',
+                        'bg-gray-100 text-gray-800': !['sensors', 'actuators', 'events'].includes(report.data_type)
+                      }">
+                  {{ report.data_type }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap"
+                  (click)="viewReportDetails(report)">
+                <span class="px-2.5 py-1 text-xs font-medium rounded-full"
+                      [ngClass]="{
+                        'bg-yellow-100 text-yellow-800': report.format === 'json',
+                        'bg-pink-100 text-pink-800': report.format === 'csv',
+                        'bg-gray-100 text-gray-800': !['json', 'csv'].includes(report.format)
+                      }">
+                  {{ report.format | uppercase }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                  (click)="viewReportDetails(report)">
+                {{ formatFileSize(report.size) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                  (click)="viewReportDetails(report)">
+                {{ formatDate(report.created_at) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex space-x-2">
+                  <button 
+                    (click)="downloadReport(report, $event)" 
+                    class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all">
+                    <svg class="h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Descargar
+                  </button>
+                  <button 
+                    (click)="deleteReport(report, $event)" 
+                    class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-sm transition-all">
+                    <svg class="h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Empty state -->
+    <div *ngIf="!isLoading && reports.length === 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+      <div class="max-w-md mx-auto">
+        <div class="bg-indigo-100 mx-auto h-20 w-20 rounded-full flex items-center justify-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-900 mb-2">No hay reportes disponibles</h2>
+        <p class="text-gray-500 mb-6">Genere un nuevo reporte o ajuste los filtros de búsqueda para ver resultados</p>
+        <button 
+          (click)="openGenerateReportModal()" 
+          class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium inline-flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+          Generar Nuevo Reporte
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Generate Report Modal -->
+<div *ngIf="showReportModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-auto overflow-hidden animate-fade-in-up">
+    <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+      <h3 class="text-xl font-semibold text-white">Generar Nuevo Reporte</h3>
+      <button 
+        (click)="closeReportModal()" 
+        class="text-white/80 hover:text-white transition-colors">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <div class="p-6">
+      <div class="space-y-5">
+        <!-- Client Selection -->
+        <div class="space-y-2">
+          <label for="reportClientSelect" class="block text-sm font-medium text-gray-700">Cliente</label>
+          <select 
+            id="reportClientSelect" 
+            [(ngModel)]="selectedClient"
+            class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            <option *ngFor="let client of clients" [value]="client.client_id">{{ client.name }}</option>
+          </select>
+        </div>
+        
+        <!-- Date Range -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label for="startDate" class="block text-sm font-medium text-gray-700">Fecha Inicial</label>
+            <input 
+              type="date" 
+              id="startDate" 
+              [(ngModel)]="reportFormData.start_date"
+              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+          </div>
+          
+          <div class="space-y-2">
+            <label for="endDate" class="block text-sm font-medium text-gray-700">Fecha Final</label>
+            <input 
+              type="date" 
+              id="endDate" 
+              [(ngModel)]="reportFormData.end_date"
+              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+          </div>
+        </div>
+        
+        <!-- Data Type -->
+        <div class="space-y-2">
+          <label for="reportDataType" class="block text-sm font-medium text-gray-700">Tipo de Datos</label>
+          <select 
+            id="reportDataType" 
+            [(ngModel)]="reportFormData.data_type"
+            class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            <option value="sensors">Sensores</option>
+            <option value="events">Eventos</option>
+            <option value="actuators">Actuadores</option>
+          </select>
+        </div>
+        
+        <!-- Format -->
+        <div class="space-y-2">
+          <label for="reportFormat" class="block text-sm font-medium text-gray-700">Formato</label>
+          <select 
+            id="reportFormat" 
+            [(ngModel)]="reportFormData.format"
+            class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            <option value="json">JSON</option>
+            <option value="csv">CSV</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
+      <button 
+        (click)="closeReportModal()"
+        class="px-5 py-2.5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg shadow-sm transition-all duration-200 font-medium border border-gray-200">
+        Cancelar
+      </button>
+      <button 
+        (click)="generateReport()"
+        class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
+        Generar Reporte
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-auto overflow-hidden animate-fade-in-up">
+    <div class="bg-red-600 px-6 py-4 flex justify-between items-center">
+      <h3 class="text-xl font-semibold text-white">Confirmar Eliminación</h3>
+      <button 
+        (click)="closeDeleteModal()" 
+        class="text-white/80 hover:text-white transition-colors">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <div class="p-6">
+      <div class="flex items-center mb-5">
+        <div class="bg-red-100 p-3 rounded-full mr-4">
+          <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="text-lg font-medium text-gray-900">¿Desea eliminar este reporte?</h4>
+          <p class="text-sm text-gray-500 mt-1">Esta acción no se puede deshacer</p>
+        </div>
+      </div>
+      
+      <div *ngIf="reportToDelete" class="bg-gray-50 p-4 rounded-lg mb-5">
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <div>
+            <p class="text-gray-500">ID:</p>
+            <p class="font-medium text-gray-900">#{{ reportToDelete.report_id }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500">Cliente:</p>
+            <p class="font-medium text-gray-900">{{ getClientNameById(reportToDelete.client_id) }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500">Tipo:</p>
+            <p class="font-medium text-gray-900">{{ reportToDelete.data_type }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500">Tamaño:</p>
+            <p class="font-medium text-gray-900">{{ formatFileSize(reportToDelete.size) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
+      <button 
+        (click)="closeDeleteModal()"
+        class="px-5 py-2.5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg shadow-sm transition-all duration-200 font-medium border border-gray-200">
+        Cancelar
+      </button>
+      <button 
+        (click)="confirmDeleteReport()"
+        class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
+        Eliminar Reporte
+      </button>
+    </div>
+  </div>
+</div> 

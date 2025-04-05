@@ -25,7 +25,6 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe(
         response => {
-          console.log('Login successful', response);
           this.router.navigate(['/home']);
         },
         error => {
