@@ -1,17 +1,15 @@
 import { Routes } from '@angular/router';
-import { StatisticsDashboardComponent } from './components/statistics-dashboard/statistics-dashboard.component';
-import { MsadDashboardComponent } from './components/msad-dashboard/msad-dashboard.component';
 
 export const informationRoutes: Routes = [
     {
-        path: 'statistics',
-        component: StatisticsDashboardComponent,
-        title: 'Estadísticas del Cultivo'
+        path: 'reports',
+        loadComponent: () => import('./components/reports/reports.component').then(m => m.ReportsComponent),
+        title: 'Reportes'
     },
     {
-        path: 'backups',
-        component: MsadDashboardComponent,
-        title: 'Sistema de Respaldos'
+        path: 'reports/:clientId/:reportId',
+        loadComponent: () => import('./components/report-details/report-details.component').then(m => m.ReportDetailsComponent),
+        title: 'Detalles del Reporte'
     },
-    { path: '', redirectTo: 'statistics', pathMatch: 'full' },
+    { path: '', redirectTo: 'reports', pathMatch: 'full' },
 ];
