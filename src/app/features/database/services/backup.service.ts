@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 export interface Backup {
@@ -59,7 +59,6 @@ export class BackupService {
     if (!type) {
       return this.http.get<BackupListResponse>(`${this.baseUrl}/msad/backups`)
         .pipe(
-          tap(response => console.log('Respuesta del servidor:', response)),
           catchError(error => {
             console.error('Error al obtener backups:', error);
             return throwError(() => error);
@@ -72,7 +71,6 @@ export class BackupService {
     
     return this.http.get<BackupListResponse>(`${this.baseUrl}/msad/backups`, { params })
       .pipe(
-        tap(response => console.log('Respuesta del servidor con filtro:', response)),
         // En caso de que el backend no soporte el filtrado por tipo o lo implemente diferente,
         // hacemos un filtrado adicional en el cliente
         map(response => {
@@ -107,7 +105,6 @@ export class BackupService {
   createBackup(): Observable<BackupResponse> {
     return this.http.post<BackupResponse>(`${this.baseUrl}/msad/backups/create`, {})
       .pipe(
-        tap(response => console.log('Respuesta al crear backup:', response)),
         catchError(error => {
           console.error('Error al crear backup:', error);
           return throwError(() => error);
@@ -117,17 +114,8 @@ export class BackupService {
 
   // Eliminar backup
   deleteBackup(filename: string): Observable<BackupResponse> {
-    console.log('Eliminando backup con nombre completo:', filename);
-    
-    // Para la eliminación, usamos directamente el nombre completo del archivo
-    // sin modificarlo, tal como viene
-    console.log(`URL para eliminar: ${this.baseUrl}/msad/backups/${filename}`);
-    
     return this.http.delete<BackupResponse>(`${this.baseUrl}/msad/backups/${filename}`)
       .pipe(
-        tap(response => {
-          console.log('Respuesta del servidor al eliminar backup:', response);
-        }),
         catchError(error => {
           console.error('Error al eliminar backup:', error);
           return throwError(() => error);
@@ -137,11 +125,8 @@ export class BackupService {
 
   // Restaurar backup
   restoreBackup(filename: string): Observable<BackupResponse> {
-    console.log('Restaurando backup:', filename);
-    
     return this.http.post<BackupResponse>(`${this.baseUrl}/msad/backups/restore/${filename}`, {})
       .pipe(
-        tap(response => console.log('Respuesta al restaurar backup:', response)),
         catchError(error => {
           console.error('Error al restaurar backup:', error);
           return throwError(() => error);
@@ -158,7 +143,6 @@ export class BackupService {
   getSchedulerStatus(): Observable<SchedulerResponse> {
     return this.http.get<SchedulerResponse>(`${this.baseUrl}/msad/backups/scheduler`)
       .pipe(
-        tap(response => console.log('Respuesta del programador:', response)),
         catchError(error => {
           console.error('Error al obtener estado del programador:', error);
           return throwError(() => error);
@@ -170,7 +154,6 @@ export class BackupService {
   configureScheduler(config: SchedulerConfig): Observable<SchedulerResponse> {
     return this.http.post<SchedulerResponse>(`${this.baseUrl}/msad/backups/scheduler`, config)
       .pipe(
-        tap(response => console.log('Respuesta al configurar programador:', response)),
         catchError(error => {
           console.error('Error al configurar programador:', error);
           return throwError(() => error);
