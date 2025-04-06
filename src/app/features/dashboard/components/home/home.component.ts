@@ -36,7 +36,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   clients: any[] = [];
 
   constructor() {
-    // Create an effect to respond to client ID changes
+    // Create an effect to respond to client ID changes with allowSignalWrites: true
     effect(() => {
       // Reading the signal value triggers the effect when it changes
       const clientId = this.clientService.currentClientId$();
@@ -47,9 +47,17 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       if (this.intervalId) {
         this.getAppState();
         this.fetchSensorData();
-        this.loadClients(); // Cargar los clientes cuando cambia el ID
+        // Usar una promesa para cargar los clientes sin escribir señales directamente en el efecto
+        this.loadClientsInEffect();
       }
-    });
+    }, { allowSignalWrites: true }); // Permitir escrituras de señales en el efecto
+  }
+
+  // Método seguro para llamar en el efecto
+  loadClientsInEffect(): void {
+    setTimeout(() => {
+      this.loadClients().catch(err => console.error('Error loading clients in effect:', err));
+    }, 0);
   }
 
   ngAfterViewInit(): void {
@@ -74,7 +82,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   // Cargar la lista de clientes para obtener información
   loadClients(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.authService.getClients().subscribe({
         next: (data) => {
           this.clients = data;
@@ -82,7 +90,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading clients:', error);
-          resolve(); // Resolver de todas formas para continuar con el flujo
+          reject(error); // Rechazar la promesa para mejor manejo de errores
         }
       });
     });
@@ -106,8 +114,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     // Actualizar el cultivo seleccionado
     this.clientService.setCurrentClientId(clientId);
     
-    // Forzar recarga completa de la página para actualizar todos los datos
-    window.location.reload();
+    // Recargar los datos en lugar de recargar la página completa
+    this.clearData();
+    this.loadClients().then(() => {
+      this.getAppState();
+      this.fetchSensorData();
+    }).catch(err => console.error('Error after client selection:', err));
   }
 
   clearData(): void {

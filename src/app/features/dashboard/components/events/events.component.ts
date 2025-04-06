@@ -28,9 +28,16 @@ export class EventsComponent implements OnInit, OnDestroy {
       
       // No llamar a estos métodos durante la construcción
       if (this.intervalId) {
-        this.fetchEvents();
+        this.fetchEventsInEffect();
       }
-    });
+    }, { allowSignalWrites: true }); // Permitir escrituras de señales en el efecto
+  }
+
+  // Método seguro para llamar en el efecto
+  fetchEventsInEffect(): void {
+    setTimeout(() => {
+      this.fetchEvents(true);
+    }, 0);
   }
 
   ngOnInit(): void {

@@ -1,0 +1,117 @@
+/* Estilos básicos para el navbar */
+:host {
+  display: block;
+}
+
+/* Estilos para las opciones de navegación */
+a {
+  transition: background-color 0.2s;
+}
+
+a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Indicador visual para la ruta activa */
+.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+/* Estilos para el menú móvil */
+.mobile-menu-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.mobile-menu-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.mobile-menu-exit {
+  opacity: 1;
+}
+
+.mobile-menu-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 200ms, transform 200ms;
+}
+
+/* Ajustes para diferentes tamaños de pantalla */
+@media (max-width: 640px) {
+  .nav-link {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Mejora para asegurar que el menú quede debajo del navbar */
+.nav-menu {
+  max-height: calc(100vh - 128px); /* 64px (navbar) + 64px (bottom bar) */
+  overflow-y: auto;
+}
+
+/* Efecto de transición para los botones de navegación */
+.nav-item {
+  position: relative;
+}
+
+.nav-item:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: white;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-item:hover:after {
+  width: 100%;
+  left: 0;
+}
+
+/* Estilos para la bottom navigation bar */
+@media (max-width: 768px) {
+  /* Indicador de página activa para bottom navigation */
+  .active-nav-item {
+    position: relative;
+    color: #3B82F6; /* blue-500 */
+    background-color: rgba(59, 130, 246, 0.1); /* Fondo azul muy sutil */
+  }
+  
+  .active-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background-color: #3B82F6;
+    border-radius: 0 0 3px 3px;
+  }
+  
+  /* Efecto de pulsación para los elementos táctiles */
+  .nav-touch-item {
+    transition: transform 0.2s;
+  }
+  
+  .nav-touch-item:active {
+    transform: scale(0.95);
+  }
+}
