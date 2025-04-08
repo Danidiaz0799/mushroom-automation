@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/features/auth/services/auth.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, FormsModule, ParametersComponent, ChartsComponent, EventsComponent, ClientSelectorComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ParametersComponent, ChartsComponent, EventsComponent],
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
