@@ -21,11 +21,11 @@ export class LoginComponent {
   }
 
   loginButton() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/administration/client-management']);
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe(
         response => {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/administration/client-management']);
         },
         error => {
           console.error('Login failed', error);

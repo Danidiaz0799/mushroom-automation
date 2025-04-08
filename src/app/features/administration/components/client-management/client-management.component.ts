@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../../shared/services/client.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ClientSelectorComponent } from '../../../../shared/components/client-selector/client-selector.component';
 import { DashboardService } from '../../../dashboard/services/dashboard.service';
 import { ActuatorService } from '../../services/actuator.service';
 import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 export class Client {
   client_id: string = '';
@@ -23,7 +22,6 @@ export class Client {
   currentHumidity: number | null = null;
   currentTempStatus: 'ideal' | 'warning' | 'critical' | 'unknown' = 'unknown';
   currentHumidityStatus: 'ideal' | 'warning' | 'critical' | 'unknown' = 'unknown';
-  
   // Estados de actuadores
   lucesEncendidas: boolean = false;
   ventiladoresEncendidos: boolean = false;
@@ -34,7 +32,7 @@ export class Client {
 @Component({
   selector: 'app-client-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, ClientSelectorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './client-management.component.html'
 })
 export class ClientManagementComponent implements OnInit {
