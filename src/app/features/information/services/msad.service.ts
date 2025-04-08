@@ -77,17 +77,6 @@ export class MsadService {
       );
   }
 
-  // Create test data
-  createTestData(data: TestDataRequest): Observable<any> {
-    return this.http.post(`${this.baseUrl}/msad/test-data`, data)
-      .pipe(
-        catchError(error => {
-          console.error('Error creating test data:', error);
-          return throwError(() => error);
-        })
-      );
-  }
-
   // Generate a report
   generateReport(clientId: string, reportData: ReportRequest): Observable<ReportResponse> {
     return this.http.post<ReportResponse>(`${this.baseUrl}/clients/${clientId}/msad/reports`, reportData)
