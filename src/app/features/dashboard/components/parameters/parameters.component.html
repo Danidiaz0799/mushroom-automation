@@ -1,4 +1,156 @@
-<div class="grid grid-cols-1 gap-8 mb-8">
+<div class="grid grid-cols-1 gap-4">
+  <!-- Versión móvil: Tarjetas compactas y modernas -->
+  <div class="md:hidden">
+    <!-- Temperatura y Humedad en una vista compacta -->
+    <div class="flex flex-col gap-3 mb-2">
+      <!-- Tarjeta de Temperatura -->
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+        <div class="flex items-center">
+          <!-- Indicador lateral de color -->
+          <div class="w-1.5 h-full bg-rose-500 mr-2"></div>
+          
+          <!-- Contenido principal -->
+          <div class="flex-1 p-3">
+            <div class="flex justify-between items-center">
+              <!-- Título y valor principal -->
+              <div>
+                <div class="flex items-center gap-1">
+                  <span class="text-rose-500 text-lg">🌡️</span>
+                  <h2 class="text-sm font-semibold text-gray-800">Temperatura</h2>
+                </div>
+                <p class="text-2xl font-bold text-rose-600 mt-1">
+                  {{ latestTemperature?.toFixed(3) }}°C
+                </p>
+              </div>
+              
+              <!-- Indicador de estado -->
+              <div class="py-1 px-2 rounded-full text-xs font-medium"
+                [ngClass]="{'bg-emerald-100 text-emerald-700': isTemperatureIdeal(), 'bg-rose-100 text-rose-700': !isTemperatureIdeal()}">
+                <span class="flex items-center gap-0.5">
+                  <svg *ngIf="isTemperatureIdeal()" class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                  </svg>
+                  <svg *ngIf="!isTemperatureIdeal()" class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                  </svg>
+                  {{ getTemperatureStatus() }}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Detalles adicionales -->
+            <div class="flex justify-between mt-1 text-xs text-gray-500">
+              <span>Ideal: {{ minTemperatureSet }}°C - {{ maxTemperatureSet }}°C</span>
+              <span class="text-gray-400 text-2xs">{{ latestUpdate ? latestUpdate.split(',')[1] : '' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Dispositivos relacionados -->
+        <div class="flex border-t border-gray-100">
+          <div class="flex-1 p-2 border-r border-gray-100">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <span class="text-amber-500 text-sm">💡</span>
+                <span class="text-xs font-medium text-gray-700">Iluminación</span>
+              </div>
+              <span class="px-1.5 py-0.5 rounded-full text-2xs font-medium"
+                [ngClass]="{'bg-emerald-100 text-emerald-700': illuminationState === 'Encendido', 'bg-gray-100 text-gray-500': illuminationState === 'Apagado'}">
+                {{ illuminationState === 'Encendido' ? 'ON' : 'OFF' }}
+              </span>
+            </div>
+          </div>
+          <div class="flex-1 p-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <span class="text-sky-500 text-sm">🔄</span>
+                <span class="text-xs font-medium text-gray-700">Ventilación</span>
+              </div>
+              <span class="px-1.5 py-0.5 rounded-full text-2xs font-medium"
+                [ngClass]="{'bg-emerald-100 text-emerald-700': ventilationState === 'Encendido', 'bg-gray-100 text-gray-500': ventilationState === 'Apagado'}">
+                {{ ventilationState === 'Encendido' ? 'ON' : 'OFF' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tarjeta de Humedad -->
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+        <div class="flex items-center">
+          <!-- Indicador lateral de color -->
+          <div class="w-1.5 h-full bg-sky-500 mr-2"></div>
+          
+          <!-- Contenido principal -->
+          <div class="flex-1 p-3">
+            <div class="flex justify-between items-center">
+              <!-- Título y valor principal -->
+              <div>
+                <div class="flex items-center gap-1">
+                  <span class="text-sky-500 text-lg">💧</span>
+                  <h2 class="text-sm font-semibold text-gray-800">Humedad</h2>
+                </div>
+                <p class="text-2xl font-bold text-sky-600 mt-1">
+                  {{ latestHumidity?.toFixed(3) }}%
+                </p>
+              </div>
+              
+              <!-- Indicador de estado -->
+              <div class="py-1 px-2 rounded-full text-xs font-medium"
+                [ngClass]="{'bg-emerald-100 text-emerald-700': isHumidityIdeal(), 'bg-rose-100 text-rose-700': !isHumidityIdeal()}">
+                <span class="flex items-center gap-0.5">
+                  <svg *ngIf="isHumidityIdeal()" class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                  </svg>
+                  <svg *ngIf="!isHumidityIdeal()" class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                  </svg>
+                  {{ getHumidityStatus() }}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Detalles adicionales -->
+            <div class="flex justify-between mt-1 text-xs text-gray-500">
+              <span>Ideal: {{ minHumiditySet }}% - {{ maxHumiditySet }}%</span>
+              <span class="text-gray-400 text-2xs">{{ latestUpdate ? latestUpdate.split(',')[1] : '' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Dispositivos relacionados -->
+        <div class="flex border-t border-gray-100">
+          <div class="flex-1 p-2 border-r border-gray-100">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <span class="text-sky-500 text-sm">☁️</span>
+                <span class="text-xs font-medium text-gray-700">Humidificador</span>
+              </div>
+              <span class="px-1.5 py-0.5 rounded-full text-2xs font-medium"
+                [ngClass]="{'bg-emerald-100 text-emerald-700': humidifierState === 'Encendido', 'bg-gray-100 text-gray-500': humidifierState === 'Apagado'}">
+                {{ humidifierState === 'Encendido' ? 'ON' : 'OFF' }}
+              </span>
+            </div>
+          </div>
+          <div class="flex-1 p-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <span class="text-slate-500 text-sm">🔧</span>
+                <span class="text-xs font-medium text-gray-700">Motor</span>
+              </div>
+              <span class="px-1.5 py-0.5 rounded-full text-2xs font-medium"
+                [ngClass]="{'bg-emerald-100 text-emerald-700': motorState === 'Encendido', 'bg-gray-100 text-gray-500': motorState === 'Apagado'}">
+                {{ motorState === 'Encendido' ? 'ON' : 'OFF' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Versión Desktop: Diseño original con mejoras -->
+  <div class="hidden md:grid grid-cols-1 gap-8 mb-8">
   <!-- Temperature Card -->
   <div
     class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl shadow-lg border border-gray-100 overflow-hidden relative hover:shadow-xl transition-all duration-300">
@@ -140,5 +292,5 @@
       </div>
     </div>
   </div>
-
+  </div>
 </div>

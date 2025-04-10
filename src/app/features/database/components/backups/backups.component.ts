@@ -119,7 +119,6 @@ export class BackupsComponent implements OnInit {
   openDeleteModal(backup: Backup, event: Event): void {
     event.stopPropagation();
     this.backupToDelete = backup;
-    console.log('Backup a eliminar:', backup);
     this.showDeleteModal = true;
   }
 
@@ -134,8 +133,6 @@ export class BackupsComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
     this.successMessage = null;
-    
-    console.log('Enviando solicitud para eliminar backup:', this.backupToDelete.filename);
     
     this.backupService.deleteBackup(this.backupToDelete.filename)
       .subscribe({

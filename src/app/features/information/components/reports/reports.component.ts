@@ -159,7 +159,7 @@ export class ReportsComponent implements OnInit {
       })
       .catch(error => {
         console.error('Error downloading file:', error);
-        this.error = `Error al descargar el archivo. Asegúrese de estar conectado al servidor (192.168.137.214:5000).`;
+        this.error = `Error al descargar el archivo. Asegúrese de estar conectado al servidor (raspserver.local:5000).`;
       })
       .finally(() => {
         document.body.removeChild(a);

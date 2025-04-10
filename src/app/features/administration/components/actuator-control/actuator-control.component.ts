@@ -6,8 +6,6 @@ import { DashboardService } from '../../../dashboard/services/dashboard.service'
 import { ClientService } from 'src/app/shared/services/client.service';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { ClientSelectorComponent } from 'src/app/shared/components/client-selector/client-selector.component';
 import { AuthService } from 'src/app/features/auth/services/auth.service';
 import { finalize } from 'rxjs/operators';
 
@@ -21,7 +19,7 @@ class TempToastService {
 @Component({
   selector: 'app-actuator-control',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, ClientSelectorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './actuator-control.component.html',
   styleUrls: ['./actuator-control.component.scss']
 })

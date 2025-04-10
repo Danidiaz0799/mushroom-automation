@@ -10,5 +10,5 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
-
+  // El componente ahora es más sencillo, sin estado ni métodos adicionales
 }
