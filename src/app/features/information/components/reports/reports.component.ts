@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MsadService, ReportListResponse } from '../../services/msad.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-reports',
@@ -51,7 +52,8 @@ export class ReportsComponent implements OnInit {
 
   constructor(
     private msadService: MsadService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -66,13 +68,19 @@ export class ReportsComponent implements OnInit {
   }
 
   loadClients(): void {
-    // For now, use hardcoded clients until we fix the auth service integration
-    this.clients = [
-      { client_id: '', name: 'Todos los clientes' },
-      { client_id: 'mushroom1', name: 'Mushroom 1' },
-      { client_id: 'mushroom2', name: 'Mushroom 2' },
-      { client_id: 'mushroom123', name: 'Mushroom 123' }
-    ];
+    this.isLoading = true; // Indicate loading state if needed
+    this.authService.getClients().subscribe({
+      next: (response: any) => {
+        this.clients = [{ client_id: '', name: 'Todos los clientes' }, ...response];
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Error loading clients:', err);
+        this.error = 'Error al cargar los clientes.';
+        this.clients = [{ client_id: '', name: 'Todos los clientes' }];
+        this.isLoading = false;
+      }
+    });
   }
 
   loadReports(): void {
