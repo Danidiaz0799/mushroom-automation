@@ -1,4 +1,4 @@
 export const environment = {
     production: false,
-    apiUrl: 'http://raspserver.local:5000'
+    apiUrl: 'http://192.168.184.223:5000'
 };
