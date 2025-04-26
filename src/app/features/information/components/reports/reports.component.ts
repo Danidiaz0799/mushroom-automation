@@ -174,11 +174,14 @@ export class ReportsComponent implements OnInit {
       });
   }
 
-  // Funciones para eliminar reportes
+  // Funciones// Alias para compatibilidad con el HTML antiguo o claridad
+  openDeleteModal(report: any, event: Event): void {
+    this.deleteReport(report, event);
+  }
+
+  // Abre el modal de confirmación
   deleteReport(report: any, event: Event): void {
-    // Detener la propagación para que no se navegue a los detalles del reporte
     event.stopPropagation();
-    
     this.reportToDelete = report;
     this.showDeleteModal = true;
   }

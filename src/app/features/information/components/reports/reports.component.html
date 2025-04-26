@@ -128,12 +128,13 @@
           <thead class="bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
               <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
               <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formato</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tamaño</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creación</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rango</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+              <th scope="col" class="px-6 py-3.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-100">
@@ -141,60 +142,48 @@
                 class="hover:bg-gray-50 cursor-pointer transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 group-hover:text-indigo-800"
                   (click)="viewReportDetails(report)">
-                #{{ report.report_id }}
+                {{ report.report_id }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
-                  (click)="viewReportDetails(report)">
-                {{ getClientNameById(report.client_id) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap"
-                  (click)="viewReportDetails(report)">
-                <span class="px-2.5 py-1 text-xs font-medium rounded-full"
-                      [ngClass]="{
-                        'bg-green-100 text-green-800': report.data_type === 'sensors',
-                        'bg-blue-100 text-blue-800': report.data_type === 'actuators',
-                        'bg-purple-100 text-purple-800': report.data_type === 'events',
-                        'bg-gray-100 text-gray-800': !['sensors', 'actuators', 'events'].includes(report.data_type)
-                      }">
-                  {{ report.data_type }}
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ report.client_id || selectedClient }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
+                      [ngClass]="report.format === 'csv' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
+                  <svg *ngIf="report.format === 'csv'" class="h-3 w-3 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20"><rect width="20" height="20" rx="3"/></svg>
+                  <svg *ngIf="report.format === 'json'" class="h-3 w-3 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                  {{ report.format?.toUpperCase() }}
                 </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap"
-                  (click)="viewReportDetails(report)">
-                <span class="px-2.5 py-1 text-xs font-medium rounded-full"
-                      [ngClass]="{
-                        'bg-yellow-100 text-yellow-800': report.format === 'json',
-                        'bg-pink-100 text-pink-800': report.format === 'csv',
-                        'bg-gray-100 text-gray-800': !['json', 'csv'].includes(report.format)
-                      }">
-                  {{ report.format | uppercase }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
-                  (click)="viewReportDetails(report)">
-                {{ formatFileSize(report.size) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
-                  (click)="viewReportDetails(report)">
-                {{ formatDate(report.created_at) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex space-x-2">
-                  <button 
-                    (click)="downloadReport(report, $event)" 
-                    class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all">
-                    <svg class="h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
+                      [ngClass]="{
+                        'bg-yellow-100 text-yellow-800': report.data_type === 'events',
+                        'bg-indigo-100 text-indigo-800': report.data_type === 'sensors',
+                        'bg-pink-100 text-pink-800': report.data_type === 'actuators'
+                      }">
+                  <svg *ngIf="report.data_type === 'sensors'" class="h-3 w-3 mr-1 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                  <svg *ngIf="report.data_type === 'events'" class="h-3 w-3 mr-1 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><rect width="20" height="20" rx="3"/></svg>
+                  <svg *ngIf="report.data_type === 'actuators'" class="h-3 w-3 mr-1 text-pink-500" fill="currentColor" viewBox="0 0 20 20"><polygon points="10,2 2,18 18,18"/></svg>
+                  {{ report.data_type ? (report.data_type | titlecase) : 'N/A' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
+                <span *ngIf="report.start_date && report.end_date">
+                  {{ report.start_date }} - {{ report.end_date }}
+                </span>
+                <span *ngIf="!report.start_date || !report.end_date">N/A</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{{ report.created_at | date:'medium' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <button (click)="downloadReport(report, $event)" title="Descargar" class="p-2 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 focus:outline-none" tabindex="0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
-                    Descargar
                   </button>
-                  <button 
-                    (click)="deleteReport(report, $event)" 
-                    class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-sm transition-all">
-                    <svg class="h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  <button (click)="openDeleteModal(report, $event)" title="Eliminar" class="p-2 rounded bg-red-50 hover:bg-red-100 text-red-700 focus:outline-none" tabindex="0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Eliminar
                   </button>
                 </div>
               </td>
