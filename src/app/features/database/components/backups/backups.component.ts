@@ -66,7 +66,7 @@ export class BackupsComponent implements OnInit {
         next: (response) => {
           if (response.success && response.status) {
             this.schedulerStatus = response.status;
-            this.schedulerEnabled = response.status.active;
+            this.schedulerEnabled = !!response.status.is_running;
             this.schedulerInterval = response.status.interval_hours;
           }
         },
@@ -87,6 +87,7 @@ export class BackupsComponent implements OnInit {
           if (response.success) {
             this.successMessage = 'Backup creado correctamente.';
             this.loadBackups();
+            this.loadSchedulerStatus(); // Refresca el estado del programador tras crear backup
           } else {
             this.error = response.error || 'Error desconocido al crear backup.';
             this.isLoading = false;
@@ -180,6 +181,7 @@ export class BackupsComponent implements OnInit {
           if (response.success) {
             this.successMessage = 'Base de datos restaurada correctamente.';
             this.closeRestoreModal();
+            this.loadSchedulerStatus(); // Refresca el estado tras restaurar
             this.isLoading = false;
           } else {
             this.error = response.error || 'Error desconocido al restaurar backup.';
@@ -222,6 +224,7 @@ export class BackupsComponent implements OnInit {
             this.successMessage = 'Programador configurado correctamente.';
             this.schedulerStatus = response.status || null;
             this.closeSchedulerModal();
+            this.loadSchedulerStatus(); // Refresca el estado tras configurar
             this.isLoading = false;
           } else {
             this.error = response.error || 'Error desconocido al configurar programador.';

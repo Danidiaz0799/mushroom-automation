@@ -27,11 +27,16 @@ export interface BackupResponse {
 }
 
 export interface SchedulerStatus {
-  active: boolean;
+  is_running: boolean;
   interval_hours: number;
-  next_backup: string;
-  last_backup: string;
-}
+  backup_count?: number;
+  total_size?: number;
+  formatted_size?: string;
+  last_backup?: string;
+  next_backup?: string;
+  backup_dir?: string;
+} // Sincronizado con la respuesta de la API
+
 
 export interface SchedulerResponse {
   success: boolean;
@@ -39,6 +44,7 @@ export interface SchedulerResponse {
   message?: string;
   error?: string;
 }
+// También puede venir el estado directo en la raíz según la API, así que se maneja en el método.
 
 export interface SchedulerConfig {
   enabled: boolean;
@@ -141,24 +147,65 @@ export class BackupService {
 
   // Obtener estado del programador
   getSchedulerStatus(): Observable<SchedulerResponse> {
-    return this.http.get<SchedulerResponse>(`${this.baseUrl}/msad/backups/scheduler`)
-      .pipe(
-        catchError(error => {
-          console.error('Error al obtener estado del programador:', error);
-          return throwError(() => error);
-        })
-      );
+    return this.http.get<any>(`${this.baseUrl}/msad/backups/scheduler`).pipe(
+      map((resp) => {
+        // Si la respuesta es directa (API real), la adaptamos
+        if (resp && resp.success && typeof resp.is_running !== 'undefined') {
+          return {
+            success: resp.success,
+            status: {
+              is_running: resp.is_running,
+              interval_hours: resp.interval_hours,
+              backup_count: resp.backup_count,
+              total_size: resp.total_size,
+              formatted_size: resp.formatted_size,
+              last_backup: resp.last_backup,
+              next_backup: resp.next_backup,
+              backup_dir: resp.backup_dir
+            },
+            message: resp.message
+          };
+        }
+        return resp;
+      }),
+      catchError(error => {
+        console.error('Error al obtener estado del programador:', error);
+        return of({ success: false, error: 'No se pudo obtener el estado del programador.' });
+      })
+    );
   }
 
   // Configurar programador
   configureScheduler(config: SchedulerConfig): Observable<SchedulerResponse> {
-    return this.http.post<SchedulerResponse>(`${this.baseUrl}/msad/backups/scheduler`, config)
-      .pipe(
-        catchError(error => {
-          console.error('Error al configurar programador:', error);
-          return throwError(() => error);
-        })
-      );
+    return this.http.post<any>(`${this.baseUrl}/msad/backups/scheduler`, config).pipe(
+      map((resp) => {
+        // Si la respuesta es directa (API real), la adaptamos
+        if (resp && resp.success && resp.status && typeof resp.status.is_running !== 'undefined') {
+          return resp;
+        } else if (resp && resp.success && typeof resp.is_running !== 'undefined') {
+          // A veces el estado viene plano
+          return {
+            success: resp.success,
+            status: {
+              is_running: resp.is_running,
+              interval_hours: resp.interval_hours,
+              backup_count: resp.backup_count,
+              total_size: resp.total_size,
+              formatted_size: resp.formatted_size,
+              last_backup: resp.last_backup,
+              next_backup: resp.next_backup,
+              backup_dir: resp.backup_dir
+            },
+            message: resp.message
+          };
+        }
+        return resp;
+      }),
+      catchError(error => {
+        console.error('Error al configurar programador:', error);
+        return of({ success: false, error: 'No se pudo configurar el programador.' });
+      })
+    );
   }
 
   // Utilidades
