@@ -32,8 +32,8 @@ export interface ReportResponse {
 export interface ReportListResponse {
   success: boolean;
   reports?: Array<{
-    report_id: string;
-    client_id: string;
+    report_id?: string;
+    client_id?: string;
     data_type: string;
     filename: string;
     format: string;
@@ -42,6 +42,31 @@ export interface ReportListResponse {
     download_url: string;
   }>;
   total?: number;
+  error?: string;
+}
+
+export interface SchedulerConfig {
+  interval_hours: number;
+  client_id: string;
+  start_date: string;
+  end_date: string;
+  data_type: string;
+  format: string;
+}
+
+export interface SchedulerResponse {
+  success: boolean;
+  message?: string;
+  config?: SchedulerConfig;
+  error?: string;
+}
+
+export interface SchedulerStatusResponse {
+  success: boolean;
+  is_running: boolean;
+  config?: SchedulerConfig;
+  last_run?: string;
+  next_run?: string;
   error?: string;
 }
 
@@ -129,6 +154,53 @@ export class MsadService {
       .pipe(
         catchError(error => {
           console.error('Error deleting report:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // Iniciar o reiniciar un programador de reportes
+  startScheduler(config: SchedulerConfig): Observable<SchedulerResponse> {
+    return this.http.post<SchedulerResponse>(`${this.baseUrl}/msad/reports/scheduler/start`, config)
+      .pipe(
+        catchError(error => {
+          console.error('Error iniciando programador de reportes:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // Detener un programador específico por cliente
+  stopScheduler(clientId: string): Observable<SchedulerResponse> {
+    // Según los endpoints exactos, el client_id debe ir en el body, no como query param
+    return this.http.post<SchedulerResponse>(`${this.baseUrl}/msad/reports/scheduler/stop`, { client_id: clientId })
+      .pipe(
+        catchError(error => {
+          console.error('Error deteniendo programador de reportes:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // Obtener estado del programador de reportes (específico por cliente)
+  getSchedulerStatus(clientId: string): Observable<SchedulerStatusResponse> {
+    let params = new HttpParams().set('client_id', clientId);
+    
+    return this.http.get<SchedulerStatusResponse>(`${this.baseUrl}/msad/reports/scheduler/status`, { params })
+      .pipe(
+        catchError(error => {
+          console.error('Error obteniendo estado del programador:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // Obtener todos los programadores activos (uno por cliente)
+  getAllSchedulers(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/msad/reports/schedulers`)
+      .pipe(
+        catchError(error => {
+          console.error('Error obteniendo todos los programadores:', error);
           return throwError(() => error);
         })
       );

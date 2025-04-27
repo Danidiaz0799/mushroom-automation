@@ -3,8 +3,8 @@
     <!-- Header with title and client display -->
     <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight text-gray-900 mb-1">Reportes MSAD</h1>
-        <p class="text-sm text-gray-500">Visualice y descargue informes de datos para sus cultivos</p>
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900 mb-1">Sistema de Reportes MSAD</h1>
+        <p class="text-sm text-gray-500">Visualice, descargue y configure reportes automáticos para sus cultivos</p>
       </div>
       
       <!-- Highlighted Current Client Display -->
@@ -15,28 +15,70 @@
         </div>
       </div>
     </div>
+
+    <!-- View Selector Tabs -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 mb-8">
+      <div class="flex border-b border-gray-100">
+        <button 
+          (click)="toggleView('reports')" 
+          [ngClass]="{
+            'bg-indigo-50 text-indigo-700 border-indigo-500': activeView === 'reports',
+            'text-gray-500 hover:text-gray-700 hover:bg-gray-50': activeView !== 'reports'
+          }"
+          class="flex items-center px-5 py-4 text-sm font-medium border-b-2 transition-all duration-200"
+          [class.border-transparent]="activeView !== 'reports'">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+          </svg>
+          Reportes Manuales
+        </button>
+        <button 
+          (click)="toggleView('schedulers')" 
+          [ngClass]="{
+            'bg-indigo-50 text-indigo-700 border-indigo-500': activeView === 'schedulers',
+            'text-gray-500 hover:text-gray-700 hover:bg-gray-50': activeView !== 'schedulers'
+          }"
+          class="flex items-center px-5 py-4 text-sm font-medium border-b-2 transition-all duration-200"
+          [class.border-transparent]="activeView !== 'schedulers'">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+          </svg>
+          Programadores Automáticos
+          <span *ngIf="getActiveSchedulersCount() > 0" class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
+            {{ getActiveSchedulersCount() }}
+          </span>
+        </button>
+      </div>
+    </div>
     
     <!-- Actions section -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">      
-      <!-- Generate report card -->
+      <!-- Action card (Report or Scheduler based on active view) -->
       <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
         <div class="p-5">
           <div class="flex items-center mb-3">
             <div class="flex-shrink-0 bg-indigo-100 p-2 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+              <svg *ngIf="activeView === 'reports'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd" />
               </svg>
+              <svg *ngIf="activeView === 'schedulers'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+              </svg>
             </div>
-            <h2 class="text-lg font-semibold text-gray-900 ml-3">Nuevo Reporte</h2>
+            <h2 class="text-lg font-semibold text-gray-900 ml-3">
+              {{ activeView === 'reports' ? 'Nuevo Reporte' : 'Nuevo Programador' }}
+            </h2>
           </div>
-          <p class="text-sm text-gray-500 mb-4">Cree un nuevo reporte con los datos y formato deseado</p>
+          <p class="text-sm text-gray-500 mb-4">
+            {{ activeView === 'reports' ? 'Cree un nuevo reporte con los datos y formato deseado' : 'Configure la generación automática de reportes periódicos' }}
+          </p>
           <button 
-            (click)="openGenerateReportModal()" 
+            (click)="activeView === 'reports' ? openGenerateReportModal() : openSchedulerModal()" 
             class="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
-            <span>Generar Reporte</span>
+            <span>{{ activeView === 'reports' ? 'Generar Reporte' : 'Configurar Programador' }}</span>
           </button>
         </div>
       </div>
@@ -48,7 +90,7 @@
           <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros de Búsqueda</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div class="space-y-2">
-              <label for="clientSelect" class="block text-sm font-medium text-gray-700">Cliente</label>
+              <label for="clientSelect" class="block text-sm font-medium text-gray-700">Cultivo</label>
               <select 
                 id="clientSelect" 
                 [(ngModel)]="selectedClient"
@@ -103,7 +145,7 @@
     <!-- Loading indicator -->
     <div *ngIf="isLoading" class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-r-2 border-indigo-600 mb-4"></div>
-      <span class="ml-4 text-gray-700 font-medium">Cargando reportes...</span>
+      <span class="ml-4 text-gray-700 font-medium">Cargando datos...</span>
     </div>
     
     <!-- Error message -->
@@ -117,100 +159,196 @@
       </div>
     </div>
     
-    <!-- Reports table -->
-    <div *ngIf="!isLoading && reports.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="px-5 py-4 border-b border-gray-100">
-        <h2 class="text-lg font-semibold text-gray-900">Reportes Disponibles</h2>
-        <p class="text-sm text-gray-500 mt-1">Lista de todos los reportes generados</p>
+    <!-- REPORTS VIEW -->
+    <div *ngIf="activeView === 'reports' && !isLoading">
+      <!-- Reports table -->
+      <div *ngIf="reports.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100">
+          <h2 class="text-lg font-semibold text-gray-900">Reportes Disponibles</h2>
+          <p class="text-sm text-gray-500 mt-1">Lista de todos los reportes generados</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cultivo</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formato</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rango</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                <th scope="col" class="px-6 py-3.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+              <tr *ngFor="let report of reports" 
+                  class="hover:bg-gray-50 cursor-pointer transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 group-hover:text-indigo-800"
+                    (click)="viewReportDetails(report)">
+                  {{ report.report_id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ getClientNameById(report.client_id) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
+                        [ngClass]="report.format === 'csv' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
+                    <svg *ngIf="report.format === 'csv'" class="h-3 w-3 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20"><rect width="20" height="20" rx="3"/></svg>
+                    <svg *ngIf="report.format === 'json'" class="h-3 w-3 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                    {{ report.format?.toUpperCase() }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
+                        [ngClass]="{
+                          'bg-yellow-100 text-yellow-800': report.data_type === 'events',
+                          'bg-indigo-100 text-indigo-800': report.data_type === 'sensors',
+                          'bg-pink-100 text-pink-800': report.data_type === 'actuators'
+                        }">
+                    <svg *ngIf="report.data_type === 'sensors'" class="h-3 w-3 mr-1 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                    <svg *ngIf="report.data_type === 'events'" class="h-3 w-3 mr-1 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><rect width="20" height="20" rx="3"/></svg>
+                    <svg *ngIf="report.data_type === 'actuators'" class="h-3 w-3 mr-1 text-pink-500" fill="currentColor" viewBox="0 0 20 20"><polygon points="10,2 2,18 18,18"/></svg>
+                    {{ report.data_type ? (report.data_type | titlecase) : 'N/A' }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
+                  <span *ngIf="report.period && report.period.start && report.period.end">
+                    {{ report.period.start }} - {{ report.period.end }}
+                  </span>
+                  <span *ngIf="!report.period">N/A</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{{ report.created_at | date:'medium' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button (click)="downloadReport(report, $event)" title="Descargar" class="p-2 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 focus:outline-none" tabindex="0">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    </button>
+                    <button (click)="openDeleteModal(report, $event)" title="Eliminar" class="p-2 rounded bg-red-50 hover:bg-red-100 text-red-700 focus:outline-none" tabindex="0">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formato</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rango</th>
-              <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-              <th scope="col" class="px-6 py-3.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-100">
-            <tr *ngFor="let report of reports" 
-                class="hover:bg-gray-50 cursor-pointer transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 group-hover:text-indigo-800"
-                  (click)="viewReportDetails(report)">
-                {{ report.report_id }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ report.client_id || selectedClient }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
-                      [ngClass]="report.format === 'csv' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
-                  <svg *ngIf="report.format === 'csv'" class="h-3 w-3 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20"><rect width="20" height="20" rx="3"/></svg>
-                  <svg *ngIf="report.format === 'json'" class="h-3 w-3 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
-                  {{ report.format?.toUpperCase() }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
-                      [ngClass]="{
-                        'bg-yellow-100 text-yellow-800': report.data_type === 'events',
-                        'bg-indigo-100 text-indigo-800': report.data_type === 'sensors',
-                        'bg-pink-100 text-pink-800': report.data_type === 'actuators'
-                      }">
-                  <svg *ngIf="report.data_type === 'sensors'" class="h-3 w-3 mr-1 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
-                  <svg *ngIf="report.data_type === 'events'" class="h-3 w-3 mr-1 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><rect width="20" height="20" rx="3"/></svg>
-                  <svg *ngIf="report.data_type === 'actuators'" class="h-3 w-3 mr-1 text-pink-500" fill="currentColor" viewBox="0 0 20 20"><polygon points="10,2 2,18 18,18"/></svg>
-                  {{ report.data_type ? (report.data_type | titlecase) : 'N/A' }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
-                <span *ngIf="report.start_date && report.end_date">
-                  {{ report.start_date }} - {{ report.end_date }}
-                </span>
-                <span *ngIf="!report.start_date || !report.end_date">N/A</span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{{ report.created_at | date:'medium' }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-center">
-                <div class="flex items-center justify-center gap-2">
-                  <button (click)="downloadReport(report, $event)" title="Descargar" class="p-2 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 focus:outline-none" tabindex="0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                  </button>
-                  <button (click)="openDeleteModal(report, $event)" title="Eliminar" class="p-2 rounded bg-red-50 hover:bg-red-100 text-red-700 focus:outline-none" tabindex="0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+      <!-- Empty state for reports -->
+      <div *ngIf="!isLoading && reports.length === 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+        <div class="max-w-md mx-auto">
+          <div class="bg-indigo-100 mx-auto h-20 w-20 rounded-full flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">No hay reportes disponibles</h2>
+          <p class="text-gray-500 mb-6">Genere un nuevo reporte o ajuste los filtros de búsqueda para ver resultados</p>
+          <button 
+            (click)="openGenerateReportModal()" 
+            class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium inline-flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Generar Nuevo Reporte
+          </button>
+        </div>
       </div>
     </div>
     
-    <!-- Empty state -->
-    <div *ngIf="!isLoading && reports.length === 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
-      <div class="max-w-md mx-auto">
-        <div class="bg-indigo-100 mx-auto h-20 w-20 rounded-full flex items-center justify-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+    <!-- SCHEDULERS VIEW -->
+    <div *ngIf="activeView === 'schedulers' && !isLoading">
+      <!-- Active Schedulers Cards -->
+      <div *ngIf="filteredSchedulerStatuses.size > 0" class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Programadores Activos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Scheduler Card for each active client -->
+          <div *ngFor="let entry of filteredSchedulerStatuses | keyvalue" class="bg-white rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
+            <div class="bg-emerald-50 px-5 py-3 border-b border-emerald-100 flex justify-between items-center">
+              <div class="flex items-center">
+                <div class="h-3 w-3 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
+                <h3 class="font-medium text-emerald-800">{{ getClientNameById(entry.key) }}</h3>
+              </div>
+              <button 
+                (click)="stopScheduler(entry.key, $event)" 
+                class="p-1.5 bg-white rounded text-red-600 hover:bg-red-50 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+            <div class="p-5">
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <p class="text-xs text-gray-500 mb-1">Frecuencia</p>
+                  <p class="text-sm font-medium text-gray-800">{{ getIntervalLabel(entry.value.config?.interval_hours || 24) }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 mb-1">Formato</p>
+                  <p class="text-sm font-medium text-gray-800">{{ entry.value.config?.format?.toUpperCase() || 'JSON' }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 mb-1">Tipo de datos</p>
+                  <p class="text-sm font-medium text-gray-800">{{ entry.value.config?.data_type || 'sensors' | titlecase }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 mb-1">Última ejecución</p>
+                  <p class="text-sm font-medium text-gray-800">{{ entry.value.last_run ? (entry.value.last_run | date:'short') : 'N/A' }}</p>
+                </div>
+              </div>
+              
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                  <p class="text-xs text-blue-800 mb-0.5">Próxima ejecución</p>
+                  <p class="text-sm font-semibold text-blue-900">{{ formatNextRun(entry.value.next_run) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <h2 class="text-xl font-semibold text-gray-900 mb-2">No hay reportes disponibles</h2>
-        <p class="text-gray-500 mb-6">Genere un nuevo reporte o ajuste los filtros de búsqueda para ver resultados</p>
-        <button 
-          (click)="openGenerateReportModal()" 
-          class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium inline-flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-          </svg>
-          Generar Nuevo Reporte
-        </button>
+      </div>
+      
+      <!-- No Active Schedulers state -->
+      <div *ngIf="filteredSchedulerStatuses.size === 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+        <div class="max-w-md mx-auto">
+          <div class="bg-indigo-100 mx-auto h-20 w-20 rounded-full flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">No hay programadores activos</h2>
+          <!-- Mensaje diferenciado si no hay programadores en total vs. no hay por filtros -->
+          <p *ngIf="schedulerStatuses.size === 0" class="text-gray-500 mb-6">Configure un programador para generar reportes automáticamente para sus cultivos</p>
+          <p *ngIf="schedulerStatuses.size > 0" class="text-gray-500 mb-6">No hay programadores que coincidan con los filtros seleccionados</p>
+          <button 
+            (click)="openSchedulerModal()" 
+            class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium inline-flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Configurar Programador
+          </button>
+        </div>
+      </div>
+      
+      <!-- Information about schedulers -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mt-8">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Información sobre programadores</h2>
+        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+          <h3 class="font-medium text-blue-800 mb-2">¿Cómo funcionan los programadores de reportes?</h3>
+          <p class="text-sm text-blue-700 mb-2">Los programadores automáticos generan reportes con la frecuencia configurada, utilizando el período y tipo de datos seleccionados.</p>
+          <ul class="list-disc pl-5 text-sm text-blue-700 space-y-1">
+            <li>Cada cultivo puede tener un programador activo</li>
+            <li>Los reportes generados estarán disponibles en la sección "Reportes Manuales"</li>
+            <li>Las programaciones persisten incluso al reiniciar el servidor</li>
+            <li>Para detener un programador, utilice el botón de detener en la tarjeta correspondiente</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -234,7 +372,7 @@
       <div class="space-y-5">
         <!-- Client Selection -->
         <div class="space-y-2">
-          <label for="reportClientSelect" class="block text-sm font-medium text-gray-700">Cliente</label>
+          <label for="reportClientSelect" class="block text-sm font-medium text-gray-700">Cultivo</label>
           <select 
             id="reportClientSelect" 
             [(ngModel)]="selectedClient"
@@ -306,6 +444,106 @@
   </div>
 </div>
 
+<!-- Scheduler Configuration Modal -->
+<div *ngIf="showSchedulerModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-auto overflow-hidden animate-fade-in-up">
+    <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+      <h3 class="text-xl font-semibold text-white">Configurar Programador Automático</h3>
+      <button 
+        (click)="closeSchedulerModal()" 
+        class="text-white/80 hover:text-white transition-colors">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <div class="p-6">
+      <!-- Client information -->
+      <div class="bg-indigo-50 p-4 rounded-lg mb-5 border border-indigo-100">
+        <p class="text-sm text-indigo-700 font-medium mb-1">Cultivo seleccionado:</p>
+        <p class="text-indigo-900 font-semibold">{{ getCurrentClientName() }}</p>
+        <p *ngIf="hasActiveScheduler()" class="mt-2 text-xs text-indigo-600">
+          Este cultivo ya tiene un programador activo. Al guardar, se actualizará la configuración existente.
+        </p>
+      </div>
+      
+      <div class="space-y-5">
+        <!-- Interval Selection -->
+        <div class="space-y-2">
+          <label for="intervalHours" class="block text-sm font-medium text-gray-700">Frecuencia de generación</label>
+          <select 
+            id="intervalHours" 
+            [(ngModel)]="schedulerFormData.interval_hours"
+            class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            <option *ngFor="let option of intervalOptions" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+        
+        <!-- Period configuration -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label for="schStartDate" class="block text-sm font-medium text-gray-700">Fecha Inicial</label>
+            <input 
+              type="date" 
+              id="schStartDate" 
+              [(ngModel)]="schedulerFormData.start_date"
+              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+          </div>
+          
+          <div class="space-y-2">
+            <label for="schEndDate" class="block text-sm font-medium text-gray-700">Fecha Final</label>
+            <input 
+              type="date" 
+              id="schEndDate" 
+              [(ngModel)]="schedulerFormData.end_date"
+              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+          </div>
+        </div>
+        
+        <!-- Data Type and Format in a row -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label for="schDataType" class="block text-sm font-medium text-gray-700">Tipo de Datos</label>
+            <select 
+              id="schDataType" 
+              [(ngModel)]="schedulerFormData.data_type"
+              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+              <option value="sensors">Sensores</option>
+              <option value="events">Eventos</option>
+              <option value="actuators">Actuadores</option>
+            </select>
+          </div>
+          
+          <div class="space-y-2">
+            <label for="schFormat" class="block text-sm font-medium text-gray-700">Formato</label>
+            <select 
+              id="schFormat" 
+              [(ngModel)]="schedulerFormData.format"
+              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
+      <button 
+        (click)="closeSchedulerModal()"
+        class="px-5 py-2.5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg shadow-sm transition-all duration-200 font-medium border border-gray-200">
+        Cancelar
+      </button>
+      <button 
+        (click)="saveScheduler()"
+        class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
+        {{ hasActiveScheduler() ? 'Actualizar Programador' : 'Crear Programador' }}
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Delete Confirmation Modal -->
 <div *ngIf="showDeleteModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
   <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-auto overflow-hidden animate-fade-in-up">
@@ -368,4 +606,4 @@
       </button>
     </div>
   </div>
-</div> 
+</div>

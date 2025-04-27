@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MsadService, ReportListResponse } from '../../services/msad.service';
+import { MsadService, ReportListResponse, SchedulerConfig, SchedulerStatusResponse } from '../../services/msad.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
+import { Subject, interval } from 'rxjs';
+import { takeUntil, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-reports',
@@ -12,12 +14,13 @@ import { AuthService } from '../../../auth/services/auth.service';
   templateUrl: './reports.component.html',
   styles: []
 })
-export class ReportsComponent implements OnInit {
+export class ReportsComponent implements OnInit, OnDestroy {
   reports: any[] = [];
   isLoading = false;
   error: string | null = null;
   downloadedData: any[] = [];
   showReportModal = false;
+  showSchedulerModal = false;
   showDeleteModal = false;
   reportToDelete: any = null;
   reportFormData = {
@@ -26,7 +29,23 @@ export class ReportsComponent implements OnInit {
     data_type: 'sensors',
     format: 'json'
   };
+
+  // Scheduler configuration
+  schedulerFormData: SchedulerConfig = {
+    interval_hours: 24,
+    client_id: '',
+    start_date: '',
+    end_date: '',
+    data_type: 'sensors',
+    format: 'json'
+  };
+
+  // Scheduler status for active clients
+  schedulerStatuses: Map<string, SchedulerStatusResponse> = new Map();
   
+  // Programadores filtrados para mostrar en la UI
+  filteredSchedulerStatuses: Map<string, SchedulerStatusResponse> = new Map();
+
   // Filter options
   selectedDataType: string = '';
   selectedFormat: string = '';
@@ -45,10 +64,24 @@ export class ReportsComponent implements OnInit {
     { value: 'csv', label: 'CSV' }
   ];
 
+  intervalOptions = [
+    { value: 1, label: 'Cada hora' },
+    { value: 6, label: 'Cada 6 horas' },
+    { value: 12, label: 'Cada 12 horas' },
+    { value: 24, label: 'Cada día' },
+    { value: 168, label: 'Cada semana' }
+  ];
+
   clients: any[] = [];
+  
+  // Variable para controlar la vista actual (reportes o programadores)
+  activeView: 'reports' | 'schedulers' = 'reports';
   
   // Add a storage key to maintain compatibility
   private readonly STORAGE_KEY = 'currentClientId';
+  
+  // Para desuscribirse de los observables cuando se destruya el componente
+  private destroy$ = new Subject<void>();
 
   constructor(
     private msadService: MsadService,
@@ -65,6 +98,39 @@ export class ReportsComponent implements OnInit {
     
     // Load reports
     this.loadReports();
+    
+    // Verificar programadores activos para cada cliente
+    this.checkSchedulersStatus();
+    
+    // Configurar actualizaciones periódicas de estado de programadores (cada 30 segundos)
+    interval(30000).pipe(
+      takeUntil(this.destroy$),
+      switchMap(() => {
+        if (this.activeView === 'schedulers') {
+          return new Promise(resolve => {
+            this.checkSchedulersStatus();
+            resolve(null);
+          });
+        }
+        return Promise.resolve(null);
+      })
+    ).subscribe();
+  }
+  
+  ngOnDestroy(): void {
+    // Desuscribirse de todos los observables
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // Método para alternar entre vistas
+  toggleView(view: 'reports' | 'schedulers'): void {
+    this.activeView = view;
+    if (view === 'schedulers') {
+      this.checkSchedulersStatus();
+    } else {
+      this.loadReports();
+    }
   }
 
   loadClients(): void {
@@ -81,6 +147,108 @@ export class ReportsComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  // Verificar el estado de programadores para cada cliente
+  checkSchedulersStatus(): void {
+    this.isLoading = true;
+    this.error = null;
+    this.schedulerStatuses.clear();
+    
+    // Si no hay clientes, terminar
+    if (!this.clients || this.clients.length <= 1) {
+      this.isLoading = false;
+      return;
+    }
+    
+    // Para cada cliente (excepto el primer elemento que es "Todos los clientes")
+    let completedChecks = 0;
+    const clientsToCheck = this.clients.filter(c => c.client_id !== '');
+    
+    // Si no hay clientes para verificar
+    if (clientsToCheck.length === 0) {
+      this.isLoading = false;
+      return;
+    }
+    
+    clientsToCheck.forEach(client => {
+      this.msadService.getSchedulerStatus(client.client_id).subscribe({
+        next: (response: SchedulerStatusResponse) => {
+          if (response.success && response.is_running) {
+            this.schedulerStatuses.set(client.client_id, response);
+          }
+          completedChecks++;
+          if (completedChecks === clientsToCheck.length) {
+            this.applySchedulerFilters(); // Aplicar filtros después de cargar todos
+            this.isLoading = false;
+          }
+        },
+        error: () => {
+          // Ignorar errores, asumimos que no hay programador para este cliente
+          completedChecks++;
+          if (completedChecks === clientsToCheck.length) {
+            this.applySchedulerFilters(); // Aplicar filtros incluso si hay errores
+            this.isLoading = false;
+          }
+        }
+      });
+    });
+  }
+
+  // Aplicar filtros a programadores
+  applySchedulerFilters(): void {
+    this.filteredSchedulerStatuses = new Map(this.schedulerStatuses);
+    
+    // Filtrar por cliente específico
+    if (this.selectedClient) {
+      const filteredMap = new Map();
+      if (this.schedulerStatuses.has(this.selectedClient)) {
+        // Asegúrate de obtener el valor antes de establecerlo
+        const status = this.schedulerStatuses.get(this.selectedClient);
+        if (status) { // Comprobación adicional por si acaso
+          filteredMap.set(this.selectedClient, status);
+        }
+      }
+      this.filteredSchedulerStatuses = filteredMap;
+    }
+    
+    // Filtrar por tipo de datos
+    if (this.selectedDataType) {
+      const filteredMap = new Map();
+      this.filteredSchedulerStatuses.forEach((status, clientId) => {
+        if (status.config?.data_type === this.selectedDataType) {
+          filteredMap.set(clientId, status);
+        }
+      });
+      this.filteredSchedulerStatuses = filteredMap;
+    }
+    
+    // Filtrar por formato
+    if (this.selectedFormat) {
+      const filteredMap = new Map();
+      this.filteredSchedulerStatuses.forEach((status, clientId) => {
+        if (status.config?.format === this.selectedFormat) {
+          filteredMap.set(clientId, status);
+        }
+      });
+      this.filteredSchedulerStatuses = filteredMap;
+    }
+  }
+
+  applyFilters(): void {
+    if (this.activeView === 'reports') {
+      this.loadReports();
+    } else {
+      this.applySchedulerFilters();
+    }
+  }
+
+  clearFilters(): void {
+    this.selectedDataType = '';
+    this.selectedFormat = '';
+    // Al restablecer, si hay un cliente activo, usarlo, sino mostrar todos
+    this.selectedClient = this.getCurrentClientId() || ''; 
+    this.applyFilters();
   }
 
   loadReports(): void {
@@ -114,17 +282,6 @@ export class ReportsComponent implements OnInit {
           }
         });
     }
-  }
-
-  applyFilters(): void {
-    this.loadReports();
-  }
-
-  clearFilters(): void {
-    this.selectedDataType = '';
-    this.selectedFormat = '';
-    this.selectedClient = this.getCurrentClientId();
-    this.loadReports();
   }
 
   viewReportDetails(report: any): void {
@@ -174,7 +331,89 @@ export class ReportsComponent implements OnInit {
       });
   }
 
-  // Funciones// Alias para compatibilidad con el HTML antiguo o claridad
+  // Funciones para programadores
+  openSchedulerModal(): void {
+    if (!this.selectedClient) {
+      this.error = 'Por favor seleccione un cliente para configurar un programador';
+      return;
+    }
+    
+    // Si ya existe un programador para este cliente, cargamos su configuración
+    const existingScheduler = this.schedulerStatuses.get(this.selectedClient);
+    if (existingScheduler && existingScheduler.config) {
+      this.schedulerFormData = {...existingScheduler.config};
+    } else {
+      // Inicializar formulario con valores por defecto
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      this.schedulerFormData = {
+        interval_hours: 24,
+        client_id: this.selectedClient,
+        start_date: this.formatDateForInput(today),
+        end_date: this.formatDateForInput(tomorrow),
+        data_type: 'sensors',
+        format: 'json'
+      };
+    }
+    
+    this.showSchedulerModal = true;
+  }
+  
+  closeSchedulerModal(): void {
+    this.showSchedulerModal = false;
+  }
+  
+  saveScheduler(): void {
+    this.isLoading = true;
+    this.error = null;
+    
+    this.msadService.startScheduler(this.schedulerFormData)
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.closeSchedulerModal();
+            this.checkSchedulersStatus();
+          } else {
+            this.error = response.error || 'Error desconocido al configurar el programador';
+            this.isLoading = false;
+          }
+        },
+        error: (err) => {
+          this.error = 'Error al configurar el programador. Por favor intente nuevamente.';
+          this.isLoading = false;
+          console.error(err);
+        }
+      });
+  }
+  
+  // Detener un programador específico por cliente
+  stopScheduler(clientId: string, event: Event): void {
+    event.stopPropagation();
+    this.isLoading = true;
+    this.error = null;
+    
+    this.msadService.stopScheduler(clientId)
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.schedulerStatuses.delete(clientId);
+          } else {
+            this.error = response.error || 'Error desconocido al detener el programador';
+          }
+          this.isLoading = false;
+          this.checkSchedulersStatus();
+        },
+        error: (err) => {
+          this.error = 'Error al detener el programador. Por favor intente nuevamente.';
+          this.isLoading = false;
+          console.error(err);
+        }
+      });
+  }
+
+  // Funciones para reportes manuales
   openDeleteModal(report: any, event: Event): void {
     this.deleteReport(report, event);
   }
@@ -279,6 +518,25 @@ export class ReportsComponent implements OnInit {
     return date.toLocaleString();
   }
 
+  // Formatear siguiente ejecución para mostrar en la UI
+  formatNextRun(dateString: string | undefined): string {
+    if (!dateString) return 'No programado';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = date.getTime() - now.getTime();
+    
+    // Si es menos de un día
+    if (diff < 24 * 60 * 60 * 1000) {
+      const hours = Math.floor(diff / (60 * 60 * 1000));
+      const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+      return `En ${hours}h ${minutes}m`;
+    }
+    
+    // Si es más de un día
+    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+    return `En ${days} día${days !== 1 ? 's' : ''}`;
+  }
+
   // Client service methods implemented directly
   getCurrentClientId(): string {
     const storedId = localStorage.getItem(this.STORAGE_KEY);
@@ -295,4 +553,28 @@ export class ReportsComponent implements OnInit {
     const client = this.clients.find(c => c.client_id === clientId);
     return client ? client.name : clientId;
   }
-} 
+  
+  // Retorna el label de una opción de intervalo
+  getIntervalLabel(hours: number): string {
+    const option = this.intervalOptions.find(o => o.value === hours);
+    return option ? option.label : `${hours} horas`;
+  }
+  
+  // Retorna la cantidad de programadores activos después de filtrar
+  getActiveSchedulersCount(): number {
+    // Siempre devuelve el tamaño del mapa filtrado cuando la vista es 'schedulers'
+    return this.activeView === 'schedulers' 
+      ? this.filteredSchedulerStatuses.size 
+      : this.schedulerStatuses.size; // Para la pestaña de reportes, muestra el total real
+  }
+  
+  // Verifica si hay un programador activo para el cliente actual
+  hasActiveScheduler(): boolean {
+    return this.selectedClient ? this.schedulerStatuses.has(this.selectedClient) : false;
+  }
+  
+  // Obtiene el estado del programador para el cliente actual
+  getCurrentClientScheduler(): SchedulerStatusResponse | null {
+    return this.selectedClient ? (this.schedulerStatuses.get(this.selectedClient) || null) : null;
+  }
+}
