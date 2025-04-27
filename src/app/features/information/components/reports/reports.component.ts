@@ -1,36 +1,49 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MsadService, ReportListResponse, SchedulerConfig, SchedulerStatusResponse } from '../../services/msad.service';
-import { Router } from '@angular/router';
-import { AuthService } from '../../../auth/services/auth.service';
+import { FormsModule } from '@angular/forms';
 import { Subject, interval } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
+import { ReportsService } from '../../services/reports.service';
+import { SchedulerService } from '../../services/scheduler.service';
+import { Report, ReportRequest } from '../../models/report.model';
+import { SchedulerConfig, SchedulerStatus } from '../../models/scheduler.model';
+import { Client } from '../../models/client.model';
+import { ReportFiltersComponent } from './report-filters/report-filters.component';
+import { ReportModalComponent } from './report-modal/report-modal.component';
+import { SchedulerModalComponent } from './scheduler-modal/scheduler-modal.component';
+import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReportFiltersComponent,
+    ReportModalComponent,
+    SchedulerModalComponent,
+    DeleteModalComponent
+  ],
   templateUrl: './reports.component.html',
-  styles: []
 })
 export class ReportsComponent implements OnInit, OnDestroy {
-  reports: any[] = [];
+  reports: Report[] = [];
   isLoading = false;
   error: string | null = null;
-  downloadedData: any[] = [];
+  successMessage: string | null = null;
   showReportModal = false;
   showSchedulerModal = false;
   showDeleteModal = false;
-  reportToDelete: any = null;
-  reportFormData = {
+  reportToDelete: Report | null = null;
+  reportFormData: ReportRequest = {
     start_date: '',
     end_date: '',
     data_type: 'sensors',
     format: 'json'
   };
 
-  // Scheduler configuration
   schedulerFormData: SchedulerConfig = {
     interval_hours: 24,
     client_id: '',
@@ -40,69 +53,36 @@ export class ReportsComponent implements OnInit, OnDestroy {
     format: 'json'
   };
 
-  // Scheduler status for active clients
-  schedulerStatuses: Map<string, SchedulerStatusResponse> = new Map();
-  
-  // Programadores filtrados para mostrar en la UI
-  filteredSchedulerStatuses: Map<string, SchedulerStatusResponse> = new Map();
+  schedulerStatuses: Map<string, SchedulerStatus> = new Map();
+  filteredSchedulerStatuses: Map<string, SchedulerStatus> = new Map();
 
-  // Filter options
   selectedDataType: string = '';
   selectedFormat: string = '';
   selectedClient: string = '';
   
-  dataTypeOptions = [
-    { value: '', label: 'Todos los tipos' },
-    { value: 'sensors', label: 'Sensores' },
-    { value: 'events', label: 'Eventos' },
-    { value: 'actuators', label: 'Actuadores' }
-  ];
-  
-  formatOptions = [
-    { value: '', label: 'Todos los formatos' },
-    { value: 'json', label: 'JSON' },
-    { value: 'csv', label: 'CSV' }
-  ];
-
-  intervalOptions = [
-    { value: 1, label: 'Cada hora' },
-    { value: 6, label: 'Cada 6 horas' },
-    { value: 12, label: 'Cada 12 horas' },
-    { value: 24, label: 'Cada día' },
-    { value: 168, label: 'Cada semana' }
-  ];
-
-  clients: any[] = [];
-  
-  // Variable para controlar la vista actual (reportes o programadores)
+  clients: Client[] = [];
   activeView: 'reports' | 'schedulers' = 'reports';
   
-  // Add a storage key to maintain compatibility
+  get filteredClientsForModal(): Client[] {
+    return this.clients.filter(c => c.client_id !== '');
+  }
+
   private readonly STORAGE_KEY = 'currentClientId';
-  
-  // Para desuscribirse de los observables cuando se destruya el componente
   private destroy$ = new Subject<void>();
 
   constructor(
-    private msadService: MsadService,
+    private reportsService: ReportsService,
+    private schedulerService: SchedulerService,
     private router: Router,
     private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    // Get the currently selected client from localStorage
     this.selectedClient = this.getCurrentClientId();
-    
-    // Load available clients
     this.loadClients();
-    
-    // Load reports
     this.loadReports();
-    
-    // Verificar programadores activos para cada cliente
     this.checkSchedulersStatus();
     
-    // Configurar actualizaciones periódicas de estado de programadores (cada 30 segundos)
     interval(30000).pipe(
       takeUntil(this.destroy$),
       switchMap(() => {
@@ -118,12 +98,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
   
   ngOnDestroy(): void {
-    // Desuscribirse de todos los observables
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  // Método para alternar entre vistas
   toggleView(view: 'reports' | 'schedulers'): void {
     this.activeView = view;
     if (view === 'schedulers') {
@@ -134,7 +112,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   loadClients(): void {
-    this.isLoading = true; // Indicate loading state if needed
+    this.isLoading = true;
     this.authService.getClients().subscribe({
       next: (response: any) => {
         this.clients = [{ client_id: '', name: 'Todos los clientes' }, ...response];
@@ -149,45 +127,40 @@ export class ReportsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Verificar el estado de programadores para cada cliente
   checkSchedulersStatus(): void {
     this.isLoading = true;
     this.error = null;
     this.schedulerStatuses.clear();
     
-    // Si no hay clientes, terminar
     if (!this.clients || this.clients.length <= 1) {
       this.isLoading = false;
       return;
     }
     
-    // Para cada cliente (excepto el primer elemento que es "Todos los clientes")
     let completedChecks = 0;
     const clientsToCheck = this.clients.filter(c => c.client_id !== '');
     
-    // Si no hay clientes para verificar
     if (clientsToCheck.length === 0) {
       this.isLoading = false;
       return;
     }
     
     clientsToCheck.forEach(client => {
-      this.msadService.getSchedulerStatus(client.client_id).subscribe({
-        next: (response: SchedulerStatusResponse) => {
+      this.schedulerService.getSchedulerStatus(client.client_id).subscribe({
+        next: (response: SchedulerStatus) => {
           if (response.success && response.is_running) {
             this.schedulerStatuses.set(client.client_id, response);
           }
           completedChecks++;
           if (completedChecks === clientsToCheck.length) {
-            this.applySchedulerFilters(); // Aplicar filtros después de cargar todos
+            this.applySchedulerFilters();
             this.isLoading = false;
           }
         },
         error: () => {
-          // Ignorar errores, asumimos que no hay programador para este cliente
           completedChecks++;
           if (completedChecks === clientsToCheck.length) {
-            this.applySchedulerFilters(); // Aplicar filtros incluso si hay errores
+            this.applySchedulerFilters();
             this.isLoading = false;
           }
         }
@@ -195,24 +168,20 @@ export class ReportsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Aplicar filtros a programadores
   applySchedulerFilters(): void {
     this.filteredSchedulerStatuses = new Map(this.schedulerStatuses);
     
-    // Filtrar por cliente específico
     if (this.selectedClient) {
       const filteredMap = new Map();
       if (this.schedulerStatuses.has(this.selectedClient)) {
-        // Asegúrate de obtener el valor antes de establecerlo
         const status = this.schedulerStatuses.get(this.selectedClient);
-        if (status) { // Comprobación adicional por si acaso
+        if (status) {
           filteredMap.set(this.selectedClient, status);
         }
       }
       this.filteredSchedulerStatuses = filteredMap;
     }
     
-    // Filtrar por tipo de datos
     if (this.selectedDataType) {
       const filteredMap = new Map();
       this.filteredSchedulerStatuses.forEach((status, clientId) => {
@@ -223,7 +192,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
       this.filteredSchedulerStatuses = filteredMap;
     }
     
-    // Filtrar por formato
     if (this.selectedFormat) {
       const filteredMap = new Map();
       this.filteredSchedulerStatuses.forEach((status, clientId) => {
@@ -233,6 +201,212 @@ export class ReportsComponent implements OnInit, OnDestroy {
       });
       this.filteredSchedulerStatuses = filteredMap;
     }
+  }
+
+  loadReports(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    const observable = this.selectedClient
+      ? this.reportsService.getClientReports(this.selectedClient, this.selectedFormat, this.selectedDataType)
+      : this.reportsService.getAllReports(this.selectedFormat, this.selectedDataType);
+
+    observable.subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.reports = response.reports || [];
+        } else {
+          this.error = response.error || 'Error al cargar los reportes';
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading reports:', err);
+        this.error = 'Error al cargar los reportes';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // Add helper for date formatting
+  private formatDateForInput(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+
+  openGenerateReportModal(): void {
+    const today = this.formatDateForInput(new Date());
+    this.reportFormData = {
+      start_date: today, // Initialize with today
+      end_date: today,   // Initialize with today
+      data_type: 'sensors',
+      format: 'json'
+    };
+    this.showReportModal = true;
+  }
+
+  closeReportModal(): void {
+    this.showReportModal = false;
+  }
+
+  generateReport(): void {
+    if (!this.selectedClient) {
+      this.error = 'Debe seleccionar un cliente para generar el reporte';
+      return;
+    }
+
+    this.isLoading = true;
+    this.reportsService.generateReport(this.selectedClient, this.reportFormData).subscribe({
+      next: (response) => {
+        this.error = null;
+        this.successMessage = null;
+        if (response.success) {
+          this.successMessage = response.message || 'Reporte generado con éxito.';
+          this.loadReports();
+          this.showReportModal = false;
+        } else {
+          this.error = response.error || 'Error al generar el reporte';
+        }
+        this.isLoading = false;
+        setTimeout(() => this.successMessage = null, 5000);
+      },
+      error: (err) => {
+        console.error('Error generating report:', err);
+        this.error = 'Error al generar el reporte';
+        this.isLoading = false;
+        this.successMessage = null;
+      }
+    });
+  }
+
+  openSchedulerModal(): void {
+    const today = this.formatDateForInput(new Date());
+    // Default client to current selected if available
+    const currentClientId = this.getCurrentClientId() || ''; 
+    this.schedulerFormData = {
+      interval_hours: 24,
+      client_id: currentClientId,
+      start_date: today, // Initialize with today
+      end_date: today,   // Initialize with today
+      data_type: 'sensors',
+      format: 'json'
+    };
+    // Ensure the selected client in the modal matches, or is null if none selected
+    this.schedulerFormData.client_id = this.clients.some(c => c.client_id === currentClientId) ? currentClientId : '';
+    
+    this.showSchedulerModal = true;
+  }
+
+  closeSchedulerModal(): void {
+    this.showSchedulerModal = false;
+  }
+
+  saveScheduler(): void {
+    if (!this.schedulerFormData.client_id) {
+      this.error = 'Debe seleccionar un cliente para el programador';
+      return;
+    }
+
+    this.isLoading = true;
+    this.schedulerService.startScheduler(this.schedulerFormData).subscribe({
+      next: (response) => {
+        this.error = null;
+        this.successMessage = null;
+        if (response.success) {
+          this.successMessage = response.message || 'Programador configurado con éxito.';
+          this.checkSchedulersStatus();
+          this.showSchedulerModal = false;
+        } else {
+          this.error = response.error || 'Error al configurar el programador';
+        }
+        this.isLoading = false;
+        setTimeout(() => this.successMessage = null, 5000);
+      },
+      error: (err) => {
+        console.error('Error saving scheduler:', err);
+        this.error = 'Error al configurar el programador';
+        this.isLoading = false;
+        this.successMessage = null;
+      }
+    });
+  }
+
+  stopScheduler(clientId: string): void {
+    this.isLoading = true;
+    this.schedulerService.stopScheduler(clientId).subscribe({
+      next: (response) => {
+        this.error = null;
+        this.successMessage = null;
+        if (response.success) {
+          this.successMessage = response.message || 'Programador detenido con éxito.';
+          this.checkSchedulersStatus();
+        } else {
+          this.error = response.error || 'Error al detener el programador';
+        }
+        this.isLoading = false;
+        setTimeout(() => this.successMessage = null, 5000);
+      },
+      error: (err) => {
+        console.error('Error stopping scheduler:', err);
+        this.error = 'Error al detener el programador';
+        this.isLoading = false;
+        this.successMessage = null;
+      }
+    });
+  }
+
+  openDeleteModal(report: Report): void {
+    this.reportToDelete = report;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.reportToDelete = null;
+  }
+
+  confirmDeleteReport(): void {
+    if (!this.reportToDelete || !this.reportToDelete.client_id || !this.reportToDelete.report_id) {
+      this.error = 'No se puede eliminar el reporte';
+      return;
+    }
+
+    this.isLoading = true;
+    this.reportsService.deleteReport(this.reportToDelete.client_id, this.reportToDelete.report_id).subscribe({
+      next: (response) => {
+        this.error = null;
+        this.successMessage = null;
+        if (response.success) {
+          this.successMessage = response.message || 'Reporte eliminado con éxito.';
+          this.loadReports();
+          this.showDeleteModal = false;
+          this.reportToDelete = null;
+        } else {
+          this.error = response.error || 'Error al eliminar el reporte';
+        }
+        this.isLoading = false;
+        setTimeout(() => this.successMessage = null, 5000);
+      },
+      error: (err) => {
+        console.error('Error deleting report:', err);
+        this.error = 'Error al eliminar el reporte';
+        this.isLoading = false;
+        this.successMessage = null;
+      }
+    });
+  }
+
+  getCurrentClientId(): string {
+    return localStorage.getItem(this.STORAGE_KEY) || '';
+  }
+
+  getCurrentClientName(): string {
+    const client = this.clients.find(c => c.client_id === this.selectedClient);
+    return client ? client.name : '';
+  }
+
+  getClientNameById(clientId: string): string {
+    const client = this.clients.find(c => c.client_id === clientId);
+    return client ? client.name : clientId;
   }
 
   applyFilters(): void {
@@ -246,68 +420,23 @@ export class ReportsComponent implements OnInit, OnDestroy {
   clearFilters(): void {
     this.selectedDataType = '';
     this.selectedFormat = '';
-    // Al restablecer, si hay un cliente activo, usarlo, sino mostrar todos
     this.selectedClient = this.getCurrentClientId() || ''; 
     this.applyFilters();
   }
 
-  loadReports(): void {
-    this.isLoading = true;
-    this.error = null;
-    
-    if (!this.selectedClient) {
-      this.msadService.getAllReports(this.selectedFormat, this.selectedDataType)
-        .subscribe({
-          next: (response: ReportListResponse) => {
-            this.reports = response.reports || [];
-            this.isLoading = false;
-          },
-          error: (err: any) => {
-            this.error = 'Error al cargar los reportes. Por favor intente nuevamente.';
-            this.isLoading = false;
-            console.error(err);
-          }
-        });
-    } else {
-      this.msadService.getClientReports(this.selectedClient, this.selectedFormat, this.selectedDataType)
-        .subscribe({
-          next: (response: ReportListResponse) => {
-            this.reports = response.reports || [];
-            this.isLoading = false;
-          },
-          error: (err: any) => {
-            this.error = 'Error al cargar los reportes. Por favor intente nuevamente.';
-            this.isLoading = false;
-            console.error(err);
-          }
-        });
+  downloadReport(report: Report): void {
+    if (!report || !report.client_id || !report.filename) {
+      this.error = 'No se puede descargar el reporte seleccionado.';
+      return;
     }
-  }
-
-  viewReportDetails(report: any): void {
-    this.router.navigate(['/information/reports', report.client_id, report.report_id]);
-  }
-
-  downloadReport(report: any, event: Event): void {
-    // Detener la propagación para que no se navegue a los detalles del reporte
-    event.stopPropagation();
     
-    // Extraer el nombre del archivo de la URL original
-    const urlParts = report.download_url.split('/');
-    const fileName = urlParts[urlParts.length - 1];
-    
-    // Construir la URL correcta usando el servicio
-    const correctUrl = this.msadService.getReportDownloadUrl(report.client_id, fileName);
-    
-    // Determinar el tipo MIME basado en el formato
+    const correctUrl = this.reportsService.getReportDownloadUrl(report.client_id, report.filename);
     const mimeType = report.format === 'json' ? 'application/json' : 'text/csv';
     
-    // Crear elemento de anclaje para descarga
     const a = document.createElement('a');
     a.style.display = 'none';
     document.body.appendChild(a);
     
-    // Realizar la descarga mediante fetch para asegurar que se maneje como archivo
     fetch(correctUrl)
       .then(response => {
         if (!response.ok) {
@@ -318,193 +447,38 @@ export class ReportsComponent implements OnInit, OnDestroy {
       .then(blob => {
         const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }));
         a.href = url;
-        a.download = fileName;
+        a.download = report.filename;
         a.click();
         window.URL.revokeObjectURL(url);
       })
       .catch(error => {
         console.error('Error downloading file:', error);
-        this.error = `Error al descargar el archivo. Asegúrese de estar conectado al servidor (raspserver.local:5000).`;
+        this.error = `Error al descargar el archivo. ${error.message || ''}`;
       })
       .finally(() => {
         document.body.removeChild(a);
       });
   }
 
-  // Funciones para programadores
-  openSchedulerModal(): void {
-    if (!this.selectedClient) {
-      this.error = 'Por favor seleccione un cliente para configurar un programador';
-      return;
-    }
-    
-    // Si ya existe un programador para este cliente, cargamos su configuración
-    const existingScheduler = this.schedulerStatuses.get(this.selectedClient);
-    if (existingScheduler && existingScheduler.config) {
-      this.schedulerFormData = {...existingScheduler.config};
-    } else {
-      // Inicializar formulario con valores por defecto
-      const today = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      this.schedulerFormData = {
-        interval_hours: 24,
-        client_id: this.selectedClient,
-        start_date: this.formatDateForInput(today),
-        end_date: this.formatDateForInput(tomorrow),
-        data_type: 'sensors',
-        format: 'json'
-      };
-    }
-    
-    this.showSchedulerModal = true;
-  }
-  
-  closeSchedulerModal(): void {
-    this.showSchedulerModal = false;
-  }
-  
-  saveScheduler(): void {
-    this.isLoading = true;
-    this.error = null;
-    
-    this.msadService.startScheduler(this.schedulerFormData)
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.closeSchedulerModal();
-            this.checkSchedulersStatus();
-          } else {
-            this.error = response.error || 'Error desconocido al configurar el programador';
-            this.isLoading = false;
-          }
-        },
-        error: (err) => {
-          this.error = 'Error al configurar el programador. Por favor intente nuevamente.';
-          this.isLoading = false;
-          console.error(err);
-        }
-      });
-  }
-  
-  // Detener un programador específico por cliente
-  stopScheduler(clientId: string, event: Event): void {
-    event.stopPropagation();
-    this.isLoading = true;
-    this.error = null;
-    
-    this.msadService.stopScheduler(clientId)
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.schedulerStatuses.delete(clientId);
-          } else {
-            this.error = response.error || 'Error desconocido al detener el programador';
-          }
-          this.isLoading = false;
-          this.checkSchedulersStatus();
-        },
-        error: (err) => {
-          this.error = 'Error al detener el programador. Por favor intente nuevamente.';
-          this.isLoading = false;
-          console.error(err);
-        }
-      });
+  formatDate(dateString: string | undefined): string {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleString();
   }
 
-  // Funciones para reportes manuales
-  openDeleteModal(report: any, event: Event): void {
-    this.deleteReport(report, event);
-  }
-
-  // Abre el modal de confirmación
-  deleteReport(report: any, event: Event): void {
-    event.stopPropagation();
-    this.reportToDelete = report;
-    this.showDeleteModal = true;
-  }
-
-  closeDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.reportToDelete = null;
-  }
-
-  confirmDeleteReport(): void {
-    if (!this.reportToDelete) return;
+  formatNextRun(dateString: string | undefined): string {
+    if (!dateString) return 'N/A';
+    const nextRun = new Date(dateString);
+    const now = new Date();
+    const diff = nextRun.getTime() - now.getTime();
     
-    this.isLoading = true;
-    this.msadService.deleteReport(this.reportToDelete.client_id, this.reportToDelete.report_id)
-      .subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            // Recargar la lista de reportes después de eliminar
-            this.loadReports();
-            this.closeDeleteModal();
-          } else {
-            this.error = response.error || 'Error desconocido al eliminar el reporte';
-            this.isLoading = false;
-          }
-        },
-        error: (err: any) => {
-          this.error = 'Error al eliminar el reporte. Por favor intente nuevamente.';
-          this.isLoading = false;
-          console.error(err);
-          this.closeDeleteModal();
-        }
-      });
-  }
-
-  openGenerateReportModal(): void {
-    // Initialize form with today's date and yesterday's date
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    if (diff < 0) return 'En progreso';
     
-    this.reportFormData = {
-      start_date: this.formatDateForInput(yesterday),
-      end_date: this.formatDateForInput(today),
-      data_type: 'sensors',
-      format: 'json'
-    };
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     
-    this.showReportModal = true;
+    return `En ${hours}h ${minutes}m`;
   }
 
-  closeReportModal(): void {
-    this.showReportModal = false;
-  }
-
-  formatDateForInput(date: Date): string {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  generateReport(): void {
-    if (!this.selectedClient) {
-      this.error = 'Por favor seleccione un cliente para generar un reporte';
-      return;
-    }
-    
-    this.msadService.generateReport(this.selectedClient, this.reportFormData)
-      .subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            this.closeReportModal();
-            this.loadReports();
-          } else {
-            this.error = response.error || 'Error desconocido al generar el reporte';
-          }
-        },
-        error: (err: any) => {
-          this.error = 'Error al generar el reporte. Por favor intente nuevamente.';
-          console.error(err);
-        }
-      });
-  }
-  
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -513,68 +487,23 @@ export class ReportsComponent implements OnInit, OnDestroy {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  }
-
-  // Formatear siguiente ejecución para mostrar en la UI
-  formatNextRun(dateString: string | undefined): string {
-    if (!dateString) return 'No programado';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = date.getTime() - now.getTime();
-    
-    // Si es menos de un día
-    if (diff < 24 * 60 * 60 * 1000) {
-      const hours = Math.floor(diff / (60 * 60 * 1000));
-      const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
-      return `En ${hours}h ${minutes}m`;
-    }
-    
-    // Si es más de un día
-    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-    return `En ${days} día${days !== 1 ? 's' : ''}`;
-  }
-
-  // Client service methods implemented directly
-  getCurrentClientId(): string {
-    const storedId = localStorage.getItem(this.STORAGE_KEY);
-    return storedId || 'mushroom1';
-  }
-  
-  getCurrentClientName(): string {
-    if (!this.selectedClient) return '';
-    const client = this.clients.find(c => c.client_id === this.selectedClient);
-    return client ? client.name : '';
-  }
-
-  getClientNameById(clientId: string): string {
-    const client = this.clients.find(c => c.client_id === clientId);
-    return client ? client.name : clientId;
-  }
-  
-  // Retorna el label de una opción de intervalo
   getIntervalLabel(hours: number): string {
-    const option = this.intervalOptions.find(o => o.value === hours);
+    const intervalOptions = [
+      { value: 1, label: 'Cada hora' },
+      { value: 6, label: 'Cada 6 horas' },
+      { value: 12, label: 'Cada 12 horas' },
+      { value: 24, label: 'Cada día' },
+      { value: 168, label: 'Cada semana' }
+    ];
+    const option = intervalOptions.find(o => o.value === hours);
     return option ? option.label : `${hours} horas`;
   }
-  
-  // Retorna la cantidad de programadores activos después de filtrar
+
   getActiveSchedulersCount(): number {
-    // Siempre devuelve el tamaño del mapa filtrado cuando la vista es 'schedulers'
-    return this.activeView === 'schedulers' 
-      ? this.filteredSchedulerStatuses.size 
-      : this.schedulerStatuses.size; // Para la pestaña de reportes, muestra el total real
+    return this.filteredSchedulerStatuses.size;
   }
-  
-  // Verifica si hay un programador activo para el cliente actual
+
   hasActiveScheduler(): boolean {
     return this.selectedClient ? this.schedulerStatuses.has(this.selectedClient) : false;
-  }
-  
-  // Obtiene el estado del programador para el cliente actual
-  getCurrentClientScheduler(): SchedulerStatusResponse | null {
-    return this.selectedClient ? (this.schedulerStatuses.get(this.selectedClient) || null) : null;
   }
 }

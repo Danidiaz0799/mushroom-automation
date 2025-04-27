@@ -1,0 +1,32 @@
+<div *ngIf="isLoading" class="loading">Cargando reportes...</div>
+
+<table *ngIf="!isLoading" class="reports-table">
+  <thead>
+    <tr>
+      <th>Nombre del Archivo</th>
+      <th>Tipo de Datos</th>
+      <th>Formato</th>
+      <th>Tamaño</th>
+      <th>Fecha de Creación</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let report of reports">
+      <td>{{ report.filename }}</td>
+      <td>{{ report.data_type }}</td>
+      <td>{{ report.format }}</td>
+      <td>{{ formatFileSize(report.size) }}</td>
+      <td>{{ formatDate(report.created_at) }}</td>
+      <td>
+        <button class="action-button" (click)="onViewReport(report)">Ver</button>
+        <button class="action-button" (click)="onDownloadReport(report)">Descargar</button>
+        <button class="action-button" (click)="onDeleteReport(report)">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div *ngIf="!isLoading && reports.length === 0" class="no-reports">
+  No hay reportes disponibles.
+</div> 

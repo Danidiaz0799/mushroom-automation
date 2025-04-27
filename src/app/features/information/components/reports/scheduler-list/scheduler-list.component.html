@@ -1,0 +1,32 @@
+<div *ngIf="isLoading" class="loading">Cargando programadores...</div>
+
+<table *ngIf="!isLoading" class="schedulers-table">
+  <thead>
+    <tr>
+      <th>Cliente</th>
+      <th>Tipo de Datos</th>
+      <th>Formato</th>
+      <th>Intervalo</th>
+      <th>Última Ejecución</th>
+      <th>Próxima Ejecución</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of schedulerStatuses | keyvalue">
+      <td>{{ getClientName(item.key) }}</td>
+      <td>{{ item.value.config?.data_type }}</td>
+      <td>{{ item.value.config?.format }}</td>
+      <td>{{ item.value.config?.interval_hours }} horas</td>
+      <td>{{ formatDate(item.value.last_run) }}</td>
+      <td>{{ formatNextRun(item.value.next_run) }}</td>
+      <td>
+        <button class="action-button" (click)="onStopScheduler(item.key)">Detener</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div *ngIf="!isLoading && schedulerStatuses.size === 0" class="no-schedulers">
+  No hay programadores activos.
+</div> 

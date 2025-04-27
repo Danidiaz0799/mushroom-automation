@@ -88,56 +88,16 @@
         <!-- Filters section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros de Búsqueda</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div class="space-y-2">
-              <label for="clientSelect" class="block text-sm font-medium text-gray-700">Cultivo</label>
-              <select 
-                id="clientSelect" 
-                [(ngModel)]="selectedClient"
-                class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                <option *ngFor="let client of clients" [value]="client.client_id">{{ client.name }}</option>
-              </select>
-            </div>
-            
-            <div class="space-y-2">
-              <label for="dataTypeSelect" class="block text-sm font-medium text-gray-700">Tipo de Datos</label>
-              <select 
-                id="dataTypeSelect" 
-                [(ngModel)]="selectedDataType"
-                class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                <option *ngFor="let option of dataTypeOptions" [value]="option.value">{{ option.label }}</option>
-              </select>
-            </div>
-            
-            <div class="space-y-2">
-              <label for="formatSelect" class="block text-sm font-medium text-gray-700">Formato</label>
-              <select 
-                id="formatSelect" 
-                [(ngModel)]="selectedFormat"
-                class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                <option *ngFor="let option of formatOptions" [value]="option.value">{{ option.label }}</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="flex items-center space-x-3 mt-5 justify-end">
-            <button 
-              (click)="applyFilters()" 
-              class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V19a1 1 0 01-1 1H9a1 1 0 01-1-1v-7.586l-4.707-4.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-              </svg>
-              Aplicar Filtros
-            </button>
-            <button 
-              (click)="clearFilters()" 
-              class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg shadow-sm transition-all duration-200 font-medium flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-              </svg>
-              Restablecer
-            </button>
-          </div>
+          <app-report-filters
+            [selectedClient]="selectedClient"
+            [selectedDataType]="selectedDataType"
+            [selectedFormat]="selectedFormat"
+            [clients]="clients"
+            (selectedClientChange)="selectedClient = $event; applyFilters()" 
+            (selectedDataTypeChange)="selectedDataType = $event; applyFilters()"
+            (selectedFormatChange)="selectedFormat = $event; applyFilters()"
+            (filtersCleared)="clearFilters()"
+          ></app-report-filters>
         </div>
       </div>
     </div>
@@ -159,6 +119,16 @@
       </div>
     </div>
     
+    <!-- Success message -->
+    <div *ngIf="successMessage" class="bg-green-50 p-5 rounded-xl border border-green-100 text-green-700 mb-8 flex items-start gap-3 animate-fade-in-up">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-green-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+      <div>
+        <p class="font-medium">{{ successMessage }}</p>
+      </div>
+    </div>
+    
     <!-- REPORTS VIEW -->
     <div *ngIf="activeView === 'reports' && !isLoading">
       <!-- Reports table -->
@@ -175,19 +145,18 @@
                 <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cultivo</th>
                 <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formato</th>
                 <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rango</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tamaño</th>
                 <th scope="col" class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
                 <th scope="col" class="px-6 py-3.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100">
               <tr *ngFor="let report of reports" 
-                  class="hover:bg-gray-50 cursor-pointer transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 group-hover:text-indigo-800"
-                    (click)="viewReportDetails(report)">
+                  class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 group-hover:text-indigo-800">
                   {{ report.report_id }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ getClientNameById(report.client_id) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ getClientNameById(report.client_id || '') }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
                         [ngClass]="report.format === 'csv' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
@@ -210,20 +179,17 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
-                  <span *ngIf="report.period && report.period.start && report.period.end">
-                    {{ report.period.start }} - {{ report.period.end }}
-                  </span>
-                  <span *ngIf="!report.period">N/A</span>
+                    {{ formatFileSize(report.size) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{{ report.created_at | date:'medium' }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
                   <div class="flex items-center justify-center gap-2">
-                    <button (click)="downloadReport(report, $event)" title="Descargar" class="p-2 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 focus:outline-none" tabindex="0">
+                    <button (click)="downloadReport(report)" title="Descargar" class="p-2 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 focus:outline-none" tabindex="0">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
                     </button>
-                    <button (click)="openDeleteModal(report, $event)" title="Eliminar" class="p-2 rounded bg-red-50 hover:bg-red-100 text-red-700 focus:outline-none" tabindex="0">
+                    <button (click)="openDeleteModal(report)" title="Eliminar" class="p-2 rounded bg-red-50 hover:bg-red-100 text-red-700 focus:outline-none" tabindex="0">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
@@ -272,30 +238,36 @@
                 <h3 class="font-medium text-emerald-800">{{ getClientNameById(entry.key) }}</h3>
               </div>
               <button 
-                (click)="stopScheduler(entry.key, $event)" 
+                (click)="stopScheduler(entry.key)" 
                 class="p-1.5 bg-white rounded text-red-600 hover:bg-red-50 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
                 </svg>
               </button>
             </div>
-            <div class="p-5">
+            <div class="p-5" *ngIf="entry.value.config as config">
               <div class="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <p class="text-xs text-gray-500 mb-1">Frecuencia</p>
-                  <p class="text-sm font-medium text-gray-800">{{ getIntervalLabel(entry.value.config?.interval_hours || 24) }}</p>
+                  <p class="text-sm font-medium text-gray-800">{{ getIntervalLabel(config.interval_hours || 24) }}</p>
                 </div>
                 <div>
                   <p class="text-xs text-gray-500 mb-1">Formato</p>
-                  <p class="text-sm font-medium text-gray-800">{{ entry.value.config?.format?.toUpperCase() || 'JSON' }}</p>
+                  <p class="text-sm font-medium text-gray-800">{{ config?.format?.toUpperCase() || 'N/A' }}</p>
+                </div>
+                <div class="col-span-2">
+                  <p class="text-xs text-gray-500 mb-1">Rango de Fechas</p>
+                  <p class="text-sm font-medium text-gray-800">
+                    {{ config.start_date || 'N/A' }} - {{ config.end_date || 'N/A' }}
+                  </p>
                 </div>
                 <div>
                   <p class="text-xs text-gray-500 mb-1">Tipo de datos</p>
-                  <p class="text-sm font-medium text-gray-800">{{ entry.value.config?.data_type || 'sensors' | titlecase }}</p>
+                  <p class="text-sm font-medium text-gray-800">{{ config.data_type | titlecase }}</p>
                 </div>
                 <div>
                   <p class="text-xs text-gray-500 mb-1">Última ejecución</p>
-                  <p class="text-sm font-medium text-gray-800">{{ entry.value.last_run ? (entry.value.last_run | date:'short') : 'N/A' }}</p>
+                  <p class="text-sm font-medium text-gray-800">{{ formatDate(entry.value.last_run) }}</p>
                 </div>
               </div>
               
@@ -355,255 +327,26 @@
 </div>
 
 <!-- Generate Report Modal -->
-<div *ngIf="showReportModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-auto overflow-hidden animate-fade-in-up">
-    <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
-      <h3 class="text-xl font-semibold text-white">Generar Nuevo Reporte</h3>
-      <button 
-        (click)="closeReportModal()" 
-        class="text-white/80 hover:text-white transition-colors">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    
-    <div class="p-6">
-      <div class="space-y-5">
-        <!-- Client Selection -->
-        <div class="space-y-2">
-          <label for="reportClientSelect" class="block text-sm font-medium text-gray-700">Cultivo</label>
-          <select 
-            id="reportClientSelect" 
-            [(ngModel)]="selectedClient"
-            class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-            <option *ngFor="let client of clients" [value]="client.client_id">{{ client.name }}</option>
-          </select>
-        </div>
-        
-        <!-- Date Range -->
-        <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label for="startDate" class="block text-sm font-medium text-gray-700">Fecha Inicial</label>
-            <input 
-              type="date" 
-              id="startDate" 
-              [(ngModel)]="reportFormData.start_date"
-              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-          </div>
-          
-          <div class="space-y-2">
-            <label for="endDate" class="block text-sm font-medium text-gray-700">Fecha Final</label>
-            <input 
-              type="date" 
-              id="endDate" 
-              [(ngModel)]="reportFormData.end_date"
-              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-          </div>
-        </div>
-        
-        <!-- Data Type -->
-        <div class="space-y-2">
-          <label for="reportDataType" class="block text-sm font-medium text-gray-700">Tipo de Datos</label>
-          <select 
-            id="reportDataType" 
-            [(ngModel)]="reportFormData.data_type"
-            class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-            <option value="sensors">Sensores</option>
-            <option value="events">Eventos</option>
-            <option value="actuators">Actuadores</option>
-          </select>
-        </div>
-        
-        <!-- Format -->
-        <div class="space-y-2">
-          <label for="reportFormat" class="block text-sm font-medium text-gray-700">Formato</label>
-          <select 
-            id="reportFormat" 
-            [(ngModel)]="reportFormData.format"
-            class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-            <option value="json">JSON</option>
-            <option value="csv">CSV</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    
-    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
-      <button 
-        (click)="closeReportModal()"
-        class="px-5 py-2.5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg shadow-sm transition-all duration-200 font-medium border border-gray-200">
-        Cancelar
-      </button>
-      <button 
-        (click)="generateReport()"
-        class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
-        Generar Reporte
-      </button>
-    </div>
-  </div>
-</div>
+<app-report-modal
+  [showModal]="showReportModal"
+  [reportFormData]="reportFormData"
+  (closeModal)="closeReportModal()"
+  (generateReport)="generateReport()"
+></app-report-modal>
 
 <!-- Scheduler Configuration Modal -->
-<div *ngIf="showSchedulerModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-auto overflow-hidden animate-fade-in-up">
-    <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
-      <h3 class="text-xl font-semibold text-white">Configurar Programador Automático</h3>
-      <button 
-        (click)="closeSchedulerModal()" 
-        class="text-white/80 hover:text-white transition-colors">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    
-    <div class="p-6">
-      <!-- Client information -->
-      <div class="bg-indigo-50 p-4 rounded-lg mb-5 border border-indigo-100">
-        <p class="text-sm text-indigo-700 font-medium mb-1">Cultivo seleccionado:</p>
-        <p class="text-indigo-900 font-semibold">{{ getCurrentClientName() }}</p>
-        <p *ngIf="hasActiveScheduler()" class="mt-2 text-xs text-indigo-600">
-          Este cultivo ya tiene un programador activo. Al guardar, se actualizará la configuración existente.
-        </p>
-      </div>
-      
-      <div class="space-y-5">
-        <!-- Interval Selection -->
-        <div class="space-y-2">
-          <label for="intervalHours" class="block text-sm font-medium text-gray-700">Frecuencia de generación</label>
-          <select 
-            id="intervalHours" 
-            [(ngModel)]="schedulerFormData.interval_hours"
-            class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-            <option *ngFor="let option of intervalOptions" [value]="option.value">{{ option.label }}</option>
-          </select>
-        </div>
-        
-        <!-- Period configuration -->
-        <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label for="schStartDate" class="block text-sm font-medium text-gray-700">Fecha Inicial</label>
-            <input 
-              type="date" 
-              id="schStartDate" 
-              [(ngModel)]="schedulerFormData.start_date"
-              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-          </div>
-          
-          <div class="space-y-2">
-            <label for="schEndDate" class="block text-sm font-medium text-gray-700">Fecha Final</label>
-            <input 
-              type="date" 
-              id="schEndDate" 
-              [(ngModel)]="schedulerFormData.end_date"
-              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-          </div>
-        </div>
-        
-        <!-- Data Type and Format in a row -->
-        <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label for="schDataType" class="block text-sm font-medium text-gray-700">Tipo de Datos</label>
-            <select 
-              id="schDataType" 
-              [(ngModel)]="schedulerFormData.data_type"
-              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-              <option value="sensors">Sensores</option>
-              <option value="events">Eventos</option>
-              <option value="actuators">Actuadores</option>
-            </select>
-          </div>
-          
-          <div class="space-y-2">
-            <label for="schFormat" class="block text-sm font-medium text-gray-700">Formato</label>
-            <select 
-              id="schFormat" 
-              [(ngModel)]="schedulerFormData.format"
-              class="w-full rounded-lg border border-gray-300 py-2.5 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-              <option value="json">JSON</option>
-              <option value="csv">CSV</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
-      <button 
-        (click)="closeSchedulerModal()"
-        class="px-5 py-2.5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg shadow-sm transition-all duration-200 font-medium border border-gray-200">
-        Cancelar
-      </button>
-      <button 
-        (click)="saveScheduler()"
-        class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
-        {{ hasActiveScheduler() ? 'Actualizar Programador' : 'Crear Programador' }}
-      </button>
-    </div>
-  </div>
-</div>
+<app-scheduler-modal
+  [showModal]="showSchedulerModal"
+  [schedulerFormData]="schedulerFormData"
+  [clients]="filteredClientsForModal"
+  (closeModal)="closeSchedulerModal()"
+  (saveScheduler)="saveScheduler()"
+></app-scheduler-modal>
 
 <!-- Delete Confirmation Modal -->
-<div *ngIf="showDeleteModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-auto overflow-hidden animate-fade-in-up">
-    <div class="bg-red-600 px-6 py-4 flex justify-between items-center">
-      <h3 class="text-xl font-semibold text-white">Confirmar Eliminación</h3>
-      <button 
-        (click)="closeDeleteModal()" 
-        class="text-white/80 hover:text-white transition-colors">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    
-    <div class="p-6">
-      <div class="flex items-center mb-5">
-        <div class="bg-red-100 p-3 rounded-full mr-4">
-          <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div>
-          <h4 class="text-lg font-medium text-gray-900">¿Desea eliminar este reporte?</h4>
-          <p class="text-sm text-gray-500 mt-1">Esta acción no se puede deshacer</p>
-        </div>
-      </div>
-      
-      <div *ngIf="reportToDelete" class="bg-gray-50 p-4 rounded-lg mb-5">
-        <div class="grid grid-cols-2 gap-2 text-sm">
-          <div>
-            <p class="text-gray-500">ID:</p>
-            <p class="font-medium text-gray-900">#{{ reportToDelete.report_id }}</p>
-          </div>
-          <div>
-            <p class="text-gray-500">Cliente:</p>
-            <p class="font-medium text-gray-900">{{ getClientNameById(reportToDelete.client_id) }}</p>
-          </div>
-          <div>
-            <p class="text-gray-500">Tipo:</p>
-            <p class="font-medium text-gray-900">{{ reportToDelete.data_type }}</p>
-          </div>
-          <div>
-            <p class="text-gray-500">Tamaño:</p>
-            <p class="font-medium text-gray-900">{{ formatFileSize(reportToDelete.size) }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
-      <button 
-        (click)="closeDeleteModal()"
-        class="px-5 py-2.5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg shadow-sm transition-all duration-200 font-medium border border-gray-200">
-        Cancelar
-      </button>
-      <button 
-        (click)="confirmDeleteReport()"
-        class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm transition-all duration-200 font-medium">
-        Eliminar Reporte
-      </button>
-    </div>
-  </div>
-</div>
+<app-delete-modal
+  [showModal]="showDeleteModal"
+  [reportToDelete]="reportToDelete"
+  (closeModal)="closeDeleteModal()"
+  (confirmDelete)="confirmDeleteReport()"
+></app-delete-modal>
